@@ -33,6 +33,7 @@ newtype TxSubmitPort
 data TxSubmitStatus
   = TxSubmitOk
   | TxSubmitDecodeHex
+  | TxSubmitEmpty
   | TxSubmitDecodeFail DecoderError
   | TxSubmitFail Text
   deriving Eq
@@ -52,6 +53,7 @@ convertJson st =
       case st of
         TxSubmitOk -> "No error"
         TxSubmitDecodeHex -> "Provided data was hex encoded and this webapi expects raw binary"
+        TxSubmitEmpty -> "Provided transaction has zero length"
         TxSubmitDecodeFail err -> sformat build err
         TxSubmitFail err -> err
 

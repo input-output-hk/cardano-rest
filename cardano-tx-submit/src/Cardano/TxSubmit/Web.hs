@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE TypeApplications #-}
 module Cardano.TxSubmit.Web
   ( runTxSubmitServer
@@ -58,9 +59,10 @@ txSubmitPost tsv trce tx = do
   case decodeByronTx tx of
     Left err -> do
       liftIO $ logInfo trce ("txSubmitPost: Decoding of transaction failed: " <> textShow err)
-      pure $ if BS.all isHexOrWhitespace tx
-                then TxSubmitDecodeHex
-                else TxSubmitDecodeFail err
+      pure $ if
+              | BS.length tx == 0 -> TxSubmitEmpty
+              | BS.all isHexOrWhitespace tx -> TxSubmitDecodeHex
+              | otherwise -> TxSubmitDecodeFail err
     Right tx1 -> do
       mresp <- liftIO $ submitTx tsv tx1
       liftIO $ logInfo trce (maybe "Success" (\r -> "Error: " <> textShow r) mresp)
