@@ -1,4 +1,5 @@
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Cardano.TxSubmit.Tx
   ( TxSubmitVar (..)
@@ -10,10 +11,12 @@ module Cardano.TxSubmit.Tx
 
 import           Cardano.Prelude hiding (atomically)
 
+import           Cardano.TxSubmit.Types
+
 import           Control.Monad.Class.MonadSTM.Strict (StrictTMVar,
                     atomically, newEmptyTMVarM, putTMVar, takeTMVar)
 
-import           Ouroboros.Consensus.Ledger.Byron (ByronBlock (..), GenTx)
+import           Ouroboros.Consensus.Ledger.Byron (ByronBlock (..), GenTx (..))
 import           Ouroboros.Consensus.Ledger.Byron.Auxiliary (ApplyMempoolPayloadErr)
 
 -- The type of 'reject' (determined by ouroboros-network) is currently 'Maybe String'.
@@ -43,7 +46,12 @@ writeTxSubmitResponse tsv merr =
 -- the response written as a second operation. Doing this as a single atmomic
 -- operation would not work as the other end of the submit/response pair need
 -- to be operated on independently.
-submitTx :: TxSubmitVar -> GenTx ByronBlock -> IO (Maybe ApplyMempoolPayloadErr)
-submitTx tsv tx = do
-  atomically $ putTMVar (txSubmit tsv) tx
-  atomically $ takeTMVar (txRespond tsv)
+submitTx :: TxSubmitVar -> GenTx ByronBlock -> IO TxSubmitStatus
+submitTx tsv tx =
+  case tx of
+    ByronTx txid _ -> do
+      atomically $ putTMVar (txSubmit tsv) tx
+      maybe (TxSubmitOk txid) TxSubmitFail <$> atomically (takeTMVar $ txRespond tsv)
+    ByronDlg {} -> pure $ TxSubmitBadTx "Delegation"
+    ByronUpdateProposal {} -> pure $ TxSubmitBadTx "Proposal"
+    ByronUpdateVote {} -> pure $ TxSubmitBadTx "UpdateVote"

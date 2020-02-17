@@ -8,9 +8,12 @@ module Cardano.TxSubmit.Types
   , TxSubmitApiRecord (..)
   , TxSubmitStatus (..)
   , TxSubmitPort (..)
+  , renderTxSubmitStatus
   ) where
 
 import           Cardano.Binary (DecoderError)
+import qualified Cardano.Chain.UTxO as Utxo
+import           Cardano.TxSubmit.ErrorRender
 
 import           Data.Aeson (ToJSON (..), Value (..))
 import qualified Data.Aeson as Aeson
@@ -18,11 +21,13 @@ import           Data.ByteString.Char8 (ByteString)
 import qualified Data.ByteString.Lazy.Char8 as LBS
 import           Data.Text (Text)
 
-import           Formatting (build, sformat)
+import           Formatting ((%), build, sformat)
 
 import           GHC.Generics (Generic)
 
 import           Network.HTTP.Media ((//))
+
+import           Ouroboros.Consensus.Ledger.Byron.Auxiliary (ApplyMempoolPayloadErr)
 
 import           Servant (Accept (..), JSON, MimeRender (..), MimeUnrender (..), Post, ReqBody, (:>))
 import           Servant.API.Generic (ToServantApi, (:-))
@@ -31,11 +36,12 @@ newtype TxSubmitPort
   = TxSubmitPort Int
 
 data TxSubmitStatus
-  = TxSubmitOk
+  = TxSubmitOk Utxo.TxId
   | TxSubmitDecodeHex
   | TxSubmitEmpty
   | TxSubmitDecodeFail DecoderError
-  | TxSubmitFail Text
+  | TxSubmitBadTx Text
+  | TxSubmitFail ApplyMempoolPayloadErr
   deriving Eq
 
 instance ToJSON TxSubmitStatus where
@@ -44,18 +50,26 @@ instance ToJSON TxSubmitStatus where
 convertJson :: TxSubmitStatus -> Value
 convertJson st =
     Aeson.object
-      [ ( "status", String (if st == TxSubmitOk then "success" else "fail") )
-      , ( "errorMsg", String failMsg )
+      [ ( "status", String statusMsg )
+      , ( "message", String (renderTxSubmitStatus st) )
       ]
   where
-    failMsg :: Text
-    failMsg =
+    statusMsg :: Text
+    statusMsg =
       case st of
-        TxSubmitOk -> "No error"
-        TxSubmitDecodeHex -> "Provided data was hex encoded and this webapi expects raw binary"
-        TxSubmitEmpty -> "Provided transaction has zero length"
-        TxSubmitDecodeFail err -> sformat build err
-        TxSubmitFail err -> err
+        TxSubmitOk{} -> "success"
+        _other -> "fail"
+
+renderTxSubmitStatus :: TxSubmitStatus -> Text
+renderTxSubmitStatus st =
+  case st of
+    TxSubmitOk tx -> sformat ("Tx "% build %" submitted successfully") tx
+    TxSubmitDecodeHex -> "Provided data was hex encoded and this webapi expects raw binary"
+    TxSubmitEmpty -> "Provided transaction has zero length"
+    TxSubmitDecodeFail err -> sformat build err
+    TxSubmitBadTx tt -> mconcat ["Transactions of type '", tt, "' not supported"]
+    TxSubmitFail err -> renderApplyMempoolPayloadErr err
+
 
 -- | Servant API which provides access to tx submission webapi
 type TxSubmitApi

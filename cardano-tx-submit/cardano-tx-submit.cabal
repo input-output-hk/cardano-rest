@@ -38,6 +38,7 @@ library
   exposed-modules:      Cardano.TxSubmit
 
   other-modules:        Cardano.TxSubmit.Config
+                      , Cardano.TxSubmit.ErrorRender
                       , Cardano.TxSubmit.Metrics
                       , Cardano.TxSubmit.Node
                       , Cardano.TxSubmit.Tracing.ToObjectOrphans

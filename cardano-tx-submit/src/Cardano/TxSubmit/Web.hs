@@ -58,18 +58,16 @@ txSubmitPost tsv trce tx = do
   liftIO $ logInfo trce ("txSubmitPost: received " <> textShow (BS.length tx) <> " bytes")
   case decodeByronTx tx of
     Left err -> do
-      liftIO $ logInfo trce ("txSubmitPost: Decoding of transaction failed: " <> textShow err)
-      pure $ if
-              | BS.length tx == 0 -> TxSubmitEmpty
-              | BS.all isHexOrWhitespace tx -> TxSubmitDecodeHex
-              | otherwise -> TxSubmitDecodeFail err
+      let serr = if
+                  | BS.length tx == 0 -> TxSubmitEmpty
+                  | BS.all isHexOrWhitespace tx -> TxSubmitDecodeHex
+                  | otherwise -> TxSubmitDecodeFail err
+      liftIO $ logInfo trce ("txSubmitPost: " <> renderTxSubmitStatus serr)
+      pure serr
     Right tx1 -> do
-      mresp <- liftIO $ submitTx tsv tx1
-      liftIO $ logInfo trce (maybe "Success" (\r -> "Error: " <> textShow r) mresp)
-      case mresp of
-        Nothing -> pure TxSubmitOk
-                    -- FFS, why is there not a way of pretty printing this????
-        Just r -> pure $ TxSubmitFail (textShow r)
+      resp <- liftIO $ submitTx tsv tx1
+      liftIO $ logInfo trce ("txSubmitPost: " <> renderTxSubmitStatus resp)
+      pure resp
 
 decodeByronTx :: ByteString -> Either DecoderError (GenTx ByronBlock)
 decodeByronTx bs =
