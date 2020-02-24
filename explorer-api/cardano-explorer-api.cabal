@@ -2,7 +2,7 @@ cabal-version:          >= 1.10
 
 -- http://haskell.org/cabal/users-guide/
 
-name:                   cardano-explorer-webapi
+name:                   cardano-explorer-api
 version:                1.3.0
 synopsis:               A Block Explorer for the Cardano network
 description:
@@ -110,13 +110,13 @@ test-suite test
   build-depends:        base                            >= 4.12         && < 4.13
                       , aeson
                       , cardano-explorer-db-test
-                      , cardano-explorer-webapi
+                      , cardano-explorer-api
                       , cardano-ledger
                       , hedgehog
 
-executable cardano-explorer-webapi
+executable cardano-explorer-api
   default-language:    Haskell2010
-  main-is:             cardano-explorer-webapi.hs
+  main-is:             cardano-explorer-api.hs
   hs-source-dirs:      app
 
   ghc-options:          -Wall
@@ -131,12 +131,12 @@ executable cardano-explorer-webapi
   -- other-modules:
 
   build-depends:        base                            >= 4.12         && < 4.13
-                      , cardano-explorer-webapi
+                      , cardano-explorer-api
                       , Cabal
 
-executable cardano-webapi-compare
+executable cardano-api-compare
   default-language:    Haskell2010
-  main-is:             cardano-webapi-compare.hs
+  main-is:             cardano-api-compare.hs
   hs-source-dirs:      app
 
   ghc-options:          -Wall
@@ -152,16 +152,16 @@ executable cardano-webapi-compare
 
   build-depends:        base                            >= 4.12         && < 4.13
                       , async
-                      , cardano-explorer-webapi
+                      , cardano-explorer-api
                       , Diff
                       , bytestring
                       , http-conduit
                       , text
                       , text-ansi
 
-executable cardano-webapi-validate
+executable cardano-api-validate
   default-language:    Haskell2010
-  main-is:             cardano-webapi-validate.hs
+  main-is:             cardano-api-validate.hs
   hs-source-dirs:      app
 
   ghc-options:          -Wall
@@ -184,7 +184,7 @@ executable cardano-webapi-validate
                       , async
                       , bytestring
                       , cardano-explorer-db
-                      , cardano-explorer-webapi
+                      , cardano-explorer-api
                       , cardano-ledger
                       , esqueleto
                       , http-conduit
