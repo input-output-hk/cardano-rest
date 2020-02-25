@@ -24,6 +24,7 @@ cabal.project.local~
 .ghc.environment.*
 .ghci
 *.tix
+stack.yaml.lock
 
 ### Nix ###
 result*

@@ -134,9 +134,9 @@ executable cardano-explorer-api
                       , cardano-explorer-api
                       , Cabal
 
-executable cardano-api-compare
+executable cardano-explorer-api-compare
   default-language:    Haskell2010
-  main-is:             cardano-api-compare.hs
+  main-is:             cardano-explorer-api-compare.hs
   hs-source-dirs:      app
 
   ghc-options:          -Wall
@@ -159,9 +159,9 @@ executable cardano-api-compare
                       , text
                       , text-ansi
 
-executable cardano-api-validate
+executable cardano-explorer-api-validate
   default-language:    Haskell2010
-  main-is:             cardano-api-validate.hs
+  main-is:             cardano-explorer-api-validate.hs
   hs-source-dirs:      app
 
   ghc-options:          -Wall
