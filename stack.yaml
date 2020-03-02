@@ -84,6 +84,9 @@ extra-deps:
   - git: https://github.com/input-output-hk/goblins
     commit: 26d35ad52fe9ade3391532dbfeb2f416f07650bc
 
+  - git: https://github.com/input-output-hk/cardano-crypto
+    commit: 2547ad1e80aeabca2899951601079408becbc92c
+
   - git: https://github.com/input-output-hk/cardano-ledger-specs
     commit: f27e8b66a393f0b7da1893889dcea07da0fe4dec
     subdirs:
@@ -109,6 +112,7 @@ extra-deps:
       - ouroboros-consensus
       - typed-protocols
       - typed-protocols-cbor
+      - ouroboros-network-testing
 
   # TODO
   #
@@ -118,3 +122,7 @@ extra-deps:
     commit: 61c2a152e280a4c511a99b40e056a7baee7e74e1
     subdirs:
       - cardano-explorer-db
+      - cardano-explorer-db/test
+
+nix:
+  shell-file: nix/stack-shell.nix
