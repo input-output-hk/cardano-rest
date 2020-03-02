@@ -7,7 +7,7 @@ info:
   version: 1.0.0
   license:
     name: Apache-2.0
-    url: https://github.com/input-output-hk/cardano-explorer/blob/master/cardano-explorer-webapi/LICENSE
+    url: https://github.com/input-output-hk/cardano-rest/blob/master/explorer-api/LICENSE
   description: |
     <p align="right"><img style="position: relative; top: -10em; margin-bottom: -12em;" width="20%" src="https://cardanodocs.com/img/cardano.png"></img></p>
 
@@ -678,5 +678,3 @@ paths:
           schema:
             <<: *response200
             <<: { "properties": { "Right": *CAda } }
-
-

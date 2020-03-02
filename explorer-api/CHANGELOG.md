@@ -1,4 +1,4 @@
-# Revision history for cardano-explorer-webapi
+# Revision history for cardano-explorer-api
 
 ## 1.3.0 -- January 2020
 
