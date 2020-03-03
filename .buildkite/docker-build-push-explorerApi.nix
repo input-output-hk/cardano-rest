@@ -29,9 +29,9 @@ with hostPkgs;
 with hostPkgs.lib;
 
 let
-  images = mapAttrs (key: image: impureCreated image) { inherit (restPackages.dockerImages) explorerApi txSubmit; };
+  images = mapAttrs (key: image: impureCreated image) { inherit (restPackages.dockerImages) explorerApi; };
 
-  # Override Docker image, setting its creation date to the current time rather than the unix epoch.
+  # Override Docker image, setting its creation date to the current time rather than the UNIX epoch.
   impureCreated = image: image.overrideAttrs (oldAttrs: { created = "now"; }) // { inherit (image) version; };
 
 in
@@ -71,6 +71,8 @@ in
         echo "Pushing $fullrepo:$tag"
         docker push "$fullrepo:$tag"
       fi
+      echo "Cleaning up with docker system prune"
+      docker system prune -f
 
     '') (builtins.attrValues images)}
   ''

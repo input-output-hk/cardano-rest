@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 # notes:
-# this service exposes an http port, and connects to a cardano-node over a unix socket
+# this service exposes an http port, and connects to a cardano-node over a UNIX socket
 let
   cfg = config.services.cardano-tx-submit;
   envConfig = cfg.environment;
