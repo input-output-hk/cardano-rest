@@ -14,9 +14,16 @@ steps:
     agents:
       system: x86_64-linux
 
-  - label: 'Docker Image'
+  - label: 'cardano-explorer-api Docker image'
     command:
-      - "nix-build .buildkite/docker-build-push.nix --argstr dockerHubRepoName inputoutput/cardano-explorer-api -o docker-build-push"
+      - "nix-build .buildkite/docker-build-push-explorerApi.nix --argstr dockerHubRepoName inputoutput/cardano-explorer-api -o docker-build-push"
+      - "./docker-build-push"
+    agents:
+      system: x86_64-linux
+
+  - label: 'cardano-tx-submit Docker image'
+    command:
+      - "nix-build .buildkite/docker-build-push-txSubmit.nix --argstr dockerHubRepoName inputoutput/cardano-tx-submit -o docker-build-push"
       - "./docker-build-push"
     agents:
       system: x86_64-linux
