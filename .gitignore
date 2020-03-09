@@ -31,5 +31,5 @@ result*
 .stack-to-nix.cache
 
 ### Docker ###
-config
+config/docker
 tmp

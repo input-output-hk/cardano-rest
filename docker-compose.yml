@@ -16,7 +16,7 @@ services:
       - cardano-node
       - postgres
     volumes:
-      - ./config/pgpass:/config/pgpass
+      - ./config/docker/pgpass:/config/pgpass
       - ./tmp:/tmp # cardano-db-sync logs migration errors to disk, and then exits. Without the container running, we can't access the logs. Writing them to the host works around the limitation.
       - node-socket:/data/node.socket
     restart: on-failure
@@ -41,7 +41,7 @@ services:
     depends_on:
       - postgres
     volumes:
-      - ./config/pgpass:/config/pgpass
+      - ./config/docker/pgpass:/config/pgpass
     ports:
       - 8100:8100
     restart: on-failure
@@ -58,11 +58,11 @@ services:
     restart: on-failure
 secrets:
   postgres_db:
-    file: ./config/secrets/postgres_db
+    file: ./config/docker/secrets/postgres_db
   postgres_password:
-    file: ./config/secrets/postgres_password
+    file: ./config/docker/secrets/postgres_password
   postgres_user:
-    file: ./config/secrets/postgres_user
+    file: ./config/docker/secrets/postgres_user
 volumes:
   postgres-data:
   node-db:
