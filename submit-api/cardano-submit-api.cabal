@@ -109,7 +109,7 @@ executable cardano-submit-api
                       , cardano-submit-api
                       , optparse-applicative
 
-test-suite test
+test-suite unit
   default-language:     Haskell2010
   type:                 exitcode-stdio-1.0
   main-is:              test.hs

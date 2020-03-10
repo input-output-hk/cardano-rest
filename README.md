@@ -1,5 +1,5 @@
 <p align="center">
-  <big><strong>Cardano REST (deprecated)</strong></big>
+  <big><strong>Cardano REST</strong></big>
 </p>
 
 <p align="center">
@@ -23,24 +23,27 @@
 Cardano REST provides a set of APIs for interacting with on-chain data 
 through JSON over HTTP.
 
-:warning: These APIs are now considered **deprecated** and new users should instead 
+:warning: These APIs are now considered **legacy** and new users should instead 
 look into [cardano-graphql](https://github.com/input-output-hk/cardano-graphql).
 
 ## How to install (Linux / Windows / Mac OS)
 
-TODO
+See **Installation Instructions** for each available [release](https://github.com/input-output-hk/cardano-rest/releases).
+
+For Docker users, jump directly to [Using Docker](https://github.com/input-output-hk/cardano-rest/wiki/Docker).
 
 ## How to build from sources
 
-TODO
+See [Wiki - Building](https://github.com/input-output-hk/cardano-rest/wiki/Building)
 
 ## How to test
 
-TODO
+See [Wiki - Testing](https://github.com/input-output-hk/cardano-rest/wiki/Testing)
 
 ## Documentation
 
-TODO
+- [API Documentation](https://input-output-hk.github.io/cardano-rest/explorer-api)
+- [Wiki](https://github.com/input-output-hk/cardano-wallet/wiki)                                     
 
 <hr/>
 
