@@ -31,12 +31,12 @@ let
   dockerImages = let
     stateDir = "/data";
     defaultConfig = rec {
-      services.cardano-tx-submit.socketPath = stateDir + "/node.socket";
+      services.cardano-submit-api.socketPath = stateDir + "/node.socket";
     };
     customConfig' = lib.mkMerge [ defaultConfig customConfig ];
   in pkgs.callPackage ./nix/docker.nix {
     inherit (self) cardano-explorer-api;
-    inherit (self) cardano-tx-submit-webapi;
+    inherit (self) cardano-submit-api;
     scripts = callPackage ./nix/scripts.nix { customConfig = customConfig'; };
   };
 
@@ -50,8 +50,8 @@ let
     # Grab the executable component of our package.
     inherit (haskellPackages.cardano-explorer-api.components.exes)
       cardano-explorer-api cardano-explorer-api-compare cardano-explorer-api-validate;
-    inherit (haskellPackages.cardano-tx-submit.components.exes)
-      cardano-tx-submit-webapi;
+    inherit (haskellPackages.cardano-submit-api.components.exes)
+      cardano-submit-api;
 
     # `tests` are the test suites which have been built.
     tests = collectComponents' "tests" haskellPackages;

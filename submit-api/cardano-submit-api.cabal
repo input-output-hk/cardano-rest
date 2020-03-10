@@ -2,7 +2,7 @@ cabal-version:          >= 1.10
 
 -- http://haskell.org/cabal/users-guide/
 
-name:                   cardano-tx-submit
+name:                   cardano-submit-api
 version:                1.3.0
 synopsis:               A web server that allows transactions to be POSTed to the cardano chain
 description:
@@ -89,9 +89,9 @@ library
                       , warp
                       , yaml
 
-executable cardano-tx-submit-webapi
+executable cardano-submit-api
   default-language:    Haskell2010
-  main-is:             cardano-tx-submit-webapi.hs
+  main-is:             cardano-submit-api.hs
   hs-source-dirs:      app
 
   ghc-options:          -Wall
@@ -106,7 +106,7 @@ executable cardano-tx-submit-webapi
   -- other-modules:
 
   build-depends:        base                            >= 4.12         && < 4.13
-                      , cardano-tx-submit
+                      , cardano-submit-api
                       , optparse-applicative
 
 test-suite test

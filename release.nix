@@ -111,7 +111,7 @@ let
       jobs.native.cardano-explorer-api.x86_64-linux
       jobs.native.cardano-explorer-api-compare.x86_64-linux
       jobs.native.cardano-explorer-api-validate.x86_64-linux
-      jobs.native.cardano-tx-submit-webapi.x86_64-linux
+      jobs.native.cardano-submit-api.x86_64-linux
     ]));
 
 in jobs

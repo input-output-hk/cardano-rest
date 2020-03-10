@@ -1,6 +1,6 @@
-# cardano-tx-submit-webapi
+# cardano-submit-api
 
-The `cardano-tx-submit-webapi` is a program that provides a webapi that allows transactions
+The `cardano-submit-api` is a program that provides a webapi that allows transactions
 (generated using the `cardano-cli` program in the `cardano-node` repository) to be HTTP POSTed
 to the Cardano blockchain.
 

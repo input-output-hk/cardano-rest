@@ -6,7 +6,7 @@ let
         enable = true;
         postgres.user = "*";
       };
-      services.cardano-tx-submit = {
+      services.cardano-submit-api = {
         enable = true;
         environment = envConfig;
         network = envConfig.name;
@@ -24,6 +24,6 @@ let
     };
   in {
     explorer-api = eval.config.services.cardano-explorer-api.script;
-    tx-submit = eval.config.services.cardano-tx-submit.script;
+    submit-api = eval.config.services.cardano-submit-api.script;
   };
 in iohkNix.cardanoLib.forEnvironments mkStartScripts

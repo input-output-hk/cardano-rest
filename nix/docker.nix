@@ -4,21 +4,21 @@
 # To build and load into the Docker engine:
 #
 #   docker load -i $(nix-build -A dockerImages.explorerApi --no-out-link)
-#   docker load -i $(nix-build -A dockerImages.txSubmit --no-out-link)
+#   docker load -i $(nix-build -A dockerImages.submitApi --no-out-link)
 #
-# cardano-tx-submit
+# cardano-submit-api
 #  To launch with provided mainnet configuration
 #
-#    docker run -e NETWORK=mainnet inputoutput/cardano-tx-submit:<TAG>
+#    docker run -e NETWORK=mainnet inputoutput/cardano-submit-api:<TAG>
 #
 #  To launch with provided testnet configuration
 #
-#    docker run -e NETWORK=testnet inputoutput/cardano-tx-submit:<TAG>
+#    docker run -e NETWORK=testnet inputoutput/cardano-submit-api:<TAG>
 #
 #  To launch with custom config, mount a dir containing config.yaml, genesis.json,
 #  into /config
 #
-#    docker run -v $PATH_TO/config:/config inputoutput/cardano-tx-submit:<TAG>
+#    docker run -v $PATH_TO/config:/config inputoutput/cardano-submit-api:<TAG>
 #
 # cardano-explorer-api
 #  docker run -v $PATH_TO/pgpass:/config/pgpass inputoutput/cardano-explorer-api:<TAG>
@@ -30,7 +30,7 @@
 
 # The main contents of the image.
 , cardano-explorer-api
-, cardano-tx-submit-webapi
+, cardano-submit-api
 , scripts
 
 # Get the current commit
@@ -52,7 +52,7 @@
 , lib
 
 , explorerApiRepoName ? "inputoutput/cardano-explorer-api"
-, txSubmitRepoName ? "inputoutput/cardano-tx-submit"
+, submitApiRepoName ? "inputoutput/cardano-submit-api"
 }:
 
 let
@@ -106,16 +106,16 @@ let
       };
     };
   };
-  txSubmitWithoutConfig = dockerTools.buildImage {
-    name = "tx-submit-without-config";
+  submitApiWithoutConfig = dockerTools.buildImage {
+    name = "submit-api-without-config";
     contents = [
-      cardano-tx-submit-webapi
+      cardano-submit-api
     ];
   };
-  txSubmitDockerImage = let
+  submitApiDockerImage = let
     clusterStatements = lib.concatStringsSep "\n" (lib.mapAttrsToList (_: value: value) (commonLib.forEnvironments (env: ''
       elif [[ "$NETWORK" == "${env.name}" ]]; then
-        ${if (env ? txSubmitConfig) then "exec ${scripts.${env.name}.tx-submit}"
+        ${if (env ? submitApiConfig) then "exec ${scripts.${env.name}.submit-api}"
         else ''
           tx submission not supported on ${env.name}
             exit 1''}
@@ -125,7 +125,7 @@ let
       # set up /tmp (override with TMPDIR variable)
       mkdir -m 1777 tmp
       if [[ -d /config ]]; then
-         exec ${cardano-tx-submit-webapi}/bin/cardano-tx-submit-webapi \
+         exec ${cardano-submit-api}/bin/cardano-submit-api \
            --socket-path /data/node.socket \
            --genesis-file /config/genesis.json \
            --port 8101 \
@@ -137,8 +137,8 @@ let
       fi
     '';
   in dockerTools.buildImage {
-    name = "${txSubmitRepoName}";
-    fromImage = txSubmitWithoutConfig;
+    name = "${submitApiRepoName}";
+    fromImage = submitApiWithoutConfig;
     tag = "${gitrev}";
     created = "now";   # Set creation date to build time. Breaks reproducibility
     contents = [ entry-point ];
@@ -152,5 +152,5 @@ let
 
 in {
   explorerApi = explorerApiDockerImage;
-  txSubmit = txSubmitDockerImage;
+  submitApi = submitApiDockerImage;
 }

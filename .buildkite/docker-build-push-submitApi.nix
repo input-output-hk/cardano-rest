@@ -5,7 +5,7 @@
 # There is a little bit of bash logic to replace the default repo and
 # tag from the nix-build (../nix/docker.nix).
 #
-# 1. The repo (default "inputoutput/cardano-tx-submit") is changed to match
+# 1. The repo (default "inputoutput/cardano-submit-api") is changed to match
 #    the logged in Docker user's credentials.
 #
 # 2. The tag (default "VERSION") is changed to reflect the
@@ -29,7 +29,7 @@ with hostPkgs;
 with hostPkgs.lib;
 
 let
-  images = mapAttrs (key: image: impureCreated image) { inherit (restPackages.dockerImages) txSubmit; };
+  images = mapAttrs (key: image: impureCreated image) { inherit (restPackages.dockerImages) submitApi; };
 
   # Override Docker image, setting its creation date to the current time rather than the UNIX epoch.
   impureCreated = image: image.overrideAttrs (oldAttrs: { created = "now"; }) // { inherit (image) version; };
@@ -43,7 +43,7 @@ in
     export PATH=${lib.makeBinPath [ docker gnused ]}
 
     ${if dockerHubRepoName == null then ''
-    reponame=cardano-tx-submit
+    reponame=cardano-submit-api
     username="$(docker info | sed '/Username:/!d;s/.* //')"
     fullrepo="$username/$reponame"
     '' else ''

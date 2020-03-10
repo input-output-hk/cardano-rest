@@ -1,4 +1,4 @@
-# Revision history for cardano-tx-submit
+# Revision history for cardano-submit-api
 
 ## 1.3.0 -- January 2020
 

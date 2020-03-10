@@ -23,8 +23,8 @@ let
       {
         packages.cardano-explorer-api.src = haskell-nix.haskellLib.cleanGit
           { src = ../.; subDir = "explorer-api"; };
-        packages.cardano-tx-submit.src = haskell-nix.haskellLib.cleanGit
-          { src = ../.; subDir = "tx-submit"; };
+        packages.cardano-submit-api.src = haskell-nix.haskellLib.cleanGit
+          { src = ../.; subDir = "submit-api"; };
       }
       {
         # Packages we wish to ignore version bounds of.
@@ -35,7 +35,7 @@ let
         # split data output for ekg to reduce closure size
         packages.ekg.components.library.enableSeparateDataOutput = true;
         packages.cardano-explorer-api.configureFlags = [ "--ghc-option=-Wall" "--ghc-option=-Werror" ];
-        packages.cardano-tx-submit.configureFlags = [ "--ghc-option=-Wall" "--ghc-option=-Werror" ];
+        packages.cardano-submit-api.configureFlags = [ "--ghc-option=-Wall" "--ghc-option=-Werror" ];
         enableLibraryProfiling = profiling;
       }
     ];
