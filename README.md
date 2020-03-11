@@ -42,7 +42,8 @@ See [Wiki - Testing](https://github.com/input-output-hk/cardano-rest/wiki/Testin
 
 ## Documentation
 
-- [API Documentation](https://input-output-hk.github.io/cardano-rest/explorer-api)
+- [API Documentation (cardano-explorer-api)](https://input-output-hk.github.io/cardano-rest/explorer-api)
+- [API Documentation (cardano-submit-api)](https://input-output-hk.github.io/cardano-rest/submit-api)
 - [Wiki](https://github.com/input-output-hk/cardano-wallet/wiki)                                     
 
 <hr/>
