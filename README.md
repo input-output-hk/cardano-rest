@@ -20,10 +20,10 @@
 
 ## Overview
 
-Cardano REST provides a set of APIs for interacting with on-chain data 
+Cardano REST provides a set of APIs for interacting with on-chain data
 through JSON over HTTP.
 
-:warning: These APIs are now considered **legacy** and new users should instead 
+:warning: These APIs are now considered **legacy** and new users should instead
 look into [cardano-graphql](https://github.com/input-output-hk/cardano-graphql).
 
 ## How to install (Linux / Windows / Mac OS)
@@ -44,7 +44,7 @@ See [Wiki - Testing](https://github.com/input-output-hk/cardano-rest/wiki/Testin
 
 - [API Documentation (cardano-explorer-api)](https://input-output-hk.github.io/cardano-rest/explorer-api)
 - [API Documentation (cardano-submit-api)](https://input-output-hk.github.io/cardano-rest/submit-api)
-- [Wiki](https://github.com/input-output-hk/cardano-wallet/wiki)                                     
+- [Wiki](https://github.com/input-output-hk/cardano-rest/wiki)
 
 <hr/>
 
