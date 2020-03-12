@@ -13,7 +13,9 @@ services:
       - postgres_user
       - postgres_db
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
     restart: on-failure
 
   cardano-node:
@@ -21,54 +23,55 @@ services:
     environment:
       - NETWORK=${NETWORK}
     volumes:
-      - node-db:/data/db
-      - node-socket:/data/node.socket
-    restart: on-failure
+      - cardano-node:/data
 
   cardano-db-sync:
     image: inputoutput/cardano-db-sync:master
     environment:
       - NETWORK=${NETWORK}
     depends_on:
-      - cardano-node
+      #      - cardano-node
       - postgres
+    secrets:
+      - source: pgpass
+        target: /config/pgpass
     volumes:
-      - ./config/docker/pgpass:/config/pgpass
-      - ./tmp:/tmp # cardano-db-sync logs migration errors to disk, and then exits. Without the container running, we can't access the logs. Writing them to the host works around the limitation.
-      - node-socket:/data/node.socket
+      - cardano-node:/data
+      - /tmp:/tmp
     restart: on-failure
 
-  cardano-explorer-api:
-    image: inputoutput/cardano-explorer-api:master
-    depends_on:
-      - postgres
-    volumes:
-      - ./config/docker/pgpass:/config/pgpass
-    ports:
-      - 8100:8100
-    restart: on-failure
+#  cardano-explorer-api:
+#    image: inputoutput/cardano-explorer-api:master
+#    depends_on:
+#      - postgres
+#    environment:
+#      - PGPASSFILE=/run/secrets/pgpass
+#    ports:
+#      - 8100:8100
 
-  cardano-submit-api:
-    image: inputoutput/cardano-submit-api:master
-    environment:
-      - NETWORK=${NETWORK}
-    depends_on:
-      - cardano-node
-    volumes:
-      - node-socket:/data/node.socket
-    ports:
-      - 8101:8101
-    restart: on-failure
+#  cardano-submit-api:
+#    image: inputoutput/cardano-submit-api:master
+#    environment:
+#      - NETWORK=${NETWORK}
+#    depends_on:
+#      - cardano-node
+#    volumes:
+#      - node-socket:/data/node.socket
+#    ports:
+#      - 8101:8101
+#    restart: on-failure
 
 secrets:
   postgres_db:
-    file: ./config/docker/secrets/postgres_db
+    file: ./config/postgres_db
   postgres_password:
-    file: ./config/docker/secrets/postgres_password
+    file: ./config/postgres_password
   postgres_user:
-    file: ./config/docker/secrets/postgres_user
+    file: ./config/postgres_user
+  pgpass:
+    file: ./config/pgpass
 
 volumes:
-  postgres-data:
-  node-db:
-  node-socket:
+  postgres:
+  cardano-node:
+  tmp:
