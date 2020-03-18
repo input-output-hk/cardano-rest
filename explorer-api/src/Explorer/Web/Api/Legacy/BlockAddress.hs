@@ -5,35 +5,77 @@ module Explorer.Web.Api.Legacy.BlockAddress
   ( blockAddress
   ) where
 
-import           Cardano.Chain.Common (isRedeemAddress)
+import Cardano.Chain.Common
+    ( isRedeemAddress )
+import Cardano.Db
+    ( EntityField (..), TxId, unValue3 )
+import Control.Monad.IO.Class
+    ( MonadIO )
+import Control.Monad.Trans.Except.Extra
+    ( hoistEither, newExceptT, runExceptT )
+import Control.Monad.Trans.Reader
+    ( ReaderT )
+import Data.ByteString.Char8
+    ( ByteString )
+import Data.List.Extra
+    ( groupOn )
+import Data.Maybe
+    ( listToMaybe )
+import Data.Text
+    ( Text )
+import Data.Time.Clock
+    ( UTCTime )
+import Data.Time.Clock.POSIX
+    ( utcTimeToPOSIXSeconds )
+import Data.Word
+    ( Word16, Word64 )
+import Database.Esqueleto
+    ( InnerJoin (..)
+    , Value (..)
+    , distinct
+    , from
+    , in_
+    , on
+    , select
+    , val
+    , valList
+    , where_
+    , (&&.)
+    , (<=.)
+    , (==.)
+    , (^.)
+    )
+import Database.Persist.Sql
+    ( SqlBackend )
+import Explorer.Web.Api.Legacy.Util
+    ( bsBase16Encode
+    , collapseTxGroup
+    , decodeTextAddress
+    , runQuery
+    , textBase16Decode
+    , zipTxBrief
+    )
+import Explorer.Web.ClientTypes
+    ( CAddress (..)
+    , CAddressSummary (..)
+    , CAddressType (..)
+    , CChainTip (..)
+    , CCoin (..)
+    , CHash (..)
+    , CTxAddressBrief (..)
+    , CTxBrief (..)
+    , CTxHash (..)
+    , mkCCoin
+    , sumCCoin
+    )
+import Explorer.Web.Error
+    ( ExplorerError (..) )
+import Explorer.Web.Query
+    ( queryChainTip )
+import Servant
+    ( Handler )
 
-import           Control.Monad.IO.Class (MonadIO)
-import           Control.Monad.Trans.Except.Extra (hoistEither, runExceptT, newExceptT)
-import           Control.Monad.Trans.Reader (ReaderT)
-
-import           Data.ByteString.Char8 (ByteString)
 import qualified Data.List as List
-import           Data.List.Extra (groupOn)
-import           Data.Maybe (listToMaybe)
-import           Data.Text (Text)
-import           Data.Time.Clock (UTCTime)
-import           Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
-import           Data.Word (Word16, Word64)
-
-import           Database.Esqueleto (InnerJoin (..), Value (..), (^.), (==.), (&&.), (<=.),
-                    distinct, from, in_, on, select, val, valList, where_)
-import           Database.Persist.Sql (SqlBackend)
-
-import           Explorer.DB (EntityField (..), TxId, unValue3)
-import           Explorer.Web.ClientTypes (CAddress (..), CAddressSummary (..), CAddressType (..),
-                    CCoin (..), CChainTip (..), CHash (..), CTxAddressBrief (..), CTxBrief (..),
-                    CTxHash (..), mkCCoin, sumCCoin)
-import           Explorer.Web.Error (ExplorerError (..))
-import           Explorer.Web.Query (queryChainTip)
-import           Explorer.Web.Api.Legacy.Util (bsBase16Encode, collapseTxGroup, decodeTextAddress,
-                    runQuery, textBase16Decode, zipTxBrief)
-
-import           Servant (Handler)
 
 -- This is a new endpoint that was requested by one of the large exchanges.
 -- It did not exist in the original legacy explorer webapi.

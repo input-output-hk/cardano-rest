@@ -8,26 +8,54 @@ module Explorer.Web.Query
   , queryNextBlock
   ) where
 
-import           Control.Monad.IO.Class (MonadIO)
-import           Control.Monad.Trans.Reader (ReaderT)
-
-import           Data.ByteString (ByteString)
-import           Data.Maybe (listToMaybe)
-import           Data.Time.Clock.POSIX (POSIXTime)
-import           Data.Word (Word64)
-
-import           Database.Esqueleto (InnerJoin (..), Value (..), (^.), (==.),
-                    desc, from, in_, limit, on, orderBy, select, subList_select, sum_,
-                    unValue, val, where_)
-import           Database.Persist.Sql (Entity (..), SqlBackend)
-
-import           Explorer.DB (Ada, Block, BlockId, EntityField (..),
-                    blockPrevious, blockSlotNo, isJust, querySlotPosixTime,
-                    querySelectCount, unValueSumAda)
-
-
-import           Explorer.Web.ClientTypes (CChainTip (..), CHash (..))
-import           Explorer.Web.Api.Legacy.Util (bsBase16Encode)
+import Cardano.Db
+    ( Ada
+    , Block
+    , BlockId
+    , EntityField (..)
+    , blockPrevious
+    , blockSlotNo
+    , isJust
+    , querySelectCount
+    , querySlotPosixTime
+    , unValueSumAda
+    )
+import Control.Monad.IO.Class
+    ( MonadIO )
+import Control.Monad.Trans.Reader
+    ( ReaderT )
+import Data.ByteString
+    ( ByteString )
+import Data.Maybe
+    ( listToMaybe )
+import Data.Time.Clock.POSIX
+    ( POSIXTime )
+import Data.Word
+    ( Word64 )
+import Database.Esqueleto
+    ( InnerJoin (..)
+    , Value (..)
+    , desc
+    , from
+    , in_
+    , limit
+    , on
+    , orderBy
+    , select
+    , subList_select
+    , sum_
+    , unValue
+    , val
+    , where_
+    , (==.)
+    , (^.)
+    )
+import Database.Persist.Sql
+    ( Entity (..), SqlBackend )
+import Explorer.Web.Api.Legacy.Util
+    ( bsBase16Encode )
+import Explorer.Web.ClientTypes
+    ( CChainTip (..), CHash (..) )
 
 queryBlockHash :: MonadIO m => BlockId -> ReaderT SqlBackend m (Maybe ByteString)
 queryBlockHash blkid = do

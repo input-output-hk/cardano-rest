@@ -1,34 +1,65 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Explorer.Web.Api.Legacy.TxsSummary
   ( txsSummary
   ) where
 
-import           Control.Monad.IO.Class      (MonadIO)
-import           Control.Monad.Trans.Reader  (ReaderT)
-import           Control.Monad.Trans.Except (runExceptT)
-import           Control.Monad.Trans.Except.Extra (hoistEither, left)
-
-import           Data.ByteString (ByteString)
-import           Data.Maybe (listToMaybe)
-import           Data.Text (Text)
-import           Data.Word (Word16, Word64)
-
-import           Database.Esqueleto (InnerJoin (..), Value (..), (^.), (==.), (&&.),
-                    entityVal, from, on, select, val, where_)
-import           Database.Persist.Sql (SqlBackend)
-
-import           Explorer.DB (Block (..), BlockId, EntityField (..), LookupFail (..), Tx (..),
-                    TxId, entityPair, maybeToEither)
-
-import           Explorer.Web.ClientTypes (CAddress (..), CCoin (..), CHash (..),
-                    CTxAddressBrief (..), CTxHash (..), CTxSummary (..), mkCCoin)
-import           Explorer.Web.Error (ExplorerError (..))
-import           Explorer.Web.Api.Legacy.Util
-
-import           Servant (Handler)
--- import           Data.Time.Clock.POSIX (POSIXTime, utcTimeToPOSIXSeconds)
+import Cardano.Db
+    ( Block (..)
+    , BlockId
+    , EntityField (..)
+    , LookupFail (..)
+    , Tx (..)
+    , TxId
+    , entityPair
+    , maybeToEither
+    )
+import Control.Monad.IO.Class
+    ( MonadIO )
+import Control.Monad.Trans.Except
+    ( runExceptT )
+import Control.Monad.Trans.Except.Extra
+    ( hoistEither, left )
+import Control.Monad.Trans.Reader
+    ( ReaderT )
+import Data.ByteString
+    ( ByteString )
+import Data.Maybe
+    ( listToMaybe )
+import Data.Text
+    ( Text )
+import Data.Word
+    ( Word16, Word64 )
+import Database.Esqueleto
+    ( InnerJoin (..)
+    , Value (..)
+    , entityVal
+    , from
+    , on
+    , select
+    , val
+    , where_
+    , (&&.)
+    , (==.)
+    , (^.)
+    )
+import Database.Persist.Sql
+    ( SqlBackend )
+import Explorer.Web.Api.Legacy.Util
+import Explorer.Web.ClientTypes
+    ( CAddress (..)
+    , CCoin (..)
+    , CHash (..)
+    , CTxAddressBrief (..)
+    , CTxHash (..)
+    , CTxSummary (..)
+    , mkCCoin
+    )
+import Explorer.Web.Error
+    ( ExplorerError (..) )
+import Servant
+    ( Handler )
 
 
 -- Example queries:

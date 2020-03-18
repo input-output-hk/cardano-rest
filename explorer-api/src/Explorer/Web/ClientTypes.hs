@@ -1,11 +1,11 @@
-{-# LANGUAGE AllowAmbiguousTypes        #-}
-{-# LANGUAGE DeriveGeneric              #-}
-{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE OverloadedStrings          #-}
-{-# LANGUAGE RankNTypes                 #-}
-{-# LANGUAGE TemplateHaskell            #-}
-{-# LANGUAGE TypeApplications           #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeApplications #-}
 {-# OPTIONS_GHC -Wno-error=partial-fields #-}
 
 -- | Types that arise in the API: mostly simplified representations
@@ -42,30 +42,42 @@ module Explorer.Web.ClientTypes
        , sumCCoin
        ) where
 
-import           Control.Monad.Error.Class (throwError)
-import           Data.ByteString           (ByteString)
-import qualified Data.ByteString.Base16    as B16
-import qualified Data.ByteString.Char8     as SB8
-import           Data.Fixed (Fixed (..))
-import           Data.Text                 (Text)
-import qualified Data.Text                 as T
-import qualified Data.Text.Encoding        as T
-import           Data.Time.Clock.POSIX     (POSIXTime)
-import           Formatting                (Buildable, build, sformat, (%))
-import           GHC.Generics              (Generic)
-import           Servant.API               (FromHttpApiData (parseUrlPiece))
+import Cardano.Crypto.Hash.Class
+    ( Hash (getHash) )
+import Cardano.Db
+    ( Ada (..) )
+import Control.DeepSeq
+    ( NFData )
+import Control.Monad.Error.Class
+    ( throwError )
+import Data.Aeson.TH
+    ( defaultOptions, deriveJSON, deriveToJSON )
+import Data.Aeson.Types
+    ( ToJSON (toJSON) )
+import Data.ByteString
+    ( ByteString )
+import Data.Fixed
+    ( Fixed (..) )
+import Data.Hashable
+    ( Hashable )
+import Data.Text
+    ( Text )
+import Data.Time.Clock.POSIX
+    ( POSIXTime )
+import Data.Word
+    ( Word16, Word64 )
+import Formatting
+    ( Buildable, build, sformat, (%) )
+import GHC.Generics
+    ( Generic )
+import Servant.API
+    ( FromHttpApiData (parseUrlPiece) )
 
-import           Cardano.Crypto.Hash.Class (Hash (getHash))
-
-import           Control.DeepSeq           (NFData)
-import           Data.Aeson.TH             (defaultOptions, deriveJSON,
-                                            deriveToJSON)
-import           Data.Aeson.Types          (ToJSON (toJSON))
 import qualified Data.Aeson as Aeson
-import           Data.Hashable             (Hashable)
-import           Data.Word                 (Word16, Word64)
-
-import           Explorer.DB (Ada (..))
+import qualified Data.ByteString.Base16 as B16
+import qualified Data.ByteString.Char8 as B8
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as T
 
 -------------------------------------------------------------------------------------
 -- Hash types
@@ -289,7 +301,7 @@ toCHash :: Hash h a -> CHash
 toCHash = CHash . T.decodeLatin1 . B16.encode . getHash
 
 instance FromHttpApiData CHash where
-    parseUrlPiece url = case B16.decode (SB8.pack (T.unpack url)) of
+    parseUrlPiece url = case B16.decode (B8.pack (T.unpack url)) of
           (_, "") -> Right $ CHash url
           _       -> Left "invalid hash"
 

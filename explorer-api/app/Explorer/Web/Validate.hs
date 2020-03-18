@@ -4,21 +4,28 @@ module Explorer.Web.Validate
   ( runValidation
   ) where
 
-import           Control.Monad.IO.Class (liftIO)
-import           Control.Monad.Logger (runNoLoggingT)
+import Cardano.Db
+    ( readPGPassFileEnv, toConnectionString )
+import Control.Monad.IO.Class
+    ( liftIO )
+import Control.Monad.Logger
+    ( runNoLoggingT )
+import Data.Text.ANSI
+    ( yellow )
+import Database.Persist.Postgresql
+    ( withPostgresqlConn )
+import Database.Persist.Sql
+    ( SqlBackend )
+import Explorer.Web.Api.Legacy.Util
+    ( textShow )
+import Explorer.Web.Validate.Address
+    ( validateAddressSummary, validateRedeemAddressSummary )
+import Explorer.Web.Validate.BlocksTxs
+    ( validateBlocksTxs )
+import Explorer.Web.Validate.GenesisAddress
+    ( validateGenesisAddressPaging )
 
-import           Data.Text.ANSI (yellow)
 import qualified Data.Text.IO as Text
-
-import           Database.Persist.Postgresql (withPostgresqlConn)
-import           Database.Persist.Sql (SqlBackend)
-
-import           Explorer.DB (readPGPassFileEnv, toConnectionString)
-
-import           Explorer.Web.Api.Legacy.Util (textShow)
-import           Explorer.Web.Validate.Address (validateAddressSummary, validateRedeemAddressSummary)
-import           Explorer.Web.Validate.BlocksTxs (validateBlocksTxs)
-import           Explorer.Web.Validate.GenesisAddress (validateGenesisAddressPaging)
 
 runValidation :: Word -> IO ()
 runValidation count = do

@@ -55,7 +55,7 @@ library
                       , cardano-binary
                       , cardano-crypto-class
                       , cardano-crypto-wrapper
-                      , cardano-explorer-db
+                      , cardano-db-sync
                       , cardano-prelude
                       , cardano-ledger
                       , cardano-shell
@@ -75,7 +75,10 @@ library
                       , mtl
                       , network
                       , ouroboros-consensus
+                      , ouroboros-consensus-byron
+                      , ouroboros-consensus-cardano
                       , ouroboros-network
+                      , ouroboros-network-framework
                       , prometheus
                       , serialise
                       , servant
@@ -85,7 +88,7 @@ library
                       , transformers
                       , transformers-except
                       , typed-protocols
-                      , typed-protocols-cbor
+                      , typed-protocols-examples
                       , warp
                       , yaml
 

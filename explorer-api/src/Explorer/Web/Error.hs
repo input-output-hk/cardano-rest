@@ -1,6 +1,6 @@
-{-# LANGUAGE DeriveGeneric     #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 -- | Types describing runtime errors related to Explorer
 
@@ -9,17 +9,20 @@ module Explorer.Web.Error
   , renderExplorerError
   ) where
 
-import           Data.Aeson (ToJSON (..), Value (..))
-import           Data.Text (Text)
-
-import           Explorer.DB (LookupFail (..), renderLookupFail)
-
-import           Formatting (bprint, stext, (%))
-import           Formatting.Buildable (Buildable)
+import Cardano.Db
+    ( LookupFail (..), renderLookupFail )
+import Data.Aeson
+    ( ToJSON (..), Value (..) )
+import Data.Text
+    ( Text )
+import Formatting
+    ( bprint, stext, (%) )
+import Formatting.Buildable
+    ( Buildable )
+import GHC.Generics
+    ( Generic )
 
 import qualified Formatting.Buildable
-
-import           GHC.Generics (Generic)
 
 data ExplorerError
   = Internal Text  -- Stupid error constructor from the old code base.

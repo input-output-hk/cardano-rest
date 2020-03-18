@@ -1,11 +1,11 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
-{-# LANGUAGE DataKinds                  #-}
-{-# LANGUAGE DeriveGeneric              #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE InstanceSigs               #-}
-{-# LANGUAGE StandaloneDeriving         #-}
-{-# LANGUAGE TypeFamilies               #-}
-{-# LANGUAGE TypeOperators              #-}
+{-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeOperators #-}
 
 -- | Type-level specification of Explorer API (via Servant).
 
@@ -15,23 +15,38 @@ module Explorer.Web.Api.Legacy
        , PageNumber
        ) where
 
-import           Cardano.Chain.Slotting (EpochNumber (EpochNumber))
-
-import           Data.Word (Word16, Word64)
-import           Data.Int (Int64)
-
-import           Explorer.DB (Ada)
-
-import           Explorer.Web.Api.Legacy.Types (PageNo (..), PageSize (..))
-import           Explorer.Web.ClientTypes (CAddress, CAddressSummary, CAddressesFilter, CBlockEntry,
-                    CBlockSummary, CGenesisAddressInfo, CGenesisSummary,
-                    CHash, CTxBrief, CTxEntry, CTxHash, CTxSummary)
-import           Explorer.Web.Error (ExplorerError)
-
-import           GHC.Generics (Generic)
-
-import           Servant.API (Capture, FromHttpApiData, Get, JSON, QueryParam, Summary, (:>))
-import           Servant.API.Generic ((:-))
+import Cardano.Chain.Slotting
+    ( EpochNumber (EpochNumber) )
+import Cardano.Db
+    ( Ada )
+import Data.Int
+    ( Int64 )
+import Data.Word
+    ( Word16, Word64 )
+import Explorer.Web.Api.Legacy.Types
+    ( PageNo (..), PageSize (..) )
+import Explorer.Web.ClientTypes
+    ( CAddress
+    , CAddressSummary
+    , CAddressesFilter
+    , CBlockEntry
+    , CBlockSummary
+    , CGenesisAddressInfo
+    , CGenesisSummary
+    , CHash
+    , CTxBrief
+    , CTxEntry
+    , CTxHash
+    , CTxSummary
+    )
+import Explorer.Web.Error
+    ( ExplorerError )
+import GHC.Generics
+    ( Generic )
+import Servant.API
+    ( (:>), Capture, FromHttpApiData, Get, JSON, QueryParam, Summary )
+import Servant.API.Generic
+    ( (:-) )
 
 
 type PageNumber = Word

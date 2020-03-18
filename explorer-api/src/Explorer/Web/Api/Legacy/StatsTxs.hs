@@ -5,27 +5,50 @@ module Explorer.Web.Api.Legacy.StatsTxs
   ( statsTxs
   ) where
 
-import           Control.Monad.Extra (concatMapM)
-import           Control.Monad.IO.Class (MonadIO)
-import           Control.Monad.Trans.Reader (ReaderT)
+import Cardano.Db
+    ( BlockId, EntityField (..), isJust, queryBlockHeight )
+import Control.Monad.Extra
+    ( concatMapM )
+import Control.Monad.IO.Class
+    ( MonadIO )
+import Control.Monad.Trans.Reader
+    ( ReaderT )
+import Data.ByteString.Char8
+    ( ByteString )
+import Data.Word
+    ( Word64 )
+import Database.Esqueleto
+    ( InnerJoin (..)
+    , Value (..)
+    , asc
+    , desc
+    , from
+    , limit
+    , offset
+    , on
+    , orderBy
+    , select
+    , val
+    , where_
+    , (==.)
+    , (^.)
+    )
+import Database.Persist.Sql
+    ( SqlBackend )
+import Explorer.Web.Api.Legacy
+    ( PageNumber, TxsStats )
+import Explorer.Web.Api.Legacy.Types
+    ( PageNo (..) )
+import Explorer.Web.Api.Legacy.Util
+    ( bsBase16Encode, runQuery )
+import Explorer.Web.ClientTypes
+    ( CHash (..), CTxHash (..) )
+import Explorer.Web.Error
+    ( ExplorerError (..) )
+import Servant
+    ( Handler )
 
-import           Data.ByteString.Char8 (ByteString)
 import qualified Data.List as List
-import           Data.Word (Word64)
-
-import           Database.Esqueleto (InnerJoin (..), Value (..), (^.), (==.),
-                    asc, desc, from, limit, offset, on, orderBy, select, val, where_)
-import           Database.Persist.Sql (SqlBackend)
-
-import           Explorer.DB (BlockId, EntityField (..), isJust, queryBlockHeight)
-
-import           Explorer.Web.Error (ExplorerError (..))
-import           Explorer.Web.ClientTypes (CHash (..), CTxHash (..))
-import           Explorer.Web.Api.Legacy (PageNumber, TxsStats)
-import           Explorer.Web.Api.Legacy.Types (PageNo (..))
-import           Explorer.Web.Api.Legacy.Util (bsBase16Encode, runQuery)
-
-import           Servant (Handler)
 
 -- Example queries:
 --

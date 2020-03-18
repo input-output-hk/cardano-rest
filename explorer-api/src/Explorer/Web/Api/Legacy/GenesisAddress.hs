@@ -4,27 +4,49 @@ module Explorer.Web.Api.Legacy.GenesisAddress
   , queryAllGenesisAddresses
   ) where
 
-import           Control.Monad (when)
-import           Control.Monad.IO.Class (MonadIO)
-import           Control.Monad.Trans.Reader (ReaderT)
-
-import           Data.Maybe (fromMaybe)
-import           Data.Text (Text)
-import           Data.Word (Word64)
-
-import           Database.Esqueleto (InnerJoin (..), SqlQuery, Value, (^.), (==.),
-                    desc, from, limit, offset, on, orderBy, select, unValue, val, where_)
-import           Database.Persist.Sql (SqlBackend)
-
-import           Explorer.DB (EntityField (..), txOutSpentB, txOutSpentP, txOutUnspentP)
-
-import           Explorer.Web.ClientTypes (CAddress (..), CAddressesFilter (..),
-                    CGenesisAddressInfo (..), mkCCoin)
-import           Explorer.Web.Error (ExplorerError (..))
-import           Explorer.Web.Api.Legacy.Types (PageNo (..), PageSize (..))
-import           Explorer.Web.Api.Legacy.Util (runQuery, toPageSize)
-
-import           Servant (Handler)
+import Cardano.Db
+    ( EntityField (..), txOutSpentB, txOutSpentP, txOutUnspentP )
+import Control.Monad
+    ( when )
+import Control.Monad.IO.Class
+    ( MonadIO )
+import Control.Monad.Trans.Reader
+    ( ReaderT )
+import Data.Maybe
+    ( fromMaybe )
+import Data.Text
+    ( Text )
+import Data.Word
+    ( Word64 )
+import Database.Esqueleto
+    ( InnerJoin (..)
+    , SqlQuery
+    , Value
+    , desc
+    , from
+    , limit
+    , offset
+    , on
+    , orderBy
+    , select
+    , unValue
+    , val
+    , where_
+    , (==.)
+    , (^.)
+    )
+import Database.Persist.Sql
+    ( SqlBackend )
+import Explorer.Web.Api.Legacy.Types
+    ( PageNo (..), PageSize (..) )
+import Explorer.Web.Api.Legacy.Util
+    ( runQuery, toPageSize )
+import Explorer.Web.ClientTypes
+    ( CAddress (..), CAddressesFilter (..), CGenesisAddressInfo (..), mkCCoin )
+import Explorer.Web.Error
+    ( ExplorerError (..) )
+import Servant
+    ( Handler )
 
 
 genesisAddressInfo

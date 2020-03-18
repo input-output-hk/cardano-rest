@@ -7,22 +7,48 @@ module Explorer.Web.Validate.Random
   , queryRandomRedeemAddress
   ) where
 
-import           Control.Monad.IO.Class (MonadIO, liftIO)
-import           Control.Monad.Trans.Reader (ReaderT)
-
-import           Data.ByteString.Char8 (ByteString)
-import           Data.Maybe (listToMaybe)
-import           Data.Text (Text)
-
-import           Database.Esqueleto (Entity (..), InnerJoin (..), Value (..), SqlExpr,
-                    (^.), (==.), (>.),
-                    asc, countRows, from, limit, offset, on, orderBy, select, val, where_)
-import           Database.Persist.Sql (SqlBackend)
-
-import           Explorer.DB (BlockId, EntityField (..), LookupFail (..), Key (..),
-                    TxOut (..), TxOutId, maybeToEither)
-
-import           System.Random (randomRIO)
+import Cardano.Db
+    ( BlockId
+    , EntityField (..)
+    , Key (..)
+    , LookupFail (..)
+    , TxOut (..)
+    , TxOutId
+    , maybeToEither
+    )
+import Control.Monad.IO.Class
+    ( MonadIO, liftIO )
+import Control.Monad.Trans.Reader
+    ( ReaderT )
+import Data.ByteString.Char8
+    ( ByteString )
+import Data.Maybe
+    ( listToMaybe )
+import Data.Text
+    ( Text )
+import Database.Esqueleto
+    ( Entity (..)
+    , InnerJoin (..)
+    , SqlExpr
+    , Value (..)
+    , asc
+    , countRows
+    , from
+    , limit
+    , offset
+    , on
+    , orderBy
+    , select
+    , val
+    , where_
+    , (==.)
+    , (>.)
+    , (^.)
+    )
+import Database.Persist.Sql
+    ( SqlBackend )
+import System.Random
+    ( randomRIO )
 
 
 -- | Get a random address.

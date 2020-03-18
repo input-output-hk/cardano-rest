@@ -5,24 +5,40 @@ module Explorer.Web.Api.Legacy.GenesisSummary
   ( genesisSummary
   ) where
 
-import           Control.Monad.IO.Class (MonadIO)
-import           Control.Monad.Trans.Reader (ReaderT)
-
-import           Data.Fixed (Fixed (..), Uni)
-import           Data.Maybe (listToMaybe)
-
-import           Database.Esqueleto (InnerJoin (..), Value,
-                    (^.), (==.), countRows, from, on, select, sum_, unValue,
-                    val, where_)
-import           Database.Persist.Sql (SqlBackend)
-
-import           Explorer.DB (EntityField (..), txOutSpentP)
-
-import           Explorer.Web.ClientTypes (CGenesisSummary (..), mkCCoin)
-import           Explorer.Web.Error (ExplorerError (..))
-import           Explorer.Web.Api.Legacy.Util (runQuery)
-
-import           Servant (Handler)
+import Cardano.Db
+    ( EntityField (..), txOutSpentP )
+import Control.Monad.IO.Class
+    ( MonadIO )
+import Control.Monad.Trans.Reader
+    ( ReaderT )
+import Data.Fixed
+    ( Fixed (..), Uni )
+import Data.Maybe
+    ( listToMaybe )
+import Database.Esqueleto
+    ( InnerJoin (..)
+    , Value
+    , countRows
+    , from
+    , on
+    , select
+    , sum_
+    , unValue
+    , val
+    , where_
+    , (==.)
+    , (^.)
+    )
+import Database.Persist.Sql
+    ( SqlBackend )
+import Explorer.Web.Api.Legacy.Util
+    ( runQuery )
+import Explorer.Web.ClientTypes
+    ( CGenesisSummary (..), mkCCoin )
+import Explorer.Web.Error
+    ( ExplorerError (..) )
+import Servant
+    ( Handler )
 
 
 genesisSummary :: SqlBackend -> Handler (Either ExplorerError CGenesisSummary)

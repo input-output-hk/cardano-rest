@@ -18,32 +18,49 @@ module Explorer.Web.Api.Legacy.Util
   , zipTxBrief
   ) where
 
-import           Cardano.Chain.Common (Address, decodeAddressBase58)
+import Cardano.Chain.Common
+    ( Address, decodeAddressBase58 )
+import Cardano.Db
+    ( Block (..), TxId )
+import Control.Monad.IO.Class
+    ( MonadIO, liftIO )
+import Control.Monad.Trans.Reader
+    ( ReaderT )
+import Data.Bifunctor
+    ( first )
+import Data.ByteString
+    ( ByteString )
+import Data.Map.Strict
+    ( Map )
+import Data.Maybe
+    ( fromMaybe, mapMaybe )
+import Data.Text
+    ( Text )
+import Data.Time.Clock
+    ( UTCTime )
+import Data.Time.Clock.POSIX
+    ( POSIXTime, utcTimeToPOSIXSeconds )
+import Data.Word
+    ( Word16, Word64 )
+import Database.Persist.Sql
+    ( IsolationLevel (..), SqlBackend, runSqlConnWithIsolation )
+import Explorer.Web.Api.Legacy.Types
+    ( PageSize (..) )
+import Explorer.Web.ClientTypes
+    ( CCoin (..)
+    , CHash (..)
+    , CTxAddressBrief (..)
+    , CTxBrief (..)
+    , CTxHash (..)
+    , mkCCoin
+    )
+import Explorer.Web.Error
+    ( ExplorerError (..) )
 
-import           Control.Monad.IO.Class (liftIO, MonadIO)
-import           Control.Monad.Trans.Reader (ReaderT)
-
-import           Data.Bifunctor (first)
-import           Data.ByteString (ByteString)
 import qualified Data.ByteString.Base16 as Base16
-import           Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
-import           Data.Maybe (fromMaybe, mapMaybe)
-import           Data.Text (Text)
 import qualified Data.Text as Text
 import qualified Data.Text.Encoding as Text
-import           Data.Time.Clock (UTCTime)
-import           Data.Time.Clock.POSIX (POSIXTime, utcTimeToPOSIXSeconds)
-import           Data.Word (Word16, Word64)
-
-import           Database.Persist.Sql (IsolationLevel (..), SqlBackend, runSqlConnWithIsolation)
-
-import           Explorer.DB (Block (..), TxId)
-
-import           Explorer.Web.Api.Legacy.Types (PageSize (..))
-import           Explorer.Web.ClientTypes (CCoin (..), CHash (..), CTxAddressBrief (..),
-                    CTxBrief (..), CTxHash (..), mkCCoin)
-import           Explorer.Web.Error (ExplorerError (..))
 
 blockPosixTime :: Block -> POSIXTime
 blockPosixTime = utcTimeToPOSIXSeconds . blockTime

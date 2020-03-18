@@ -4,26 +4,46 @@ module Explorer.Web.Api.Legacy.EpochSlot
   ( epochSlot
   ) where
 
-import           Cardano.Chain.Slotting (EpochNumber (..))
-
-import           Control.Monad.IO.Class (MonadIO)
-import           Control.Monad.Trans.Reader (ReaderT)
-
-import           Data.ByteString (ByteString)
-import           Data.Fixed (Fixed (..), Uni)
-import           Data.Maybe (fromMaybe, listToMaybe)
-import           Data.Word (Word16, Word64)
-
-import           Database.Esqueleto (Entity (..), InnerJoin (..), Value (..), (^.), (==.),
-                    countRows, from, just, on, select, sum_, val, where_)
-import           Database.Persist.Sql (SqlBackend)
-
-import           Explorer.DB (BlockId, Block (..), EntityField (..))
-import           Explorer.Web.ClientTypes (CBlockEntry (..), CHash (..), mkCCoin)
-import           Explorer.Web.Error (ExplorerError (..))
-import           Explorer.Web.Api.Legacy.Util
-
-import           Servant (Handler)
+import Cardano.Chain.Slotting
+    ( EpochNumber (..) )
+import Cardano.Db
+    ( Block (..), BlockId, EntityField (..) )
+import Control.Monad.IO.Class
+    ( MonadIO )
+import Control.Monad.Trans.Reader
+    ( ReaderT )
+import Data.ByteString
+    ( ByteString )
+import Data.Fixed
+    ( Fixed (..), Uni )
+import Data.Maybe
+    ( fromMaybe, listToMaybe )
+import Data.Word
+    ( Word16, Word64 )
+import Database.Esqueleto
+    ( Entity (..)
+    , InnerJoin (..)
+    , Value (..)
+    , countRows
+    , from
+    , just
+    , on
+    , select
+    , sum_
+    , val
+    , where_
+    , (==.)
+    , (^.)
+    )
+import Database.Persist.Sql
+    ( SqlBackend )
+import Explorer.Web.Api.Legacy.Util
+import Explorer.Web.ClientTypes
+    ( CBlockEntry (..), CHash (..), mkCCoin )
+import Explorer.Web.Error
+    ( ExplorerError (..) )
+import Servant
+    ( Handler )
 
 
 -- Example queries:

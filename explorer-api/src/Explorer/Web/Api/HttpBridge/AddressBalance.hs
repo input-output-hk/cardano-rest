@@ -5,23 +5,32 @@ module Explorer.Web.Api.HttpBridge.AddressBalance
   ( addressBalance
   ) where
 
-import           Control.Monad.IO.Class (MonadIO)
-import           Control.Monad.Trans.Reader (ReaderT)
-
-import           Data.ByteString.Char8 (ByteString)
-import           Data.Text (Text)
-import           Data.Word (Word16, Word64)
-
-import           Database.Esqueleto (InnerJoin (..), Value (..),
-                    (^.), (==.), from, on, select, val, where_)
-import           Database.Persist.Sql (SqlBackend)
-
-import           Explorer.DB (EntityField (..), txOutUnspentP, queryNetworkName)
-import           Explorer.Web.ClientTypes (CAddress (..), CNetwork (..), CAddressBalance (..),
-                    CAddressBalanceError (..))
-import           Explorer.Web.Api.Legacy.Util (bsBase16Encode, decodeTextAddress, runQuery)
-
-import           Servant (Handler)
+import Cardano.Db
+    ( EntityField (..), queryNetworkName, txOutUnspentP )
+import Control.Monad.IO.Class
+    ( MonadIO )
+import Control.Monad.Trans.Reader
+    ( ReaderT )
+import Data.ByteString.Char8
+    ( ByteString )
+import Data.Text
+    ( Text )
+import Data.Word
+    ( Word16, Word64 )
+import Database.Esqueleto
+    ( InnerJoin (..), Value (..), from, on, select, val, where_, (==.), (^.) )
+import Database.Persist.Sql
+    ( SqlBackend )
+import Explorer.Web.Api.Legacy.Util
+    ( bsBase16Encode, decodeTextAddress, runQuery )
+import Explorer.Web.ClientTypes
+    ( CAddress (..)
+    , CAddressBalance (..)
+    , CAddressBalanceError (..)
+    , CNetwork (..)
+    )
+import Servant
+    ( Handler )
 
 -- This endpoint emulates the Rust cardano-http-bridge endpoint:
 --

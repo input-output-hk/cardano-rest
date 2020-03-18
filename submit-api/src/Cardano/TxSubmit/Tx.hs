@@ -12,15 +12,15 @@ module Cardano.TxSubmit.Tx
 import Cardano.Prelude hiding
     ( atomically )
 
+import Cardano.Chain.Byron.API
+    ( ApplyMempoolPayloadErr (..) )
 import Cardano.Chain.UTxO
     ( TxId )
 import Cardano.TxSubmit.Types
 import Control.Monad.Class.MonadSTM.Strict
     ( StrictTMVar, atomically, newEmptyTMVarM, putTMVar, takeTMVar )
-import Ouroboros.Consensus.Ledger.Byron
+import Ouroboros.Consensus.Byron.Ledger
     ( ByronBlock (..), GenTx (..) )
-import Ouroboros.Consensus.Ledger.Byron.Auxiliary
-    ( ApplyMempoolPayloadErr )
 
 -- The type of 'reject' (determined by ouroboros-network) is currently 'Maybe String'.
 -- Hopefully that will be fixed to make it a concrete type.

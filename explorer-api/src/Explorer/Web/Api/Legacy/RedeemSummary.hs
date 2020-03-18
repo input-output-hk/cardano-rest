@@ -5,26 +5,52 @@ module Explorer.Web.Api.Legacy.RedeemSummary
   ( queryRedeemSummary
   ) where
 
-import           Control.Monad.IO.Class (MonadIO)
-import           Control.Monad.Trans.Reader (ReaderT)
-
-import           Data.ByteString.Char8 (ByteString)
-import           Data.Maybe (listToMaybe)
-import           Data.Text (Text)
-import           Data.Time.Clock (UTCTime)
-import           Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
-
-import           Database.Esqueleto (InnerJoin (..), Value (..),
-                    (^.), (==.), (&&.), from, on, select, val, where_)
-import           Database.Persist.Sql (SqlBackend)
-
-import           Explorer.DB (EntityField (..), unValue3)
-
-import           Explorer.Web.Api.Legacy.Util (bsBase16Encode, genesisDistributionTxHash)
-import           Explorer.Web.ClientTypes (CAddress (..), CAddressSummary (..), CAddressType (..),
-                    CCoin, CChainTip (..), CHash (..), CTxAddressBrief (..), CTxBrief (..),
-                    CTxHash (..), mkCCoin)
-import           Explorer.Web.Error (ExplorerError (..))
+import Cardano.Db
+    ( EntityField (..), unValue3 )
+import Control.Monad.IO.Class
+    ( MonadIO )
+import Control.Monad.Trans.Reader
+    ( ReaderT )
+import Data.ByteString.Char8
+    ( ByteString )
+import Data.Maybe
+    ( listToMaybe )
+import Data.Text
+    ( Text )
+import Data.Time.Clock
+    ( UTCTime )
+import Data.Time.Clock.POSIX
+    ( utcTimeToPOSIXSeconds )
+import Database.Esqueleto
+    ( InnerJoin (..)
+    , Value (..)
+    , from
+    , on
+    , select
+    , val
+    , where_
+    , (&&.)
+    , (==.)
+    , (^.)
+    )
+import Database.Persist.Sql
+    ( SqlBackend )
+import Explorer.Web.Api.Legacy.Util
+    ( bsBase16Encode, genesisDistributionTxHash )
+import Explorer.Web.ClientTypes
+    ( CAddress (..)
+    , CAddressSummary (..)
+    , CAddressType (..)
+    , CChainTip (..)
+    , CCoin
+    , CHash (..)
+    , CTxAddressBrief (..)
+    , CTxBrief (..)
+    , CTxHash (..)
+    , mkCCoin
+    )
+import Explorer.Web.Error
+    ( ExplorerError (..) )
 
 -- Example redeem addresses:
 --    /api/addresses/summary/Ae2tdPwUPEZAAvxJ9nQ1nx88X9Jq6dskyG9uFUWG69wC6TJ7DKNCp6QCEM2 (unspent)

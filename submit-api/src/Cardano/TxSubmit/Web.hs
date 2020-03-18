@@ -27,7 +27,7 @@ import Data.Text
     ( Text )
 import Formatting
     ( build, sformat )
-import Ouroboros.Consensus.Ledger.Byron
+import Ouroboros.Consensus.Byron.Ledger
     ( ByronBlock, GenTx )
 import Servant
     ( Application, Handler, ServerError (..), err400, throwError )
@@ -43,7 +43,7 @@ import qualified Data.ByteString.Char8 as BS
 import qualified Data.ByteString.Lazy.Char8 as LBS
 import qualified Data.Char as Char
 import qualified Network.Wai.Handler.Warp as Warp
-import qualified Ouroboros.Consensus.Ledger.Byron as Byron
+import qualified Ouroboros.Consensus.Byron.Ledger as Byron
 import qualified Servant
 
 runTxSubmitServer :: TxSubmitVar-> Trace IO Text -> TxSubmitPort -> IO ()

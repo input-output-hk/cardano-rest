@@ -1,37 +1,65 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Explorer.Web.Api.Legacy.EpochPage
   ( epochPage
   ) where
 
-import           Cardano.Chain.Slotting (EpochNumber (..))
+import Cardano.Chain.Slotting
+    ( EpochNumber (..) )
+import Cardano.Db
+    ( Block (..), EntityField (..) )
+import Control.Monad.IO.Class
+    ( MonadIO )
+import Control.Monad.Trans.Reader
+    ( ReaderT )
+import Data.ByteString
+    ( ByteString )
+import Data.Fixed
+    ( Fixed (..), Uni )
+import Data.Maybe
+    ( fromMaybe, listToMaybe )
+import Data.Text
+    ( Text )
+import Data.Time.Clock.POSIX
+    ( utcTimeToPOSIXSeconds )
+import Data.Word
+    ( Word64 )
+import Database.Esqueleto
+    ( Entity (..)
+    , InnerJoin (..)
+    , LeftOuterJoin (..)
+    , Value (..)
+    , asc
+    , countRows
+    , from
+    , groupBy
+    , just
+    , limit
+    , offset
+    , on
+    , orderBy
+    , select
+    , sum_
+    , val
+    , where_
+    , (==.)
+    , (?.)
+    , (^.)
+    )
+import Database.Persist.Sql
+    ( SqlBackend )
+import Explorer.Web.Api.Legacy.Types
+    ( PageNo (..) )
+import Explorer.Web.Api.Legacy.Util
+    ( bsBase16Encode, divRoundUp, runQuery, slotsPerEpoch, textShow )
+import Explorer.Web.ClientTypes
+    ( CBlockEntry (..), CHash (..), mkCCoin )
+import Explorer.Web.Error
+    ( ExplorerError (..) )
+import Servant
+    ( Handler )
 
-import           Control.Monad.IO.Class (MonadIO)
-import           Control.Monad.Trans.Reader (ReaderT)
-
-import           Data.ByteString (ByteString)
-import           Data.Fixed (Fixed (..), Uni)
 import qualified Data.List as List
-import           Data.Maybe (fromMaybe, listToMaybe)
-import           Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
-import           Data.Text (Text)
-import           Data.Word (Word64)
-
-import           Database.Esqueleto (Entity (..), InnerJoin (..), LeftOuterJoin (..), Value (..),
-                    (^.), (?.), (==.), asc, countRows, from, groupBy, just, limit,
-                    offset, on, orderBy, select, sum_, val, where_)
-import           Database.Persist.Sql (SqlBackend)
-
-
-import           Explorer.DB (Block (..), EntityField (..))
-
-import           Explorer.Web.ClientTypes (CBlockEntry (..), CHash (..), mkCCoin)
-import           Explorer.Web.Error (ExplorerError (..))
-import           Explorer.Web.Api.Legacy.Types (PageNo (..))
-import           Explorer.Web.Api.Legacy.Util (bsBase16Encode, divRoundUp, runQuery,
-                    slotsPerEpoch, textShow)
-
-import           Servant (Handler)
 
 -- Example queries:
 --

@@ -2,23 +2,41 @@ module Explorer.Web.Api.Legacy.GenesisPages
   ( genesisPages
   ) where
 
-import           Control.Monad.IO.Class (MonadIO)
-import           Control.Monad.Trans.Reader (ReaderT)
-
-import           Data.Maybe (listToMaybe)
-import           Database.Esqueleto (InnerJoin (..), Value,
-                    (^.), (==.), countRows, from, on, select, unValue, val, where_)
-import           Database.Persist.Sql (SqlBackend)
-
-import           Explorer.DB (EntityField (..), txOutSpentP, txOutUnspentP)
-
-import           Explorer.Web.ClientTypes (CAddressesFilter (..))
-import           Explorer.Web.Error (ExplorerError (..))
-import           Explorer.Web.Api.Legacy (PageNumber)
-import           Explorer.Web.Api.Legacy.Util (divRoundUp, runQuery, toPageSize)
-import           Explorer.Web.Api.Legacy.Types (PageSize (..))
-
-import           Servant (Handler)
+import Cardano.Db
+    ( EntityField (..), txOutSpentP, txOutUnspentP )
+import Control.Monad.IO.Class
+    ( MonadIO )
+import Control.Monad.Trans.Reader
+    ( ReaderT )
+import Data.Maybe
+    ( listToMaybe )
+import Database.Esqueleto
+    ( InnerJoin (..)
+    , Value
+    , countRows
+    , from
+    , on
+    , select
+    , unValue
+    , val
+    , where_
+    , (==.)
+    , (^.)
+    )
+import Database.Persist.Sql
+    ( SqlBackend )
+import Explorer.Web.Api.Legacy
+    ( PageNumber )
+import Explorer.Web.Api.Legacy.Types
+    ( PageSize (..) )
+import Explorer.Web.Api.Legacy.Util
+    ( divRoundUp, runQuery, toPageSize )
+import Explorer.Web.ClientTypes
+    ( CAddressesFilter (..) )
+import Explorer.Web.Error
+    ( ExplorerError (..) )
+import Servant
+    ( Handler )
 
 
 genesisPages

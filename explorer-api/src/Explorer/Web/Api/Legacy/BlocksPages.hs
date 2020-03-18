@@ -4,29 +4,53 @@ module Explorer.Web.Api.Legacy.BlocksPages
   ( blocksPages
   ) where
 
-import           Control.Monad.IO.Class (MonadIO)
-import           Control.Monad.Trans.Reader (ReaderT)
+import Cardano.Db
+    ( Block (..), EntityField (..), isJust, queryBlockHeight, unValue2 )
+import Control.Monad.IO.Class
+    ( MonadIO )
+import Control.Monad.Trans.Reader
+    ( ReaderT )
+import Data.ByteString.Char8
+    ( ByteString )
+import Data.Maybe
+    ( fromMaybe )
+import Data.Time.Clock.POSIX
+    ( utcTimeToPOSIXSeconds )
+import Data.Word
+    ( Word64 )
+import Database.Esqueleto
+    ( Entity (..)
+    , InnerJoin (..)
+    , Value (..)
+    , asc
+    , desc
+    , from
+    , limit
+    , offset
+    , on
+    , orderBy
+    , select
+    , val
+    , where_
+    , (==.)
+    , (^.)
+    )
+import Database.Persist.Sql
+    ( SqlBackend )
+import Explorer.Web.Api.Legacy
+    ( PageNumber )
+import Explorer.Web.Api.Legacy.Types
+    ( PageNo (..), PageSize (..) )
+import Explorer.Web.Api.Legacy.Util
+    ( bsBase16Encode, runQuery, slotsPerEpoch )
+import Explorer.Web.ClientTypes
+    ( CBlockEntry (..), CHash (..), mkCCoin )
+import Explorer.Web.Error
+    ( ExplorerError (..) )
+import Servant
+    ( Handler )
 
-import           Data.ByteString.Char8 (ByteString)
 import qualified Data.List as List
-import           Data.Maybe (fromMaybe)
-import           Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
-import           Data.Word (Word64)
-
-import           Database.Esqueleto (Entity (..), InnerJoin (..), Value (..),
-                    (^.), (==.),
-                    asc, desc, from, limit, offset, on, orderBy, select, val, where_)
-import           Database.Persist.Sql (SqlBackend)
-
-import           Explorer.DB (Block (..), EntityField (..), isJust, queryBlockHeight, unValue2)
-
-import           Explorer.Web.ClientTypes (CBlockEntry (..), CHash (..), mkCCoin)
-import           Explorer.Web.Error (ExplorerError (..))
-import           Explorer.Web.Api.Legacy (PageNumber)
-import           Explorer.Web.Api.Legacy.Util (bsBase16Encode, runQuery, slotsPerEpoch)
-import           Explorer.Web.Api.Legacy.Types (PageNo (..), PageSize (..))
-
-import           Servant (Handler)
 
 -- Example queries:
 --

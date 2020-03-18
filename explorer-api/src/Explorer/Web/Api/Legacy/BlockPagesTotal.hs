@@ -4,22 +4,28 @@ module Explorer.Web.Api.Legacy.BlockPagesTotal
   ( blockPagesTotal
   ) where
 
-import           Control.Monad.IO.Class (MonadIO)
-import           Control.Monad.Trans.Reader (ReaderT)
-
-import           Data.Maybe (listToMaybe)
-
-import           Database.Esqueleto ((^.), countRows, from, select, unValue, where_)
-import           Database.Persist.Sql (SqlBackend)
-
-import           Explorer.DB (EntityField (..), isJust)
-
-import           Explorer.Web.Error (ExplorerError (..))
-import           Explorer.Web.Api.Legacy (PageNumber)
-import           Explorer.Web.Api.Legacy.Util (divRoundUp, runQuery, toPageSize)
-import           Explorer.Web.Api.Legacy.Types (PageSize (..))
-
-import           Servant (Handler)
+import Cardano.Db
+    ( EntityField (..), isJust )
+import Control.Monad.IO.Class
+    ( MonadIO )
+import Control.Monad.Trans.Reader
+    ( ReaderT )
+import Data.Maybe
+    ( listToMaybe )
+import Database.Esqueleto
+    ( countRows, from, select, unValue, where_, (^.) )
+import Database.Persist.Sql
+    ( SqlBackend )
+import Explorer.Web.Api.Legacy
+    ( PageNumber )
+import Explorer.Web.Api.Legacy.Types
+    ( PageSize (..) )
+import Explorer.Web.Api.Legacy.Util
+    ( divRoundUp, runQuery, toPageSize )
+import Explorer.Web.Error
+    ( ExplorerError (..) )
+import Servant
+    ( Handler )
 
 
 blockPagesTotal

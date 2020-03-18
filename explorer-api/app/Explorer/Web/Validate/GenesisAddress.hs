@@ -4,26 +4,45 @@ module Explorer.Web.Validate.GenesisAddress
   ( validateGenesisAddressPaging
   ) where
 
-import           Control.Monad.IO.Class (MonadIO, liftIO)
-import           Control.Monad.Trans.Reader (ReaderT)
+import Cardano.Db
+    ( EntityField (..), LookupFail (..), listToMaybe )
+import Control.Monad.IO.Class
+    ( MonadIO, liftIO )
+import Control.Monad.Trans.Reader
+    ( ReaderT )
+import Data.Text.ANSI
+    ( green, red )
+import Database.Esqueleto
+    ( InnerJoin (..)
+    , Value (..)
+    , countRows
+    , from
+    , isNothing
+    , on
+    , select
+    , where_
+    , (==.)
+    , (^.)
+    )
+import Database.Persist.Sql
+    ( SqlBackend )
+import Explorer.Web
+    ( CAddress (..)
+    , CGenesisAddressInfo (..)
+    , queryAllGenesisAddresses
+    , runQuery
+    )
+import Explorer.Web.Api.Legacy.Types
+    ( PageNo (..), PageSize (..) )
+import Explorer.Web.Validate.ErrorHandling
+    ( handleLookupFail )
+import System.Exit
+    ( exitFailure )
+import System.Random
+    ( randomRIO )
 
 import qualified Data.List as List
-import           Data.Text.ANSI (green, red)
 import qualified Data.Text.IO as Text
-
-import           Database.Esqueleto (Value (..), InnerJoin (..), (==.), (^.),
-                    countRows, from, isNothing, on, select, where_)
-import           Database.Persist.Sql (SqlBackend)
-
-import           Explorer.DB (EntityField (..), LookupFail (..), listToMaybe)
-
-import           Explorer.Web (CAddress (..), CGenesisAddressInfo (..),
-                    queryAllGenesisAddresses, runQuery)
-import           Explorer.Web.Api.Legacy.Types (PageNo (..), PageSize (..))
-import           Explorer.Web.Validate.ErrorHandling (handleLookupFail)
-
-import           System.Exit (exitFailure)
-import           System.Random (randomRIO)
 
 -- | Validate that all address have a balance >= 0.
 validateGenesisAddressPaging :: SqlBackend -> IO ()

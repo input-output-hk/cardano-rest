@@ -5,17 +5,18 @@ module Explorer.Web.Validate.ErrorHandling
   , handleExplorerError
   ) where
 
-import           Control.Monad.IO.Class (MonadIO, liftIO)
+import Cardano.Db
+    ( LookupFail, renderLookupFail )
+import Control.Monad.IO.Class
+    ( MonadIO, liftIO )
+import Data.Text.ANSI
+    ( red )
+import Explorer.Web.Error
+    ( ExplorerError (..), renderExplorerError )
+import System.Exit
+    ( exitFailure )
 
-import           Data.Text.ANSI (red)
 import qualified Data.Text.IO as Text
-
-import           Explorer.DB (LookupFail, renderLookupFail)
-
-import           Explorer.Web.Error (ExplorerError (..), renderExplorerError)
-
-
-import           System.Exit (exitFailure)
 
 handleLookupFail :: MonadIO m => Either LookupFail a -> m a
 handleLookupFail ela =

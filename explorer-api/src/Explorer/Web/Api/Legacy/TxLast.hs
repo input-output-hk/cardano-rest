@@ -4,25 +4,47 @@ module Explorer.Web.Api.Legacy.TxLast
   ( getLastTxs
   ) where
 
-import           Control.Monad.IO.Class (MonadIO)
-import           Control.Monad.Trans.Reader (ReaderT)
-
-import           Data.ByteString.Char8 (ByteString)
-import           Data.Fixed (Fixed (..), Uni)
-import           Data.Time.Clock (UTCTime)
-import           Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
-
-import           Database.Esqueleto (Entity, InnerJoin(..), SqlExpr, Value,
-                    (^.), (==.),
-                    desc, from, limit, on, orderBy, select, subSelectUnsafe, sum_, where_, unValue)
-import           Database.Persist.Sql (SqlBackend)
-
-import           Explorer.DB (EntityField (..), Tx, isJust)
-import           Explorer.Web.ClientTypes (CHash (..), CTxEntry (..), CTxHash (..), mkCCoin)
-import           Explorer.Web.Error (ExplorerError (..))
-import           Explorer.Web.Api.Legacy.Util
-
-import           Servant (Handler)
+import Cardano.Db
+    ( EntityField (..), Tx, isJust )
+import Control.Monad.IO.Class
+    ( MonadIO )
+import Control.Monad.Trans.Reader
+    ( ReaderT )
+import Data.ByteString.Char8
+    ( ByteString )
+import Data.Fixed
+    ( Fixed (..), Uni )
+import Data.Time.Clock
+    ( UTCTime )
+import Data.Time.Clock.POSIX
+    ( utcTimeToPOSIXSeconds )
+import Database.Esqueleto
+    ( Entity
+    , InnerJoin (..)
+    , SqlExpr
+    , Value
+    , desc
+    , from
+    , limit
+    , on
+    , orderBy
+    , select
+    , subSelectUnsafe
+    , sum_
+    , unValue
+    , where_
+    , (==.)
+    , (^.)
+    )
+import Database.Persist.Sql
+    ( SqlBackend )
+import Explorer.Web.Api.Legacy.Util
+import Explorer.Web.ClientTypes
+    ( CHash (..), CTxEntry (..), CTxHash (..), mkCCoin )
+import Explorer.Web.Error
+    ( ExplorerError (..) )
+import Servant
+    ( Handler )
 
 
 getLastTxs :: SqlBackend -> Handler (Either ExplorerError [CTxEntry])

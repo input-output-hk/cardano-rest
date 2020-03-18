@@ -8,32 +8,63 @@ module Explorer.Web.Api.Legacy.BlocksTxs
   , queryBlocksTxs
   ) where
 
-import           Control.Monad.IO.Class (MonadIO)
-import           Control.Monad.Trans.Reader (ReaderT)
-
-import           Data.ByteString.Char8 (ByteString)
-
-import           Data.Int (Int64)
-import           Data.List.Extra (groupOn)
-import           Data.Maybe (fromMaybe)
-import           Data.Time.Clock (UTCTime)
-import           Data.Text (Text)
-import           Data.Word (Word16, Word64)
-
-
-import           Database.Esqueleto (InnerJoin (..), Value (..), (^.), (==.), (&&.),
-                    distinct, from, in_, on, select, val, valList, where_)
-import           Database.Persist.Sql (SqlBackend)
-
-import           Explorer.DB (EntityField (..), TxId, unValue3)
-
-import           Explorer.Web.Api.Legacy.Util (bsBase16Encode, collapseTxGroup,
-                    genesisDistributionTxHash, runQuery, textBase16Decode, zipTxBrief)
-import           Explorer.Web.ClientTypes (CAddress (..), CHash (..),
-                    CTxAddressBrief (..), CTxBrief (..), CTxHash (..), mkCCoin)
-import           Explorer.Web.Error (ExplorerError (..))
-
-import           Servant (Handler)
+import Cardano.Db
+    ( EntityField (..), TxId, unValue3 )
+import Control.Monad.IO.Class
+    ( MonadIO )
+import Control.Monad.Trans.Reader
+    ( ReaderT )
+import Data.ByteString.Char8
+    ( ByteString )
+import Data.Int
+    ( Int64 )
+import Data.List.Extra
+    ( groupOn )
+import Data.Maybe
+    ( fromMaybe )
+import Data.Text
+    ( Text )
+import Data.Time.Clock
+    ( UTCTime )
+import Data.Word
+    ( Word16, Word64 )
+import Database.Esqueleto
+    ( InnerJoin (..)
+    , Value (..)
+    , distinct
+    , from
+    , in_
+    , on
+    , select
+    , val
+    , valList
+    , where_
+    , (&&.)
+    , (==.)
+    , (^.)
+    )
+import Database.Persist.Sql
+    ( SqlBackend )
+import Explorer.Web.Api.Legacy.Util
+    ( bsBase16Encode
+    , collapseTxGroup
+    , genesisDistributionTxHash
+    , runQuery
+    , textBase16Decode
+    , zipTxBrief
+    )
+import Explorer.Web.ClientTypes
+    ( CAddress (..)
+    , CHash (..)
+    , CTxAddressBrief (..)
+    , CTxBrief (..)
+    , CTxHash (..)
+    , mkCCoin
+    )
+import Explorer.Web.Error
+    ( ExplorerError (..) )
+import Servant
+    ( Handler )
 
 -- Example queries:
 --

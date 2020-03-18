@@ -69,7 +69,8 @@ library
                       , base16-bytestring
                       , bytestring
                       , cardano-crypto-class
-                      , cardano-explorer-db
+                      , cardano-db
+                      , cardano-db-sync
                       , cardano-ledger
                       , containers
                       , deepseq
@@ -109,7 +110,7 @@ test-suite unit
 
   build-depends:        base                            >= 4.12         && < 4.13
                       , aeson
-                      , cardano-explorer-db-test
+                      , cardano-db-sync-test
                       , cardano-explorer-api
                       , cardano-ledger
                       , hedgehog
@@ -183,7 +184,8 @@ executable cardano-explorer-api-validate
   build-depends:        base                            >= 4.12         && < 4.13
                       , async
                       , bytestring
-                      , cardano-explorer-db
+                      , cardano-db
+                      , cardano-db-sync
                       , cardano-explorer-api
                       , cardano-ledger
                       , esqueleto

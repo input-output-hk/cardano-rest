@@ -15,6 +15,8 @@ import Cardano.Binary
     ( DecoderError )
 import Cardano.TxSubmit.ErrorRender
 
+import Cardano.Chain.Byron.API
+    ( ApplyMempoolPayloadErr (..) )
 import Data.Aeson
     ( ToJSON (..), Value (..) )
 import Data.ByteString.Char8
@@ -27,8 +29,6 @@ import GHC.Generics
     ( Generic )
 import Network.HTTP.Media
     ( (//) )
-import Ouroboros.Consensus.Ledger.Byron.Auxiliary
-    ( ApplyMempoolPayloadErr )
 import Servant
     ( (:>)
     , Accept (..)

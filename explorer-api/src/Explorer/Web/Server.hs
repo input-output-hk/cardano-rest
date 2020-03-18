@@ -1,52 +1,69 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Explorer.Web.Server (runServer) where
 
-import           Explorer.DB (Ada, Block (..),
-                    queryTotalSupply, readPGPassFileEnv, toConnectionString)
-import           Explorer.Web.Api (ExplorerApi, explorerApi)
-import           Explorer.Web.ClientTypes (CBlockEntry (..),  CBlockSummary (..), CHash (..),
-                    adaToCCoin)
-import           Explorer.Web.Error (ExplorerError (..))
-import           Explorer.Web.Query (queryBlockSummary)
-import           Explorer.Web.Api.HttpBridge (HttpBridgeApi (..))
-import           Explorer.Web.Api.HttpBridge.AddressBalance
-import           Explorer.Web.Api.Legacy (ExplorerApiRecord (..))
+import Cardano.Db
+    ( Ada
+    , Block (..)
+    , queryTotalSupply
+    , readPGPassFileEnv
+    , toConnectionString
+    )
+import Control.Monad.IO.Class
+    ( liftIO )
+import Control.Monad.Logger
+    ( runStdoutLoggingT )
+import Control.Monad.Trans.Except
+    ( ExceptT (..), runExceptT, throwE )
+import Data.ByteString
+    ( ByteString )
+import Data.Text
+    ( Text )
+import Database.Persist.Postgresql
+    ( withPostgresqlConn )
+import Database.Persist.Sql
+    ( SqlBackend )
+import Explorer.Web.Api
+    ( ExplorerApi, explorerApi )
+import Explorer.Web.Api.HttpBridge
+    ( HttpBridgeApi (..) )
+import Explorer.Web.Api.HttpBridge.AddressBalance
+import Explorer.Web.Api.Legacy
+    ( ExplorerApiRecord (..) )
+import Explorer.Web.Api.Legacy.AddressSummary
+import Explorer.Web.Api.Legacy.BlockAddress
+import Explorer.Web.Api.Legacy.BlockPagesTotal
+import Explorer.Web.Api.Legacy.BlocksPages
+import Explorer.Web.Api.Legacy.BlocksTxs
+import Explorer.Web.Api.Legacy.EpochPage
+import Explorer.Web.Api.Legacy.EpochSlot
+import Explorer.Web.Api.Legacy.GenesisAddress
+import Explorer.Web.Api.Legacy.GenesisPages
+import Explorer.Web.Api.Legacy.GenesisSummary
+import Explorer.Web.Api.Legacy.StatsTxs
+import Explorer.Web.Api.Legacy.TxLast
+import Explorer.Web.Api.Legacy.TxsSummary
+import Explorer.Web.Api.Legacy.Util
+import Explorer.Web.ClientTypes
+    ( CBlockEntry (..), CBlockSummary (..), CHash (..), adaToCCoin )
+import Explorer.Web.Error
+    ( ExplorerError (..) )
+import Explorer.Web.Query
+    ( queryBlockSummary )
+import Servant
+    ( Application, Handler, Server )
+import Servant.API
+    ( (:<|>) ((:<|>)) )
+import Servant.API.Generic
+    ( toServant )
+import Servant.Server.Generic
+    ( AsServerT )
 
-import           Explorer.Web.Api.Legacy.AddressSummary
-import           Explorer.Web.Api.Legacy.BlockAddress
-import           Explorer.Web.Api.Legacy.BlockPagesTotal
-import           Explorer.Web.Api.Legacy.BlocksPages
-import           Explorer.Web.Api.Legacy.BlocksTxs
-import           Explorer.Web.Api.Legacy.EpochPage
-import           Explorer.Web.Api.Legacy.EpochSlot
-import           Explorer.Web.Api.Legacy.GenesisAddress
-import           Explorer.Web.Api.Legacy.GenesisPages
-import           Explorer.Web.Api.Legacy.GenesisSummary
-import           Explorer.Web.Api.Legacy.StatsTxs
-import           Explorer.Web.Api.Legacy.TxLast
-import           Explorer.Web.Api.Legacy.TxsSummary
-import           Explorer.Web.Api.Legacy.Util
-
-import           Control.Monad.IO.Class (liftIO)
-import           Control.Monad.Logger (runStdoutLoggingT)
-import           Control.Monad.Trans.Except (ExceptT (..), runExceptT, throwE)
-import           Data.ByteString (ByteString)
 import qualified Data.ByteString.Base16 as Base16
-import           Data.Text (Text)
 import qualified Data.Text.Encoding as Text
-
 import qualified Network.Wai.Handler.Warp as Warp
-import           Servant (Application, Handler, Server)
-import qualified Servant as Servant
-import           Servant.API.Generic (toServant)
-import           Servant.Server.Generic (AsServerT)
-import           Servant.API ((:<|>)((:<|>)))
-
-import           Database.Persist.Postgresql (withPostgresqlConn)
-import           Database.Persist.Sql (SqlBackend)
-
+import qualified Servant
 
 runServer :: IO ()
 runServer = do
