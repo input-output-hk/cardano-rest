@@ -1,6 +1,6 @@
 # Revision history for cardano-explorer-api
 
-## 1.3.1 -- March 2020
+## 2.0.0 -- March 2020
 
 * Moved 'cardano-explorer-api' into its own repository
 * Renamed service and build artifacts

@@ -5,9 +5,9 @@
 * Moved 'cardano-explorer-api' into its own repository
 * Renamed service and build artifacts
 * Add swagger documentation for cardano-submit-api
-* API changes: 
-  * return 400 Bad Request on errors, and 202 for successful submission.
-  * return plain text transaction id on success, and plain text error on errors. 
+* API **breaking** changes: 
+  * returns 400 Bad Request on errors, and 202 for successful submission.
+  * returns plain text transaction id on success, and plain text error on errors (cf API documentation)
 
 ## 1.3.0 -- January 2020
 
