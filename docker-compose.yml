@@ -30,36 +30,36 @@ services:
     environment:
       - NETWORK=${NETWORK}
     depends_on:
-      #      - cardano-node
+      - cardano-node
       - postgres
     secrets:
       - source: pgpass
         target: /config/pgpass
     volumes:
       - cardano-node:/data
-      - /tmp:/tmp
     restart: on-failure
 
-#  cardano-explorer-api:
-#    image: inputoutput/cardano-explorer-api:master
-#    depends_on:
-#      - postgres
-#    environment:
-#      - PGPASSFILE=/run/secrets/pgpass
-#    ports:
-#      - 8100:8100
+  cardano-explorer-api:
+    image: inputoutput/cardano-explorer-api:master
+    depends_on:
+      - postgres
+    secrets:
+      - source: pgpass
+        target: /config/pgpass
+    ports:
+      - 8100:8100
 
-#  cardano-submit-api:
-#    image: inputoutput/cardano-submit-api:master
-#    environment:
-#      - NETWORK=${NETWORK}
-#    depends_on:
-#      - cardano-node
-#    volumes:
-#      - node-socket:/data/node.socket
-#    ports:
-#      - 8101:8101
-#    restart: on-failure
+  cardano-submit-api:
+    image: inputoutput/cardano-submit-api:master
+    environment:
+      - NETWORK=${NETWORK}
+    depends_on:
+      - cardano-node
+    volumes:
+      - cardano-node:/data
+    ports:
+      - 8101:8101
+    restart: on-failure
 
 secrets:
   postgres_db:
@@ -74,4 +74,3 @@ secrets:
 volumes:
   postgres:
   cardano-node:
-  tmp:
