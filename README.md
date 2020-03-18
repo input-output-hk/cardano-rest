@@ -26,7 +26,7 @@ through JSON over HTTP.
 :warning: These APIs are now considered **legacy** and new users should instead
 look into [cardano-graphql](https://github.com/input-output-hk/cardano-graphql).
 
-## How to install (Linux / Windows / Mac OS)
+## How to install (Linux / Mac OS / Docker)
 
 See **Installation Instructions** for each available [release](https://github.com/input-output-hk/cardano-rest/releases).
 
