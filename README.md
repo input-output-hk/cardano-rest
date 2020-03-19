@@ -26,6 +26,29 @@ through JSON over HTTP.
 :warning: These APIs are now considered **legacy** and new users should instead
 look into [cardano-graphql](https://github.com/input-output-hk/cardano-graphql).
 
+## Getting Started
+
+1. Clone the repository.
+
+```
+$ git clone git@github.com:input-output-hk/cardano-rest.git
+$ cd cardano-rest
+```
+
+2. Start a `cardano-node`, `cardano-db-sync`, `postgresql` and `cardano-rest` components using Docker:
+
+```
+$ NETWORK=testnet docker-compose up
+```
+
+3. Query the API :tada:
+
+```
+$ curl http://localhost:8100/api/txs/last 
+```
+
+For more information, have a look at the [Wiki :book:](https://github.com/input-output-hk/cardano-rest/wiki).
+
 ## How to install (Linux / Mac OS / Docker)
 
 See **Installation Instructions** for each available [release](https://github.com/input-output-hk/cardano-rest/releases).
@@ -40,11 +63,10 @@ See [Wiki - Building](https://github.com/input-output-hk/cardano-rest/wiki/Build
 
 See [Wiki - Testing](https://github.com/input-output-hk/cardano-rest/wiki/Testing)
 
-## Documentation
+## API Documentations
 
 - [API Documentation (cardano-explorer-api)](https://input-output-hk.github.io/cardano-rest/explorer-api)
 - [API Documentation (cardano-submit-api)](https://input-output-hk.github.io/cardano-rest/submit-api)
-- [Wiki](https://github.com/input-output-hk/cardano-rest/wiki)
 
 <hr/>
 
