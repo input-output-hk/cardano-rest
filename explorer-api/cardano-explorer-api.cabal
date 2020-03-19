@@ -110,7 +110,6 @@ test-suite unit
 
   build-depends:        base                            >= 4.12         && < 4.13
                       , aeson
-                      , cardano-db-sync-test
                       , cardano-explorer-api
                       , cardano-ledger
                       , hedgehog
