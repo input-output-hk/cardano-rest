@@ -47,6 +47,7 @@
 , iputils
 , socat
 , utillinux
+, writeScript
 , writeScriptBin
 , runtimeShell
 , lib
@@ -82,16 +83,31 @@ let
     ];
   };
   explorerApiDockerImage = let
+    genPgPass = writeScript "gen-pgpass" ''
+      #!${runtimeShell}
+      set -euo pipefail
+      SECRET_DIR=$1
+      echo "Generating PGPASS file"
+      POSTGRES_DB=''${POSTGRES_DB:-$(< ''${SECRET_DIR}/postgres_db)}
+      POSTGRES_USER=''${POSTGRES_USER:-$(< ''${SECRET_DIR}/postgres_user)}
+      POSTGRES_PASSWORD=''${POSTGRES_PASSWORD:-$(< ''${SECRET_DIR}/postgres_password)}
+      POSTGRES_PORT=''${POSTGRES_PORT:-5432}
+      echo "''${POSTGRES_HOST}:''${POSTGRES_PORT}:''${POSTGRES_DB}:''${POSTGRES_USER}:''${POSTGRES_PASSWORD}" > /config/pgpass
+      chmod 0600 /config/pgpass
+    '';
     entry-point = writeScriptBin "entry-point" ''
       #!${runtimeShell}
+      set -euo pipefail
       # set up /tmp (override with TMPDIR variable)
-      mkdir -m 1777 tmp
-      if [[ -d /config ]]; then
-        export PGPASSFILE="/config/pgpass";
-        exec ${cardano-explorer-api}/bin/cardano-explorer-api
-      else
-        echo "Please mount the pgpass file with credentials for postgres in /config"
+      mkdir -p /config
+      mkdir -p -m 1777 tmp
+      if [ ! -f /config/pgpass ]
+      then
+        ${genPgPass} /run/secrets
       fi
+      cat /config/pgpass
+      export PGPASSFILE="/config/pgpass";
+      exec ${cardano-explorer-api}/bin/cardano-explorer-api
     '';
   in dockerTools.buildImage {
     name = "${explorerApiRepoName}";
@@ -108,6 +124,7 @@ let
   };
   submitApiWithoutConfig = dockerTools.buildImage {
     name = "submit-api-without-config";
+    fromImage = baseImage;
     contents = [
       cardano-submit-api
     ];
@@ -123,7 +140,7 @@ let
     entry-point = writeScriptBin "entry-point" ''
       #!${runtimeShell}
       # set up /tmp (override with TMPDIR variable)
-      mkdir -m 1777 tmp
+      mkdir -p -m 1777 tmp
       if [[ -d /config ]]; then
          exec ${cardano-submit-api}/bin/cardano-submit-api \
            --socket-path /data/node.socket \
