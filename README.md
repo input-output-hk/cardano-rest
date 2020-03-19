@@ -46,19 +46,15 @@ For more information, have a look at the [Wiki :book:](https://github.com/input-
 
 ## How to install (Linux / Mac OS / Docker)
 
-See **Installation Instructions** for each available [release](https://github.com/input-output-hk/cardano-rest/releases).
+### Docker (recommended)
 
-For Docker users, jump directly to [Using Docker](https://github.com/input-output-hk/cardano-rest/wiki/Docker).
+See [Using Docker](https://github.com/input-output-hk/cardano-rest/wiki/Docker).
 
-## How to build from sources
+### From Binaries 
 
-See [Wiki - Building](https://github.com/input-output-hk/cardano-rest/wiki/Building)
+See assets available for each [release](https://github.com/input-output-hk/cardano-rest/releases).
 
-## How to test
-
-See [Wiki - Testing](https://github.com/input-output-hk/cardano-rest/wiki/Testing)
-
-## API Documentations
+## Documentation
 
 - [API Documentation (cardano-explorer-api)](https://input-output-hk.github.io/cardano-rest/explorer-api)
 - [API Documentation (cardano-submit-api)](https://input-output-hk.github.io/cardano-rest/submit-api)
