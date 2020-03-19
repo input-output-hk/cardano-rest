@@ -107,7 +107,7 @@ let
     native = mapTestOn (__trace (__toJSON (packagePlatforms project)) (packagePlatforms project));
     # Fully-static linux binary (placeholder - does not build)
     cardano-rest-linux64 = let
-      name = "cardano-rest-${project.version}";
+      name = "cardano-rest";
       tarname = "${name}-linux64.tar.gz";
     in pkgs.runCommand "${name}-linux64" {
       buildInputs = with pkgs.buildPackages; [ gnutar gzip binutils ];
@@ -124,7 +124,7 @@ let
 
     # macOS binary and dependencies in tarball
     cardano-rest-macos64 = let
-      name = "cardano-rest-${project.version}";
+      name = "cardano-rest";
       tarname = "${name}-macos64.tar.gz";
     in pkgs.runCommand "${name}-macos64" {
       buildInputs = with pkgs.buildPackages; [ gnutar gzip binutils nix ];
