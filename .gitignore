@@ -29,7 +29,3 @@ stack.yaml.lock
 ### Nix ###
 result*
 .stack-to-nix.cache
-
-### Docker ###
-config/docker
-tmp
