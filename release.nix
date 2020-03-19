@@ -105,6 +105,39 @@ let
 
   jobs = {
     native = mapTestOn (__trace (__toJSON (packagePlatforms project)) (packagePlatforms project));
+    # Fully-static linux binary (placeholder - does not build)
+    cardano-rest-linux64 = let
+      name = "cardano-rest-${project.version}";
+      tarname = "${name}-linux64.tar.gz";
+    in pkgs.runCommand "${name}-linux64" {
+      buildInputs = with pkgs.buildPackages; [ gnutar gzip binutils ];
+    } ''
+      cp -R ${jobs.musl64.cardano-explorer-api.x86_64-linux}/bin ${name}
+      cp -R ${jobs.musl64.cardano-submit-api.x86_64-linux}/bin ${name}
+      chmod -R 755 ${name}
+      strip ${name}/*
+
+      mkdir -p $out/nix-support
+      tar -czf $out/${tarname} ${name}
+      echo "file binary-dist $out/${tarname}" > $out/nix-support/hydra-build-products
+    '';
+
+    # macOS binary and dependencies in tarball
+    cardano-rest-macos64 = let
+      name = "cardano-rest-${project.version}";
+      tarname = "${name}-macos64.tar.gz";
+    in pkgs.runCommand "${name}-macos64" {
+      buildInputs = with pkgs.buildPackages; [ gnutar gzip binutils nix ];
+    } ''
+      cp -R ${jobs.native.cardano-explorer-api.x86_64-darwin}/bin ${name}
+      cp -R ${jobs.native.cardano-submit-api.x86_64-darwin}/bin ${name}
+      chmod -R 755 ${name}
+
+      mkdir -p $out/nix-support
+      tar -czf $out/${tarname} ${name}
+      echo "file binary-dist $out/${tarname}" > $out/nix-support/hydra-build-products
+    '';
+
   } // (mkRequiredJob (
       collectTests jobs.native.checks ++
       collectTests jobs.native.benchmarks ++ [
