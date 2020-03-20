@@ -35,6 +35,10 @@ library
                         -Wno-all-missed-specialisations
                         -Wno-missing-import-lists
 
+                        -threaded
+                        -rtsopts
+                        "-with-rtsopts=-T -I0"
+
   exposed-modules:      Cardano.TxSubmit
 
   other-modules:        Cardano.TxSubmit.Config
