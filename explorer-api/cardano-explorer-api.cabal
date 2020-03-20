@@ -129,6 +129,10 @@ executable cardano-explorer-api
                         -Wincomplete-record-updates
                         -Wincomplete-uni-patterns
 
+                        -threaded
+                        -rtsopts
+                        "-with-rtsopts=-T -I0"
+
   -- other-modules:
 
   build-depends:        base                            >= 4.12         && < 4.13
