@@ -1,30 +1,117 @@
-# This is a basic workflow to help you get started with Actions
+name: release
 
-name: CI
-
-# Controls when the action will run. Triggers the workflow on push or pull request 
-# events but only for the master branch
 on:
   push:
-    tags:
-    - 'v*'
+    tags: [ 'v*' ]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    - name: Release
-      uses: docker://antonyurchenko/git-release:latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
+        plan:
+        - { build: stack, resolver: "--resolver lts-13.26"  }
+        include: []
+
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Install OS Packages
+      uses: mstksg/get-package@v1
+      with:
+        apt-get: libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev
+
+    - uses: actions/checkout@v1
+
+    - name: Setup Stack
+      uses: mstksg/setup-stack@v1
+
+    - name: Install Dependencies
+      run: |
+        export PATH=$PATH:/usr/local/opt/libpq/bin
+        stack --no-terminal test --bench --only-dependencies
+    - name: Build & Test
+      run: |
+        stack --no-terminal test --bench --no-run-benchmarks
+        stack --no-terminal install
+        cp $(stack path --local-bin)/cardano-explorer-api .
+        cp $(stack path --local-bin)/cardano-submit-api .
+        tar -czf cardano-explorer-api.tar.gz cardano-explorer-api
+        tar -czf cardano-submit-api.tar.gz cardano-submit-api
+        mkdir -p dist && mv cardano-*-api.tar.gz dist
+    - name: Save Artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: ${{ matrix.os }}_cardano-rest
+        path: ./dist
+
+  release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Create Release Tag
+      id: create_release_tag
+      run: echo ::set-output name=TAG::${GITHUB_REF/refs\/tags\//}
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        DRAFT_RELEASE: "true"
-        PRE_RELEASE: "false"
-        CHANGELOG_FILE: "CHANGELOG.md"
-        ALLOW_EMPTY_CHANGELOG: "false"
-        ALLOW_TAG_PREFIX: "true"
       with:
-        args: |
-            cardano-explorer-api-$GITHUB_REF-linux64.tar.gz
-            cardano-explorer-api-$GITHUB_REF-macos64.tar.gz
-            cardano-submit-api-$GITHUB_REF-linux64.tar.gz
-            cardano-submit-api-$GITHUB_REF-macos64.tar.gz
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: true
+        prerelease: false
+
+    - name: Download Artifact (linux)
+      uses: actions/download-artifact@v1
+      with:
+        name: ubuntu-latest_cardano-rest
+
+    - name: Download Artifact (macOS)
+      uses: actions/download-artifact@v1
+      with:
+        name: macOS-latest_cardano-rest
+
+    - name: Upload Release Asset (cardano-explorer-api, linux)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./ubuntu-latest_cardano-rest/cardano-explorer-api.tar.gz
+        asset_name: cardano-explorer-api_${{ steps.create_release_tag.outputs.TAG }}-linux.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Upload Release Asset (cardano-explorer-api, macOS)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./macOS-latest_cardano-rest/cardano-explorer-api.tar.gz
+        asset_name: cardano-explorer-api_${{ steps.create_release_tag.outputs.TAG }}-macOS.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Upload Release Asset (cardano-submit-api, linux)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./ubuntu-latest_cardano-rest/cardano-submit-api.tar.gz
+        asset_name: cardano-submit-api_${{ steps.create_release_tag.outputs.TAG }}-linux.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Upload Release Asset (cardano-submit-api, macOS)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./macOS-latest_cardano-rest/cardano-submit-api.tar.gz
+        asset_name: cardano-submit-api_${{ steps.create_release_tag.outputs.TAG }}-macOS.tar.gz
+        asset_content_type: application/gzip
