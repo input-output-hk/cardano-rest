@@ -9,7 +9,7 @@ packages:
 
 extra-deps:
   - git: https://github.com/input-output-hk/cardano-db-sync
-    commit: dd6859adeaf1bd14a3b5e8ac5629455f82870445
+    commit: 5407a064d4462712a5641295e93cf94d906bd897
     subdirs:
       - cardano-db
       - cardano-db-sync

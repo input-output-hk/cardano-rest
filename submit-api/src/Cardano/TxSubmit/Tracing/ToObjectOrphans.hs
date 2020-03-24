@@ -18,9 +18,9 @@ import Ouroboros.Network.NodeToClient
 
 import qualified Network.Socket as Socket
 
-instance DefinePrivacyAnnotation (WithAddr Socket.SockAddr ErrorPolicyTrace)
-instance DefineSeverity (WithAddr Socket.SockAddr ErrorPolicyTrace) where
-  defineSeverity (WithAddr _ ev) = case ev of
+instance HasPrivacyAnnotation (WithAddr Socket.SockAddr ErrorPolicyTrace)
+instance HasSeverityAnnotation (WithAddr Socket.SockAddr ErrorPolicyTrace) where
+  getSeverityAnnotation (WithAddr _ ev) = case ev of
     ErrorPolicySuspendPeer {} -> Warning -- peer misbehaved
     ErrorPolicySuspendConsumer {} -> Notice -- peer temporarily not useful
     ErrorPolicyLocalNodeError {} -> Error
@@ -39,7 +39,7 @@ instance Transformable Text IO (WithAddr Socket.SockAddr ErrorPolicyTrace) where
   trTransformer TextualRepresentation _verb tr = Tracer $ \s -> do
     traceWith tr . (mempty,) =<< LogObject
         <$> pure mempty
-        <*> mkLOMeta (defineSeverity s) (definePrivacyAnnotation s)
+        <*> mkLOMeta (getSeverityAnnotation s) (getPrivacyAnnotation s)
         <*> pure (LogMessage $ pack $ show s)
 
   trTransformer UserdefinedFormatting verb tr = trStructured verb tr
