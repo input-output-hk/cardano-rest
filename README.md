@@ -18,8 +18,7 @@
 Cardano REST provides a set of APIs for interacting with on-chain data
 through JSON over HTTP.
 
-:warning: These APIs are now considered **legacy** and new users should instead
-look into [cardano-graphql](https://github.com/input-output-hk/cardano-graphql).
+:warning: These APIs are the currently supported APIs. In future they may be augmented or replaced by a GraphQL API of [cardano-graphql](https://github.com/input-output-hk/cardano-graphql), when GraphQL component will be released. These APIs will be supported for some time, even once alternatives become available.
 
 ## Getting Started
 
