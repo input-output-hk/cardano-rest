@@ -21,7 +21,8 @@ services:
     environment:
       - NETWORK=${NETWORK}
     volumes:
-      - cardano-node:/data
+      - node-db:/data/db
+      - node-ipc:/ipc
 
   cardano-db-sync:
     image: inputoutput/cardano-db-sync:master
@@ -37,7 +38,7 @@ services:
       - postgres_user
       - postgres_db
     volumes:
-      - cardano-node:/data
+      - node-ipc:/node-ipc
     restart: on-failure
 
   cardano-explorer-api:
@@ -63,7 +64,7 @@ services:
     depends_on:
       - cardano-node
     volumes:
-      - cardano-node:/data
+      - node-ipc:/node-ipc
     ports:
       - 8101:8101
     restart: on-failure
@@ -75,9 +76,8 @@ secrets:
     file: ./config/postgres_password
   postgres_user:
     file: ./config/postgres_user
-  pgpass:
-    file: ./config/pgpass
 
 volumes:
   postgres:
-  cardano-node:
+  node-db:
+  node-ipc:

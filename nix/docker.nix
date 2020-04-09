@@ -7,7 +7,7 @@
 #   docker load -i $(nix-build -A dockerImages.submitApi --no-out-link)
 #
 # cardano-submit-api
-#  To launch with provided mainnet configuration
+#   To launch with provided mainnet configuration
 #
 #    docker run -e NETWORK=mainnet inputoutput/cardano-submit-api:<TAG>
 #
@@ -15,13 +15,16 @@
 #
 #    docker run -e NETWORK=testnet inputoutput/cardano-submit-api:<TAG>
 #
-#  To launch with custom config, mount a dir containing config.yaml, genesis.json,
-#  into /config
+#  To launch with custom configuration, mount a dir containing configuration.yaml, genesis.json,
+#  into /configuration
 #
-#    docker run -v $PATH_TO/config:/config inputoutput/cardano-submit-api:<TAG>
+#    docker run -v $PATH_TO/configuration:/configuration inputoutput/cardano-submit-api:<TAG>
 #
-# cardano-explorer-api
-#  docker run -v $PATH_TO/pgpass:/config/pgpass inputoutput/cardano-explorer-api:<TAG>
+#  cardano-explorer-api
+#    docker run -v $PATH_TO/pgpass:/configuration/pgpass inputoutput/cardano-explorer-api:<TAG>
+#
+#  See the docker-compose.yml for demonstration of using Docker secrets instead of mounting a pgpass
+#
 ############################################################################
 
 { iohkNix
@@ -92,21 +95,21 @@ let
       POSTGRES_USER=''${POSTGRES_USER:-$(< ''${SECRET_DIR}/postgres_user)}
       POSTGRES_PASSWORD=''${POSTGRES_PASSWORD:-$(< ''${SECRET_DIR}/postgres_password)}
       POSTGRES_PORT=''${POSTGRES_PORT:-5432}
-      echo "''${POSTGRES_HOST}:''${POSTGRES_PORT}:''${POSTGRES_DB}:''${POSTGRES_USER}:''${POSTGRES_PASSWORD}" > /config/pgpass
-      chmod 0600 /config/pgpass
+      echo "''${POSTGRES_HOST}:''${POSTGRES_PORT}:''${POSTGRES_DB}:''${POSTGRES_USER}:''${POSTGRES_PASSWORD}" > /configuration/pgpass
+      chmod 0600 /configuration/pgpass
     '';
     entry-point = writeScriptBin "entry-point" ''
       #!${runtimeShell}
       set -euo pipefail
       # set up /tmp (override with TMPDIR variable)
-      mkdir -p /config
+      mkdir -p /configuration
       mkdir -p -m 1777 tmp
-      if [ ! -f /config/pgpass ]
+      if [ ! -f /configuration/pgpass ]
       then
         ${genPgPass} /run/secrets
       fi
-      cat /config/pgpass
-      export PGPASSFILE="/config/pgpass";
+      cat /configuration/pgpass
+      export PGPASSFILE="/configuration/pgpass";
       exec ${cardano-explorer-api}/bin/cardano-explorer-api
     '';
   in dockerTools.buildImage {
@@ -141,16 +144,16 @@ let
       #!${runtimeShell}
       # set up /tmp (override with TMPDIR variable)
       mkdir -p -m 1777 tmp
-      if [[ -d /config ]]; then
+      if [[ -d /configuration ]]; then
          exec ${cardano-submit-api}/bin/cardano-submit-api \
-           --socket-path /data/node.socket \
-           --genesis-file /config/genesis.json \
+           --socket-path /node-ipc/node.socket \
+           --genesis-file /configuration/genesis.json \
            --port 8101 \
-           --config /config/config.yaml
+           --config /configuration/configuration.yaml
       ${clusterStatements}
       else
         echo "Please set a NETWORK environment variable to one of: mainnet/testnet"
-        echo "Or mount a /config volume containing: config.yaml and genesis.json"
+        echo "Or mount a /configuration volume containing: configuration.yaml and genesis.json"
       fi
     '';
   in dockerTools.buildImage {
