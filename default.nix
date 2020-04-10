@@ -29,9 +29,8 @@ let
   #};
 
   dockerImages = let
-    stateDir = "/data";
     defaultConfig = rec {
-      services.cardano-submit-api.socketPath = stateDir + "/node.socket";
+      services.cardano-submit-api.socketPath = "/node-ipc/node.socket";
     };
     customConfig' = lib.mkMerge [ defaultConfig customConfig ];
   in pkgs.callPackage ./nix/docker.nix {
