@@ -1,6 +1,8 @@
 # Monolithic Docker Container
 
-*NOTE* This is deprecated. Please use the docker-compose file that runs each service in it's own container
+*NOTE*: This is deprecated. Please use the docker-compose file that runs each service in it's own container.
+
+Postgres is configured for RAM >= 8 GB in this monolithic docker container.
 
 # Building
 
@@ -21,7 +23,7 @@ Helper script that auto-loads image:
 This image provides prometheus exporters at the node, db-sync, submit-api and postgres levels.
 
 | Service | Port | Path |
-| cardano-ndoe | 12798 | /metrics |
+| cardano-node | 12798 | /metrics |
 | cardano-db-sync | 8080 | / |
 | cardano-submit-api | 8081 | / |
 | postgres | 9187 | /metrics |

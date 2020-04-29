@@ -51,7 +51,6 @@ let
   configuration = { config, ... }: {
     imports = [
       (cardano-node-src + "/nix/nixos")
-      (cardano-node-src + "/nix/nixos")
       (cardano-db-sync-src + "/nix/nixos")
     ] ++ (import ../nixos/module-list.nix);
 
