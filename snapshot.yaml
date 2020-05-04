@@ -40,19 +40,20 @@ packages:
   - connection-0.3.1
   - http-api-data-0.4.1.1
   - time-compat-1.9.2.2
+  - quiet-0.2
 
   - git: https://github.com/input-output-hk/cardano-node
-    commit: 64c2778c61245dcda13eaf16a2e0738dfacb7a16
+    commit: 3048967df2646cbe7519473600d044eeb2b0dfa8
     subdirs:
       - cardano-config
 
   - git: https://github.com/input-output-hk/cardano-shell
-    commit: bc3563c952d9f3635e1c76749b86b0a24f7e4b83
+    commit: 601bb4324c258e3c8cbd2d532e5696fd09e2582e
     subdirs:
       - cardano-shell
 
   - git: https://github.com/input-output-hk/cardano-prelude
-    commit: fe76ec64f6b45259cc407a6d840dad79ee6063b6
+    commit: f4fa92a94dd974f433f22b401c6fc31a18a50230
     subdirs:
       - .
       - test
@@ -61,18 +62,19 @@ packages:
     commit: 43a036c5bbe68ca2e9cbe611eab7982e2348fe49
 
   - git: https://github.com/input-output-hk/iohk-monitoring-framework
-    commit: 3e45d5dd4942c295f0ea4bfed7c407b914b15447
+    commit: 6faa25842b24ca288974cf6106f23e55c3d4f409
     subdirs:
       - contra-tracer
       - iohk-monitoring
       - plugins/backend-aggregation
       - plugins/backend-ekg
       - plugins/backend-monitoring
+      - plugins/backend-trace-forwarder
       - plugins/scribe-systemd
       - tracer-transformers
 
   - git: https://github.com/input-output-hk/cardano-base
-    commit: f869bee9b08ba1044b1476737c9d65083e1c6c7f
+    commit: 2cc27584bb19bd5be9f1721fd4a2393bb99c6119
     subdirs:
       - binary
       - binary/test
@@ -83,14 +85,16 @@ packages:
     commit: 26d35ad52fe9ade3391532dbfeb2f416f07650bc
 
   - git: https://github.com/input-output-hk/cardano-ledger-specs
-    commit: 647cd71e3c4630488e71596f5e9c26fee598b541
+    commit: 52afaab4fe99df8fff1e7666e665a923118cfc53
     subdirs:
-      - byron/semantics/executable-spec
       - byron/ledger/executable-spec
       - byron/chain/executable-spec
+      - semantics/executable-spec/
+      - shelley/chain-and-ledger/dependencies/non-integer
+      - shelley/chain-and-ledger/executable-spec
 
   - git: https://github.com/input-output-hk/cardano-ledger
-    commit: 1368966fd6d806d8eb65cd1ba193548c402355f6
+    commit: 9ee8a6630a8719ba54554c3ce10c555bf5dff4cc
     subdirs:
       - cardano-ledger
       - cardano-ledger/test
@@ -98,7 +102,7 @@ packages:
       - crypto/test
 
   - git: https://github.com/input-output-hk/ouroboros-network
-    commit: a85bd4751ca5c81c0507482848358980814e9ca3
+    commit: ec4f3af58c13a4c20116e9e262b048fb2d27bdc3
     subdirs:
       - io-sim
       - io-sim-classes
@@ -107,9 +111,11 @@ packages:
       - ouroboros-consensus
       - ouroboros-consensus-byron
       - ouroboros-consensus-cardano
+      - ouroboros-consensus-shelley
       - ouroboros-consensus/ouroboros-consensus-mock
       - ouroboros-consensus/ouroboros-consensus-test-infra
       - typed-protocols
       - ouroboros-network-framework
       - ouroboros-network-testing
       - typed-protocols-examples
+      - Win32-network
