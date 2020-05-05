@@ -186,7 +186,7 @@ runTxSubmitNodeClient txv topLevelConfig trce (SocketPath socketPath) = do
         NodeToClientVersion
         DictVersion
         (ConnectionId LocalAddress
-          -> OuroborosApplication 'InitiatorApp LBS.ByteString IO () Void)
+          -> OuroborosApplication 'InitiatorApp LBS.ByteString IO Void Void)
     txSubmitVersions = foldMapVersions
         (\v ->
           versionedNodeToClientProtocols
@@ -201,7 +201,7 @@ txSubmitProtocols
   -> Trace IO Text
   -> TopLevelConfig ByronBlock
   -> TxSubmitVar
-  -> NodeToClientProtocols 'InitiatorApp LBS.ByteString IO () Void
+  -> NodeToClientProtocols 'InitiatorApp LBS.ByteString IO Void Void
 txSubmitProtocols byronVersion trce topLevelConfig txv =
     NodeToClientProtocols {
           localChainSyncProtocol = localChainSyncProtocol
@@ -211,19 +211,19 @@ txSubmitProtocols byronVersion trce topLevelConfig txv =
   where
     codecs = clientCodecs (configBlock topLevelConfig) byronVersion
 
-    dummyLocalQueryProtocol :: RunMiniProtocol 'InitiatorApp LBS.ByteString IO () Void
+    dummyLocalQueryProtocol :: RunMiniProtocol 'InitiatorApp LBS.ByteString IO Void Void
     dummyLocalQueryProtocol = InitiatorProtocolOnly $ MuxPeer
         nullTracer
         (cStateQueryCodec codecs)
         localStateQueryPeerNull
 
-    localChainSyncProtocol :: RunMiniProtocol 'InitiatorApp LBS.ByteString IO () Void
+    localChainSyncProtocol :: RunMiniProtocol 'InitiatorApp LBS.ByteString IO Void Void
     localChainSyncProtocol = InitiatorProtocolOnly $ MuxPeer
         nullTracer
         (cChainSyncCodec codecs)
         chainSyncPeerNull
 
-    localTxSubmissionProtocol :: RunMiniProtocol 'InitiatorApp LBS.ByteString IO () Void
+    localTxSubmissionProtocol :: RunMiniProtocol 'InitiatorApp LBS.ByteString IO Void Void
     localTxSubmissionProtocol = InitiatorProtocolOnly $ MuxPeerRaw $ \channel ->
         logException trce "LocalTxSubmissionPtcl: " $ do
             (metrics, server) <- registerMetricsServer
@@ -242,12 +242,12 @@ txSubmitProtocols byronVersion trce topLevelConfig txv =
 --
 txSubmissionClient
   :: TxSubmitVar -> TxSubmitMetrics
-  -> LocalTxSubmissionClient (GenTx ByronBlock) (ApplyTxErr ByronBlock) IO ()
+  -> LocalTxSubmissionClient (GenTx ByronBlock) (ApplyTxErr ByronBlock) IO Void
 txSubmissionClient tsv metrics =
     LocalTxSubmissionClient $
       readTxSubmit tsv >>= pure . loop
   where
-    loop :: GenTx ByronBlock -> LocalTxClientStIdle (GenTx ByronBlock) (ApplyTxErr ByronBlock) IO ()
+    loop :: GenTx ByronBlock -> LocalTxClientStIdle (GenTx ByronBlock) (ApplyTxErr ByronBlock) IO Void
     loop tx =
       SendMsgSubmitTx tx $ \mbreject -> do
         case mbreject of
