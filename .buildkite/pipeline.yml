@@ -18,5 +18,6 @@ steps:
     command:
       - "nix-build .buildkite/docker-build-push.nix -o docker-build-push"
       - "./docker-build-push"
+    branches: master
     agents:
       system: x86_64-linux
