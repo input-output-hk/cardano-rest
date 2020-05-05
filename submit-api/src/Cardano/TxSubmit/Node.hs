@@ -226,12 +226,14 @@ txSubmitProtocols byronVersion trce topLevelConfig txv =
     localTxSubmissionProtocol :: RunMiniProtocol 'InitiatorApp LBS.ByteString IO () Void
     localTxSubmissionProtocol = InitiatorProtocolOnly $ MuxPeerRaw $ \channel ->
         logException trce "LocalTxSubmissionPtcl: " $ do
-            (metrics, _server) <- registerMetricsServer
-            runPeer
+            (metrics, server) <- registerMetricsServer
+            ret <- runPeer
                 (contramap (Text.pack . show) . toLogObject $ appendName "cardano-tx-submit" trce)
                 (cTxSubmissionCodec codecs)
                 channel
                 (localTxSubmissionClientPeer (txSubmissionClient txv metrics))
+            cancel server
+            pure ret
 
 -- | A 'LocalTxSubmissionClient' that submits transactions reading them from
 -- a 'StrictTMVar'.  A real implementation should use a better synchronisation
