@@ -2,7 +2,6 @@
 
 let
   cfg = config.services.cardano-explorer-api;
-  self = import ../. {};
 in {
   options = {
     services.cardano-explorer-api = {
