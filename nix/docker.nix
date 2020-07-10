@@ -108,7 +108,6 @@ let
       then
         ${genPgPass} /run/secrets
       fi
-      cat /configuration/pgpass
       export PGPASSFILE="/configuration/pgpass";
       exec ${cardano-explorer-api}/bin/cardano-explorer-api
     '';
