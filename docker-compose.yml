@@ -17,7 +17,7 @@ services:
     restart: on-failure
 
   cardano-node:
-    image: inputoutput/cardano-node:master
+    image: inputoutput/cardano-node:latest
     environment:
       - NETWORK=${NETWORK}
     volumes:
@@ -25,7 +25,7 @@ services:
       - node-ipc:/ipc
 
   cardano-db-sync:
-    image: inputoutput/cardano-db-sync:master
+    image: inputoutput/cardano-db-sync:latest
     environment:
       - NETWORK=${NETWORK}
       - POSTGRES_HOST=postgres
@@ -42,7 +42,7 @@ services:
     restart: on-failure
 
   cardano-explorer-api:
-    image: inputoutput/cardano-explorer-api:master
+    image: inputoutput/cardano-explorer-api:latest
     depends_on:
       - postgres
       - cardano-db-sync
@@ -58,7 +58,7 @@ services:
     restart: on-failure
 
   cardano-submit-api:
-    image: inputoutput/cardano-submit-api:master
+    image: inputoutput/cardano-submit-api:latest
     environment:
       - NETWORK=${NETWORK}
     depends_on:
