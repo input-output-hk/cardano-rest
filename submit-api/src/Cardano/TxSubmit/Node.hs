@@ -21,12 +21,21 @@ module Cardano.TxSubmit.Node
 import Cardano.Prelude hiding
     ( Nat, atomically, option, (%) )
 
-import Cardano.Binary
-    ( unAnnotated )
-import Cardano.BM.Data.Tracer
-    ( ToLogObject (..), nullTracer )
+import Cardano.Api.Protocol
+    ( Protocol (..)
+    , withlocalNodeConnectInfo
+    )
+import Cardano.Api.Typed
+    ( NodeConsensusMode (..)
+    , LocalNodeClientProtocols (..)
+    , LocalNodeConnectInfo (..)
+    , LocalTxSubmissionClient (..)
+    , NetworkId (..)
+    , connectToLocalNode
+    , nullLocalNodeClientProtocols
+    )
 import Cardano.BM.Trace
-    ( Trace, appendName, logInfo )
+    ( Trace, logInfo )
 import Cardano.TxSubmit.Config
 import Cardano.TxSubmit.Metrics
 import Cardano.TxSubmit.Tracing.ToObjectOrphans
@@ -34,92 +43,20 @@ import Cardano.TxSubmit.Tracing.ToObjectOrphans
 import Cardano.TxSubmit.Tx
 import Cardano.TxSubmit.Types
 import Cardano.TxSubmit.Util
-import Control.Concurrent
-    ( threadDelay )
-import Control.Monad
-    ( forever )
-import Control.Monad.Class.MonadST
-    ( MonadST )
 import Control.Monad.IO.Class
     ( liftIO )
-import Control.Tracer
-    ( Tracer )
-import Data.Functor.Contravariant
-    ( contramap )
 import Data.Text
     ( Text )
-import Data.Void
-    ( Void )
 import Network.Socket
     ( SockAddr (..) )
-import Network.TypedProtocol.Codec
-    ( Codec )
 import Ouroboros.Consensus.Byron.Ledger
     ( ByronBlock (..), GenTx )
-import Ouroboros.Consensus.Cardano
-    ( Protocol (..), protocolInfo )
-import Ouroboros.Consensus.Config
-    ( TopLevelConfig (..) )
-import Ouroboros.Consensus.Mempool.API
+import Ouroboros.Consensus.Ledger.SupportsMempool
     ( ApplyTxErr )
-import Ouroboros.Consensus.Node.ErrorPolicy
-    ( consensusErrorPolicy )
-import Ouroboros.Consensus.Node.ProtocolInfo
-    ( pInfoConfig )
-import Ouroboros.Consensus.Node.Run
-    ( RunNode
-    , nodeDecodeApplyTxError
-    , nodeDecodeGenTx
-    , nodeEncodeApplyTxError
-    , nodeEncodeGenTx
-    , nodeNetworkMagic
-    )
-import Ouroboros.Network.Channel
-    ( Channel )
-import Ouroboros.Network.Codec
-    ( DeserialiseFailure )
-import Ouroboros.Network.Driver.Simple
-    ( runPeer )
-import Ouroboros.Network.Mux
-    ( AppType (..)
-    , MuxPeer (..)
-    , OuroborosApplication (..)
-    , RunMiniProtocol (..)
-    )
-import Ouroboros.Network.NodeToClient
-    ( ErrorPolicyTrace (..)
-    , NodeToClientProtocols (..)
-    , NodeToClientVersionData (..)
-    , WithAddr (..)
-    , localSnocket
-    , ncSubscriptionWorker_V1
-    , networkErrorPolicies
-    , newNetworkMutableState
-    , nodeToClientProtocols
-    , withIOManager
-    )
 import Ouroboros.Network.Protocol.LocalTxSubmission.Client
     ( LocalTxClientStIdle (..)
-    , LocalTxSubmissionClient (..)
-    , localTxSubmissionClientPeer
+    , SubmitResult (..)
     )
-import Ouroboros.Network.Protocol.LocalTxSubmission.Codec
-    ( codecLocalTxSubmission )
-import Ouroboros.Network.Protocol.LocalTxSubmission.Type
-    ( LocalTxSubmission )
-import Ouroboros.Network.Snocket
-    ( LocalAddress (..) )
-import Ouroboros.Network.Subscription.Client
-    ( ClientSubscriptionParams (..) )
-import Ouroboros.Network.Tracers
-    ( NetworkSubscriptionTracers (..) )
-
-import qualified Cardano.Chain.Genesis as Ledger
-import qualified Cardano.Chain.Genesis as Genesis
-import qualified Cardano.Chain.Update as Update
-import qualified Cardano.Crypto as Crypto
-import qualified Data.ByteString.Lazy.Char8 as LBS
-import qualified Data.Text as Text
 
 import qualified System.Metrics.Prometheus.Metric.Gauge as Gauge
 
@@ -128,7 +65,8 @@ data Peer = Peer SockAddr SockAddr deriving Show
 -- | The product type of all command line arguments
 data TxSubmitNodeParams = TxSubmitNodeParams
   { tspConfigFile :: !ConfigFile
-  , tspGenesisFile :: !GenesisFile
+  , tspProtocol :: !Protocol
+  , tspNetworkId :: !NetworkId
   , tspSocketPath :: !SocketPath
   , tspWebPort :: !TxSubmitPort
   }
@@ -146,78 +84,43 @@ newtype SocketPath = SocketPath
   }
 
 
-runTxSubmitNode :: TxSubmitVar -> Trace IO Text -> Genesis.Config -> SocketPath -> IO ()
-runTxSubmitNode tsv trce gc socket = do
+runTxSubmitNode
+  :: TxSubmitVar
+  -> Trace IO Text
+  -> Protocol
+  -> NetworkId
+  -> SocketPath
+  -> IO ()
+runTxSubmitNode tsv trce protocol nwId socket = do
   logInfo trce "Running tx-submit node"
-  logException trce "tx-submit-node." $ do
-    logProtocolMagic trce $ Ledger.configProtocolMagic gc
-    void $ runTxSubmitNodeClient tsv (mkNodeConfig gc) trce socket
+  logException trce "tx-submit-node." $
+    runTxSubmitNodeClient tsv trce protocol nwId socket
 
-
-mkNodeConfig :: Genesis.Config -> TopLevelConfig ByronBlock
-mkNodeConfig gc =
-  pInfoConfig . protocolInfo $ ProtocolRealPBFT gc Nothing (Update.ProtocolVersion 0 2 0)
-      (Update.SoftwareVersion (Update.ApplicationName "cardano-sl") 1) Nothing
 
 runTxSubmitNodeClient
   :: forall blk. (blk ~ ByronBlock)
-  => TxSubmitVar -> TopLevelConfig blk
-  -> Trace IO Text -> SocketPath
-  -> IO Void
-runTxSubmitNodeClient tsv nodeConfig trce (SocketPath socketPath) = do
-  logInfo trce $ "localInitiatorNetworkApplication: connecting to node via " <> textShow socketPath
-  networkState <- newNetworkMutableState
-  withIOManager $ \iocp -> do
-    ncSubscriptionWorker_V1
-      (localSnocket iocp socketPath)
-      -- TODO: these tracers should be configurable for debugging purposes.
-      NetworkSubscriptionTracers {
-          nsMuxTracer = nullTracer,
-          nsHandshakeTracer = nullTracer,
-          nsErrorPolicyTracer = errorPolicyTracer,
-          nsSubscriptionTracer = nullTracer
-          -- TODO subscription tracer should not be 'nullTracer' by default
-        }
-      networkState
-      ClientSubscriptionParams
-          { cspAddress = LocalAddress socketPath
-          , cspConnectionAttemptDelay = Nothing
-          , cspErrorPolicies = networkErrorPolicies <> (consensusErrorPolicy (Proxy @blk))
-          }
-      (NodeToClientVersionData
-        { networkMagic = nodeNetworkMagic (Proxy @blk) nodeConfig
-        }
-      )
-      (const $ localInitiatorNetworkApplication trce tsv)
+  => TxSubmitVar
+  -> Trace IO Text
+  -> Protocol
+  -> NetworkId
+  -> SocketPath
+  -> IO ()
+runTxSubmitNodeClient tsv trce protocol nwId (SocketPath socketPath) = do
+    logInfo trce $ "runTxSubmitNodeClient: connecting to node via " <> textShow socketPath
+    withlocalNodeConnectInfo protocol nwId socketPath $ \connectInfo ->
+      case localNodeConsensusMode connectInfo of
+        ByronMode{} -> do
+          (metrics, server) <- registerMetricsServer
+          connectToLocalNode connectInfo (localNodeClientProtocols metrics)
+          cancel server
+        _ -> panic "runTxSubmitNodeClient: Currently, only the Byron mode is supported."
   where
-    errorPolicyTracer :: Tracer IO (WithAddr LocalAddress ErrorPolicyTrace)
-    errorPolicyTracer = contramap (Text.pack . show). toLogObject $ appendName "ErrorPolicy" trce
-
-localInitiatorNetworkApplication
-  :: Trace IO Text
-  -> TxSubmitVar
-  -> OuroborosApplication 'InitiatorApp LBS.ByteString IO Void Void
-localInitiatorNetworkApplication trce tsv =
-    nodeToClientProtocols NodeToClientProtocols
-        { localChainSyncProtocol =
-            InitiatorProtocolOnly $ MuxPeerRaw nullChainSyncWithBlocksPtcl
-
-        , localTxSubmissionProtocol =
-            InitiatorProtocolOnly $ MuxPeerRaw $ \channel ->
-                logException trce "LocalTxSubmissionPtcl: " $ do
-                  (metrics, server) <- registerMetricsServer
-                  ret <- runPeer
-                            (contramap (Text.pack . show) . toLogObject $ appendName "cardano-tx-submit" trce)
-                            localTxSubmissionCodec channel
-                            (localTxSubmissionClientPeer (txSubmissionClient tsv metrics))
-                  cancel server
-                  pure ret
+    localNodeClientProtocols :: TxSubmitMetrics -> LocalNodeClientProtocols blk
+    localNodeClientProtocols metrics =
+      nullLocalNodeClientProtocols
+        { localTxSubmissionClient = Just (txSubmissionClient tsv metrics)
         }
 
--- | This should be provided by ouroboros-network.
-nullChainSyncWithBlocksPtcl :: Channel IO LBS.ByteString -> IO Void
-nullChainSyncWithBlocksPtcl =
-  const . forever $ threadDelay (1000 * 1000 * 1000)
 
 -- | A 'LocalTxSubmissionClient' that submits transactions reading them from
 -- a 'StrictTMVar'.  A real implementation should use a better synchronisation
@@ -226,34 +129,19 @@ nullChainSyncWithBlocksPtcl =
 --
 txSubmissionClient
   :: TxSubmitVar -> TxSubmitMetrics
-  -> LocalTxSubmissionClient (GenTx ByronBlock) (ApplyTxErr ByronBlock) IO Void
+  -> LocalTxSubmissionClient (GenTx ByronBlock) (ApplyTxErr ByronBlock) IO ()
 txSubmissionClient tsv metrics =
     LocalTxSubmissionClient $
       readTxSubmit tsv >>= pure . loop
   where
-    loop :: GenTx ByronBlock -> LocalTxClientStIdle (GenTx ByronBlock) (ApplyTxErr ByronBlock) IO Void
+    loop
+      :: GenTx ByronBlock
+      -> LocalTxClientStIdle (GenTx ByronBlock) (ApplyTxErr ByronBlock) IO ()
     loop tx =
-      SendMsgSubmitTx tx $ \mbreject -> do
-        case mbreject of
-          Nothing -> liftIO $ Gauge.inc (tsmCount metrics)
-          Just _r -> return ()
-        writeTxSubmitResponse tsv mbreject
+      SendMsgSubmitTx tx $ \submitRes -> do
+        case submitRes of
+          SubmitSuccess -> liftIO $ Gauge.inc (tsmCount metrics)
+          SubmitFail _r -> return ()
+        writeTxSubmitResponse tsv submitRes
         nextTx <- readTxSubmit tsv
         pure $ loop nextTx
-
-localTxSubmissionCodec
-  :: forall m blk . (RunNode blk, MonadST m)
-  => Codec (LocalTxSubmission (GenTx blk) (ApplyTxErr blk)) DeserialiseFailure m LBS.ByteString
-localTxSubmissionCodec =
-  codecLocalTxSubmission
-    nodeEncodeGenTx
-    nodeDecodeGenTx
-    (nodeEncodeApplyTxError (Proxy @blk))
-    (nodeDecodeApplyTxError (Proxy @blk))
-
-logProtocolMagic :: Trace IO Text -> Crypto.ProtocolMagic -> IO ()
-logProtocolMagic tracer pm =
-  liftIO . logInfo tracer $ mconcat
-    [ "NetworkMagic: ", textShow (Crypto.getRequiresNetworkMagic pm), " "
-    , textShow (Crypto.unProtocolMagicId . unAnnotated $ Crypto.getAProtocolMagicId pm)
-    ]
