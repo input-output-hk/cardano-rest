@@ -45,6 +45,7 @@ library
                       , Cardano.TxSubmit.ErrorRender
                       , Cardano.TxSubmit.Metrics
                       , Cardano.TxSubmit.Node
+                      , Cardano.TxSubmit.Parsers
                       , Cardano.TxSubmit.Tracing.ToObjectOrphans
                       , Cardano.TxSubmit.Tx
                       , Cardano.TxSubmit.Types
@@ -56,13 +57,12 @@ library
                       , async
                       , base16-bytestring
                       , bytestring
+                      , cardano-api
                       , cardano-binary
                       , cardano-crypto-class
                       , cardano-crypto-wrapper
-                      , cardano-db-sync
                       , cardano-prelude
                       , cardano-ledger
-                      , cardano-shell
                       , containers
                       , contra-tracer
                       , cryptonite
@@ -78,6 +78,7 @@ library
                       , monad-logger
                       , mtl
                       , network
+                      , optparse-applicative
                       , ouroboros-consensus
                       , ouroboros-consensus-byron
                       , ouroboros-consensus-cardano

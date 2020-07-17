@@ -24,6 +24,8 @@ let
     ++ iohkNix.overlays.haskell-nix-extra
     # iohkNix: nix utilities and niv:
     ++ iohkNix.overlays.iohkNix
+    # libsodium fork
+    ++ iohkNix.overlays.crypto
     # our own overlays:
     ++ [
       (pkgs: _: with pkgs; {
