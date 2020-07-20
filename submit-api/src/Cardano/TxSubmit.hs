@@ -1,4 +1,3 @@
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -14,9 +13,10 @@ import           Cardano.BM.Trace (Trace, logInfo)
 
 import           Cardano.Prelude
 
+import           Cardano.TxSubmit.CLI.Parsers as X
+import           Cardano.TxSubmit.CLI.Types as X
 import           Cardano.TxSubmit.Config as X
-import           Cardano.TxSubmit.Node as X
-import           Cardano.TxSubmit.Parsers as X
+import           Cardano.TxSubmit.Metrics (registerMetricsServer)
 import           Cardano.TxSubmit.Tx as X
 import           Cardano.TxSubmit.Types as X
 import           Cardano.TxSubmit.Util as X
@@ -32,16 +32,20 @@ runTxSubmitWebapi :: TxSubmitNodeParams -> IO ()
 runTxSubmitWebapi tsnp = do
     tsnc <- readTxSubmitNodeConfig (unConfigFile $ tspConfigFile tsnp)
     trce <- mkTracer tsnc
-    tsv <- newTxSubmitVar
-    Async.race_
-      (runTxSubmitNode tsv trce tspProtocol tspNetworkId tspSocketPath)
-      (runTxSubmitServer tsv trce (tspWebPort tsnp))
-    logInfo trce "runTxSubmitWebapi: Async.race_ returned"
+    (metrics, metricsServer) <- registerMetricsServer
+    txSubmitServer <- Async.async $
+      runTxSubmitServer trce metrics tspWebPort tspProtocol tspNetworkId tspSocketPath
+    void $ Async.waitAnyCancel
+      [ txSubmitServer
+      , metricsServer
+      ]
+    logInfo trce "runTxSubmitWebapi: Async.waitAnyCancel returned"
   where
     TxSubmitNodeParams
       { tspProtocol
       , tspNetworkId
       , tspSocketPath
+      , tspWebPort
       } = tsnp
 
 mkTracer :: TxSubmitNodeConfig -> IO (Trace IO Text)

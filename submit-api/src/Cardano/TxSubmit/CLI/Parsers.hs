@@ -1,7 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Cardano.TxSubmit.Parsers
+module Cardano.TxSubmit.CLI.Parsers
   ( opts
   , pTxSubmitNodeParams
   , pConfigFile
@@ -22,7 +22,7 @@ import           Cardano.Api.Typed (NetworkId (..), NetworkMagic (..))
 
 import           Cardano.Chain.Slotting (EpochSlots (..))
 
-import           Cardano.TxSubmit.Node (ConfigFile (..), SocketPath (..),
+import           Cardano.TxSubmit.CLI.Types (ConfigFile (..), SocketPath (..),
                     TxSubmitNodeParams (..))
 import           Cardano.TxSubmit.Types (TxSubmitPort (..))
 

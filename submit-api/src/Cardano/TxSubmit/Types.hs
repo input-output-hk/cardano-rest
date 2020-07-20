@@ -6,17 +6,17 @@
 module Cardano.TxSubmit.Types
   ( TxSubmitApi
   , TxSubmitApiRecord (..)
-  , TxSubmitError (..)
+  , TxSubmitWebApiError (..)
   , TxSubmitPort (..)
-  , renderTxSubmitError
+  , renderTxSubmitWebApiError
   ) where
 
+import Cardano.Api.Typed
+    ( TxId )
 import Cardano.Binary
     ( DecoderError )
-import Cardano.TxSubmit.ErrorRender
-
-import Cardano.Chain.Byron.API
-    ( ApplyMempoolPayloadErr (..) )
+import Cardano.TxSubmit.Tx
+    ( TxSubmitError, renderTxSubmitError )
 import Data.Aeson
     ( ToJSON (..), Value (..) )
 import Data.ByteString.Char8
@@ -41,34 +41,34 @@ import Servant
 import Servant.API.Generic
     ( (:-), ToServantApi )
 
-import qualified Cardano.Chain.UTxO as Utxo
 import qualified Data.ByteString.Lazy.Char8 as LBS
 
 newtype TxSubmitPort
   = TxSubmitPort Int
 
-data TxSubmitError
+-- | An error that can occur in the transaction submission web API.
+data TxSubmitWebApiError
   = TxSubmitDecodeHex
   | TxSubmitEmpty
-  | TxSubmitDecodeFail DecoderError
-  | TxSubmitBadTx Text
-  | TxSubmitFail ApplyMempoolPayloadErr
+  | TxSubmitDecodeFail !DecoderError
+  | TxSubmitBadTx !Text
+  | TxSubmitFail !TxSubmitError
   deriving Eq
 
-instance ToJSON TxSubmitError where
+instance ToJSON TxSubmitWebApiError where
   toJSON = convertJson
 
-convertJson :: TxSubmitError -> Value
-convertJson = String . renderTxSubmitError
+convertJson :: TxSubmitWebApiError -> Value
+convertJson = String . renderTxSubmitWebApiError
 
-renderTxSubmitError :: TxSubmitError -> Text
-renderTxSubmitError st =
+renderTxSubmitWebApiError :: TxSubmitWebApiError -> Text
+renderTxSubmitWebApiError st =
   case st of
     TxSubmitDecodeHex -> "Provided data was hex encoded and this webapi expects raw binary"
     TxSubmitEmpty -> "Provided transaction has zero length"
     TxSubmitDecodeFail err -> sformat build err
     TxSubmitBadTx tt -> mconcat ["Transactions of type '", tt, "' not supported"]
-    TxSubmitFail err -> renderApplyMempoolPayloadErr err
+    TxSubmitFail err -> renderTxSubmitError err
 
 -- | Servant API which provides access to tx submission webapi
 type TxSubmitApi
@@ -80,7 +80,7 @@ data TxSubmitApiRecord route = TxSubmitApiRecord
         :- "submit"
         :> "tx"
         :> ReqBody '[CBORStream] ByteString
-        :> PostAccepted '[JSON] Utxo.TxId
+        :> PostAccepted '[JSON] TxId
   } deriving (Generic)
 
 data CBORStream

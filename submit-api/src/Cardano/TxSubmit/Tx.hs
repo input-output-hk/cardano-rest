@@ -1,68 +1,111 @@
+{-# LANGUAGE GADTs #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Cardano.TxSubmit.Tx
-  ( TxSubmitVar (..)
-  , newTxSubmitVar
-  , readTxSubmit
-  , writeTxSubmitResponse
+  ( TxSubmitError (..)
+  , renderTxSubmitError
   , submitTx
   ) where
 
-import Cardano.Prelude hiding
-    ( atomically )
+import Cardano.Prelude
 
-import Cardano.Chain.Byron.API
-    ( ApplyMempoolPayloadErr (..) )
-import Cardano.Chain.UTxO
-    ( TxId )
-import Cardano.TxSubmit.Types
-import Control.Monad.Class.MonadSTM.Strict
-    ( StrictTMVar, atomically, newEmptyTMVarM, putTMVar, takeTMVar )
+import Cardano.Api.TxSubmit hiding
+    ( submitTx )
+import Cardano.Api.Typed
+    ( Byron
+    , LocalNodeConnectInfo
+    , NodeConsensusMode (..)
+    , Shelley
+    , Tx (..)
+    , TxBody (..)
+    , TxId
+    , getTxId
+    , localNodeConsensusMode
+    )
+import Cardano.TxSubmit.ErrorRender
+    ( renderApplyMempoolPayloadErr, renderEraMismatch )
 import Ouroboros.Consensus.Byron.Ledger
-    ( ByronBlock (..), GenTx (..) )
-import Ouroboros.Network.Protocol.LocalTxSubmission.Type
-    ( SubmitResult (..) )
+    ( ByronBlock )
+import Ouroboros.Consensus.Cardano.Block
+    ( EraMismatch (..)
+    , HardForkApplyTxErr (ApplyTxErrByron, ApplyTxErrShelley, ApplyTxErrWrongEra)
+    )
+import Ouroboros.Consensus.Ledger.SupportsMempool
+    ( ApplyTxErr )
+import Ouroboros.Consensus.Shelley.Ledger
+    ( ShelleyBlock )
+import Ouroboros.Consensus.Shelley.Protocol.Crypto
+    ( TPraosStandardCrypto )
 
--- The type of 'reject' (determined by ouroboros-network) is currently 'Maybe String'.
--- Hopefully that will be fixed to make it a concrete type.
--- See: https://github.com/input-output-hk/ouroboros-network/issues/1335
-data TxSubmitVar = TxSubmitVar
-  { txSubmit :: !(StrictTMVar IO (GenTx ByronBlock))
-  , txRespond :: !(StrictTMVar IO (SubmitResult ApplyMempoolPayloadErr))
-  }
+import qualified Cardano.Api.TxSubmit as Api
+import qualified Cardano.Chain.UTxO as Byron
+import qualified Shelley.Spec.Ledger.BaseTypes as Shelley
+import qualified Shelley.Spec.Ledger.Tx as Shelley
 
-newTxSubmitVar :: IO (TxSubmitVar)
-newTxSubmitVar =
-  TxSubmitVar <$> newEmptyTMVarM <*> newEmptyTMVarM
+-- | An error that can occur while submitting a transaction to a local node.
+data TxSubmitError
+  = TxSubmitByronError !(ApplyTxErr ByronBlock)
+  | TxSubmitShelleyError !(ApplyTxErr (ShelleyBlock TPraosStandardCrypto))
+  | TxSubmitEraMismatchError !EraMismatch
+  deriving (Eq, Show)
 
--- | Read a previously submitted tx from the TMVar.
-readTxSubmit :: TxSubmitVar -> IO (GenTx ByronBlock)
-readTxSubmit tsv =
-  atomically $ takeTMVar (txSubmit tsv)
+renderTxSubmitError :: TxSubmitError -> Text
+renderTxSubmitError tse =
+  case tse of
+    TxSubmitByronError err -> renderApplyMempoolPayloadErr err
+    TxSubmitShelleyError err -> show err -- TODO: Better rendering for Shelley errors
+    TxSubmitEraMismatchError err -> renderEraMismatch err
 
--- | Write the response recieved when tx has been submitted.
-writeTxSubmitResponse
-  :: TxSubmitVar
-  -> (SubmitResult ApplyMempoolPayloadErr)
-  -> IO ()
-writeTxSubmitResponse tsv submitRes =
-  atomically $ putTMVar (txRespond tsv) submitRes
+-- | Submit a transaction to a local node.
+submitTx
+  :: forall mode block.
+     LocalNodeConnectInfo mode block
+  -> (Either (Tx Byron) (Tx Shelley))
+  -> IO (Either TxSubmitError TxId)
+submitTx connectInfo byronOrShelleyTx =
+  case (localNodeConsensusMode connectInfo, byronOrShelleyTx) of
+    (ByronMode{}, Left tx) -> do
+      result <- liftIO $ Api.submitTx connectInfo (TxForByronMode tx)
+      pure $ case result of
+        TxSubmitSuccess -> Right (getTxIdForTx tx)
+        TxSubmitFailureByronMode err -> Left (TxSubmitByronError err)
 
--- | Submit a tx and wait for the response. This is done as a pair of atomic
--- operations, to allow the tx to be read in one operation, submmited and then
--- the response written as a second operation. Doing this as a single atmomic
--- operation would not work as the other end of the submit/response pair need
--- to be operated on independently.
-submitTx :: TxSubmitVar -> GenTx ByronBlock -> IO (Either TxSubmitError TxId)
-submitTx tsv tx =
-  case tx of
-    ByronTx txid _ -> do
-      atomically $ putTMVar (txSubmit tsv) tx
-      submitRes <- atomically (takeTMVar $ txRespond tsv)
-      case submitRes of
-        SubmitSuccess -> pure $ Right txid
-        SubmitFail r -> pure $ Left (TxSubmitFail r)
-    ByronDlg {} -> pure $ Left $ TxSubmitBadTx "Delegation"
-    ByronUpdateProposal {} -> pure $ Left $ TxSubmitBadTx "Proposal"
-    ByronUpdateVote {} -> pure $ Left $ TxSubmitBadTx "UpdateVote"
+    (ByronMode{}, Right{}) ->
+      pure $ Left $ TxSubmitEraMismatchError EraMismatch {
+                ledgerEraName = "Byron",
+                otherEraName  = "Shelley"
+              }
+
+    (ShelleyMode{}, Right tx) -> do
+      result <- liftIO $ Api.submitTx connectInfo (TxForShelleyMode tx)
+      case result of
+        TxSubmitSuccess -> pure $ Right (getTxIdForTx tx)
+        TxSubmitFailureShelleyMode err ->
+          pure $ Left (TxSubmitShelleyError err)
+
+    (ShelleyMode{}, Left{}) ->
+      pure $ Left $ TxSubmitEraMismatchError EraMismatch {
+                ledgerEraName = "Shelley",
+                otherEraName  = "Byron"
+              }
+
+    (CardanoMode{}, tx) -> do
+      result <- Api.submitTx connectInfo (TxForCardanoMode tx)
+      pure $ case result of
+        TxSubmitSuccess -> Right (either getTxIdForTx getTxIdForTx tx)
+        TxSubmitFailureCardanoMode (ApplyTxErrByron err) ->
+          Left (TxSubmitByronError err)
+        TxSubmitFailureCardanoMode (ApplyTxErrShelley err) ->
+          Left (TxSubmitShelleyError err)
+        TxSubmitFailureCardanoMode (ApplyTxErrWrongEra mismatch) ->
+          Left (TxSubmitEraMismatchError mismatch)
+
+-- TODO: This function should really be implemented in `Cardano.Api.Typed`.
+-- The function, 'Cardano.Api.Typed.getTxId', accepts a 'TxBody' parameter.
+getTxIdForTx :: Tx era -> TxId
+getTxIdForTx (ByronTx tx) = getTxId . ByronTxBody . Byron.aTaTx $ tx
+getTxIdForTx (ShelleyTx tx) =
+  getTxId . (uncurry ShelleyTxBody) $
+    (Shelley._body tx, Shelley.strictMaybeToMaybe (Shelley._metadata tx))
