@@ -12,20 +12,12 @@
 , profiling ? config.haskellNix.profiling or false
 }:
 let
-
   # This creates the Haskell package set.
   # https://input-output-hk.github.io/haskell.nix/user-guide/projects/
   pkgSet = haskell-nix.cabalProject {
-    src = haskell-nix.haskellLib.cleanGit { src = ../.; };
-    ghc = buildPackages.haskell-nix.compiler.${compiler};
+    src = haskell-nix.haskellLib.cleanGit { src = ../.; name = "cardano-rest";  };
+    compiler-nix-name = compiler;
     modules = [
-      # Add source filtering to local packages
-      {
-        packages.cardano-explorer-api.src = haskell-nix.haskellLib.cleanGit
-          { src = ../.; subDir = "explorer-api"; };
-        packages.cardano-submit-api.src = haskell-nix.haskellLib.cleanGit
-          { src = ../.; subDir = "submit-api"; };
-      }
       {
         # Packages we wish to ignore version bounds of.
         # This is similar to jailbreakCabal, however it

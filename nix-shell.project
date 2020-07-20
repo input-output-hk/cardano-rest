@@ -1,0 +1,34 @@
+index-state: 2020-02-11T00:00:00Z
+
+packages:
+  explorer-api
+  submit-api
+
+package cardano-explorer-api
+  tests: True
+  ghc-options: -Wall -Werror -fwarn-redundant-constraints
+
+package cardano-submit-api
+  tests: True
+  ghc-options: -Wall -Werror -fwarn-redundant-constraints
+
+package cardano-db-sync
+  tests: False
+
+package cardano-shell
+  tests: False
+
+package ouroboros-consensus
+  tests: False
+
+package ouroboros-consensus-cardano
+  tests: False
+
+package ouroboros-consensus-byron
+  tests: False
+
+package ouroboros-consensus-shelley
+  tests: False
+
+package ouroboros-consensus-mock
+  tests: False
