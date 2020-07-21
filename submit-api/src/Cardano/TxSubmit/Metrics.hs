@@ -31,4 +31,3 @@ makeMetrics :: RegistryT IO TxSubmitMetrics
 makeMetrics =
   TxSubmitMetrics
     <$> registerGauge "tx_submit_count" mempty
-

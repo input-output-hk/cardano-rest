@@ -1,6 +1,9 @@
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
+
 module Cardano.TxSubmit.ErrorRender
   ( renderApplyMempoolPayloadErr
+  , renderEraMismatch
   ) where
 
 -- This file contains error renders. The should hve defined at a lower level, with the error
@@ -18,6 +21,8 @@ import Data.Text
     ( Text )
 import Formatting
     ( build, sformat, stext, (%) )
+import Ouroboros.Consensus.Cardano.Block
+    ( EraMismatch (..) )
 
 import qualified Data.Text as Text
 
@@ -68,6 +73,11 @@ renderUTxOError ue =
       UTxOMissingInput tx -> sformat ("Lookup of tx "% build %" failed") tx
       UTxOOverlappingUnion -> "Union or two overlapping UTxO sets"
 
+renderEraMismatch :: EraMismatch -> Text
+renderEraMismatch EraMismatch{ledgerEraName, otherEraName} =
+  "The era of the node and the tx do not match. " <>
+  "The node is running in the " <> ledgerEraName <>
+  " era, but the transaction is for the " <> otherEraName <> " era."
+
 textShow :: Show a => a -> Text
 textShow = Text.pack . show
-

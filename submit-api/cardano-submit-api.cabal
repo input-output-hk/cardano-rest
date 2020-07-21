@@ -41,11 +41,12 @@ library
 
   exposed-modules:      Cardano.TxSubmit
 
-  other-modules:        Cardano.TxSubmit.Config
+  other-modules:        Cardano.TxSubmit.CLI.Parsers
+                      , Cardano.TxSubmit.CLI.Types
+                      , Cardano.TxSubmit.Config
                       , Cardano.TxSubmit.ErrorRender
+                      , Cardano.TxSubmit.JsonOrphans
                       , Cardano.TxSubmit.Metrics
-                      , Cardano.TxSubmit.Node
-                      , Cardano.TxSubmit.Parsers
                       , Cardano.TxSubmit.Tracing.ToObjectOrphans
                       , Cardano.TxSubmit.Tx
                       , Cardano.TxSubmit.Types
@@ -82,12 +83,14 @@ library
                       , ouroboros-consensus
                       , ouroboros-consensus-byron
                       , ouroboros-consensus-cardano
+                      , ouroboros-consensus-shelley
                       , ouroboros-network
                       , ouroboros-network-framework
                       , prometheus
                       , serialise
                       , servant
                       , servant-server
+                      , shelley-spec-ledger
                       , text
                       , time
                       , transformers

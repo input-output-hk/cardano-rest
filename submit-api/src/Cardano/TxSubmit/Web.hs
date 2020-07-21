@@ -1,20 +1,39 @@
+{-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeApplications #-}
+
 module Cardano.TxSubmit.Web
   ( runTxSubmitServer
   ) where
 
+import Cardano.TxSubmit.CLI.Types
+import Cardano.TxSubmit.JsonOrphans
+    ()
+import Cardano.TxSubmit.Metrics
+    ( TxSubmitMetrics (..) )
 import Cardano.TxSubmit.Tx
 import Cardano.TxSubmit.Types
 import Cardano.TxSubmit.Util
 
+import Cardano.Api.Protocol
+    ( Protocol (..), withlocalNodeConnectInfo )
+import Cardano.Api.Typed
+    ( AsType (..)
+    , Byron
+    , LocalNodeConnectInfo
+    , NetworkId
+    , NodeConsensusMode (..)
+    , Shelley
+    , Tx (..)
+    , TxId (..)
+    , deserialiseFromCBOR
+    , localNodeConsensusMode
+    )
 import Cardano.Binary
     ( DecoderError )
 import Cardano.BM.Trace
     ( Trace, logInfo )
-import Cardano.Chain.UTxO
-    ( TxId )
 import Control.Monad.IO.Class
     ( liftIO )
 import Data.Aeson
@@ -25,10 +44,6 @@ import Data.Proxy
     ( Proxy (..) )
 import Data.Text
     ( Text )
-import Formatting
-    ( build, sformat )
-import Ouroboros.Consensus.Byron.Ledger
-    ( ByronBlock, GenTx )
 import Servant
     ( Application, Handler, ServerError (..), err400, throwError )
 import Servant.API.Generic
@@ -36,74 +51,133 @@ import Servant.API.Generic
 import Servant.Server.Generic
     ( AsServerT )
 
-import qualified Cardano.Binary as Binary
-import qualified Cardano.Chain.UTxO as Ledger
+import qualified Cardano.Crypto.Hash.Class as Crypto
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString.Char8 as BS
-import qualified Data.ByteString.Lazy.Char8 as LBS
 import qualified Data.Char as Char
+import qualified Data.Text as Text
+import qualified Data.Text.Encoding as Text
 import qualified Network.Wai.Handler.Warp as Warp
-import qualified Ouroboros.Consensus.Byron.Ledger as Byron
 import qualified Servant
+import qualified System.Metrics.Prometheus.Metric.Gauge as Gauge
 
-runTxSubmitServer :: TxSubmitVar-> Trace IO Text -> TxSubmitPort -> IO ()
-runTxSubmitServer tsv trce (TxSubmitPort port) = do
-  logInfo trce $ "Running tx-submit web server on http://localhost:" <> textShow port <> "/"
+runTxSubmitServer
+  :: Trace IO Text
+  -> TxSubmitMetrics
+  -> TxSubmitPort
+  -> Protocol
+  -> NetworkId
+  -> SocketPath
+  -> IO ()
+runTxSubmitServer trce metrics (TxSubmitPort port) protocol networkId (SocketPath sockPath) = do
+  logInfo trce $
+    "Running tx-submit web server on http://localhost:"
+      <> textShow port
+      <> "/"
   logException trce "tx-submit-webapi." $
-    Warp.run port (txSubmitApp tsv trce)
+    Warp.run port (withlocalNodeConnectInfo protocol networkId sockPath $ txSubmitApp trce metrics)
   logInfo trce "txSubmitApp: exiting"
 
-txSubmitApp :: TxSubmitVar-> Trace IO Text -> Application
-txSubmitApp tsv trce =
+txSubmitApp
+  :: Trace IO Text
+  -> TxSubmitMetrics
+  -> LocalNodeConnectInfo mode blk
+  -> Application
+txSubmitApp trce metrics connectInfo =
     Servant.serve (Proxy :: Proxy TxSubmitApi) (toServant handlers)
   where
     handlers :: TxSubmitApiRecord (AsServerT Handler)
     handlers = TxSubmitApiRecord
-      { _txSubmitPost = txSubmitPost tsv trce
+      { _txSubmitPost = txSubmitPost trce metrics connectInfo
       }
 
 txSubmitPost
-    :: TxSubmitVar -> Trace IO Text -> ByteString
-    -> Handler TxId
-txSubmitPost tsv trce tx = do
-  liftIO $ logInfo trce ("txSubmitPost: received " <> textShow (BS.length tx) <> " bytes")
-  case decodeByronTx tx of
-    Left err -> do
-      let serr = if
-                  | BS.length tx == 0 -> TxSubmitEmpty
-                  | BS.all isHexOrWhitespace tx -> TxSubmitDecodeHex
-                  | otherwise -> TxSubmitDecodeFail err
-      liftIO $ logInfo trce $ "txSubmitPost failed: "
-        <> renderTxSubmitError serr
-      errorResponse serr
-    Right tx1 -> do
-      resp <- liftIO $ submitTx tsv tx1
-      liftIO $ logInfo trce $ "txSubmitPost: "
-        <> either renderTxSubmitError (sformat build) resp
-      either errorResponse pure resp
+  :: Trace IO Text
+  -> TxSubmitMetrics
+  -> LocalNodeConnectInfo mode blk
+  -> ByteString
+  -> Handler TxId
+txSubmitPost trce metrics connectInfo txBytes = do
+  liftIO $ logInfo trce $
+    "txSubmitPost: received "
+      <> textShow (BS.length txBytes)
+      <> " bytes"
+  case localNodeConsensusMode connectInfo of
+    ByronMode{} ->
+      case deserialiseFromCBOR AsByronTx txBytes of
+        Left err -> handleDeserialiseErr err
+        Right tx -> do
+          resp <- liftIO $ submitTx connectInfo (Left tx)
+          handleSubmitResult resp
+
+    ShelleyMode{} ->
+      case deserialiseFromCBOR AsShelleyTx txBytes of
+        Left err -> handleDeserialiseErr err
+        Right tx -> do
+          resp <- liftIO $ submitTx connectInfo (Right tx)
+          handleSubmitResult resp
+
+    CardanoMode{} ->
+      case tryDeserialiseByronOrShelleyTx txBytes of
+        Left err -> handleDeserialiseErr err
+        Right byronOrShelleyTx -> do
+          resp <- liftIO $ submitTx connectInfo byronOrShelleyTx
+          handleSubmitResult resp
   where
     errorResponse :: ToJSON e => e -> Handler a
     errorResponse e = throwError $ err400 { errBody = Aeson.encode e }
 
-decodeByronTx :: ByteString -> Either DecoderError (GenTx ByronBlock)
-decodeByronTx bs =
-    toGenTx <$> fromCborTxAux bs
-  where
-    toGenTx :: Ledger.ATxAux ByteString -> GenTx ByronBlock
-    toGenTx tx = Byron.ByronTx (Byron.byronIdTx tx) tx
+    -- Log relevant information and return an appropriate HTTP 400 response to
+    -- the client.
+    handleDeserialiseErr :: DecoderError -> Handler a
+    handleDeserialiseErr err = do
+      let serr = if
+                  | BS.length txBytes == 0 -> TxSubmitEmpty
+                  | BS.all isHexDigitOrSpace txBytes -> TxSubmitDecodeHex
+                  | otherwise -> TxSubmitDecodeFail err
+      liftIO $ logInfo trce $
+        "txSubmitPost: failed to deserialise transaction: "
+          <> renderTxSubmitWebApiError serr
+      errorResponse serr
 
---TODO: remove this local definition of this function as soon as the updated
--- ledger lib with Byron.fromCborTxAux is available
-fromCborTxAux :: ByteString ->  Either DecoderError (Ledger.ATxAux ByteString)
-fromCborTxAux bs =
-    fmap (annotationBytes lbs)
-      $ Binary.decodeFullDecoder "Cardano.Chain.UTxO.TxAux.fromCborTxAux"
-                                 Binary.fromCBOR lbs
-  where
-    lbs = LBS.fromStrict bs
+    -- Log relevant information, update the metrics, and return the result to
+    -- the client.
+    handleSubmitResult :: Either TxSubmitError TxId -> Handler TxId
+    handleSubmitResult res =
+      case res of
+        Left err -> do
+          liftIO $ logInfo trce $
+            "txSubmitPost: failed to submit transaction: "
+              <> renderTxSubmitError err
+          errorResponse (TxSubmitFail err)
+        Right txid -> do
+          liftIO $ logInfo trce $
+            "txSubmitPost: successfully submitted transaction "
+              <> renderMediumTxId txid
+          liftIO $ Gauge.inc (tsmCount metrics)
+          pure txid
 
-    annotationBytes :: Functor f => LBS.ByteString -> f Binary.ByteSpan -> f ByteString
-    annotationBytes bytes = fmap (LBS.toStrict . Binary.slice bytes)
+    -- Attempt to deserialise either a Byron or Shelley transaction.
+    -- Note that, if this fails, the 'DecoderError' from the Shelley
+    -- transaction will be returned and the one from the Byron transaction
+    -- will be discarded.
+    tryDeserialiseByronOrShelleyTx
+      :: ByteString
+      -> Either DecoderError (Either (Tx Byron) (Tx Shelley))
+    tryDeserialiseByronOrShelleyTx bs =
+      case deserialiseFromCBOR AsByronTx bs of
+        Left _ -> Right <$> deserialiseFromCBOR AsShelleyTx bs
+        Right byronTx -> Right $ Left byronTx
 
-isHexOrWhitespace :: Char -> Bool
-isHexOrWhitespace c = Char.isHexDigit c || Char.isSpace c
+-- | Whether the provided 'Char' is a hex character or a space.
+isHexDigitOrSpace :: Char -> Bool
+isHexDigitOrSpace c = Char.isHexDigit c || Char.isSpace c
+
+-- | Render the first 16 characters of a transaction ID.
+renderMediumTxId :: TxId -> Text
+renderMediumTxId (TxId hash) = renderMediumHash hash
+
+-- | Render the first 16 characters of a hex-encoded hash.
+renderMediumHash :: Crypto.Hash crypto a -> Text
+renderMediumHash =
+  Text.take 16 . Text.decodeLatin1 . Crypto.getHashBytesAsHex
