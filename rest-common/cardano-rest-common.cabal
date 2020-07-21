@@ -1,0 +1,46 @@
+cabal-version:          >= 1.10
+
+-- http://haskell.org/cabal/users-guide/
+
+name:                   cardano-rest-common
+version:                2.0.0
+synopsis:               A Block Explorer for the Cardano network
+description:
+homepage:               https://github.com/input-output-hk/cardano-explorer
+bug-reports:            https://github.com/input-output-hk/cardano-explorer/issues
+license:                Apache-2.0
+license-file:           LICENSE
+author:                 IOHK Engineering Team
+maintainer:             operations@iohk.io
+copyright:              (c) 2019 IOHK
+category:               Language
+build-type:             Simple
+extra-source-files:     CHANGELOG.md
+
+library
+  default-language:     Haskell2010
+  hs-source-dirs:       src
+  ghc-options:          -Wall
+                        -Werror
+                        -Wcompat
+                        -fwarn-redundant-constraints
+                        -fwarn-incomplete-patterns
+                        -fwarn-unused-imports
+                        -Wincomplete-record-updates
+                        -Wincomplete-uni-patterns
+                        -Weverything
+                        -Wno-safe
+                        -Wno-unsafe
+                        -Wno-implicit-prelude
+                        -Wno-all-missed-specialisations
+                        -Wno-missing-import-lists
+
+  exposed-modules:      Cardano.Rest.Parsers
+                      , Cardano.Rest.Types
+
+  -- other-modules:
+
+  build-depends:        base                            >= 4.12         && < 4.13
+                      , cardano-db
+                      , optparse-applicative
+                      , warp

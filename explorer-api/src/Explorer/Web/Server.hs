@@ -8,20 +8,20 @@ module Explorer.Web.Server
 
 import Cardano.Db
     ( Ada, Block (..), PGConfig (..), queryTotalSupply, toConnectionString )
+import Cardano.Rest.Types
+    ( WebserverConfig (..), toWarpSettings )
 import Control.Monad.IO.Class
     ( liftIO )
 import Control.Monad.Logger
-    ( runStdoutLoggingT )
+    ( logInfoN, runStdoutLoggingT )
 import Control.Monad.Trans.Except
     ( ExceptT (..), runExceptT, throwE )
 import Data.ByteString
     ( ByteString )
-import Data.ByteString.Char8
-    ( unpack )
-import Data.Function
-    ( (&) )
 import Data.Text
-    ( Text )
+    ( Text, pack )
+import Data.Text.Encoding
+    ( decodeUtf8 )
 import Database.Persist.Postgresql
     ( withPostgresqlConn )
 import Database.Persist.Sql
@@ -153,15 +153,3 @@ blocksSummary backend (CHash blkHashTxt) = runExceptT $ do
             }
         Nothing -> throwE $ Internal "slot missing"
     _ -> throwE $ Internal "No block found"
-
-------------------------------------------------------------
-
-data WebserverConfig =
-  WebserverConfig
-    { wcHost :: Warp.HostPreference
-    , wcPort :: Warp.Port
-    }
-  deriving (Show, Eq)
-
-toWarpSettings (WebserverConfig {wcHost, wcPort}) =
-  Warp.defaultSettings & Warp.setHost wcHost & Warp.setPort wcPort
