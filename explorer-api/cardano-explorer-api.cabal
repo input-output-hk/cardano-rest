@@ -137,6 +137,9 @@ executable cardano-explorer-api
 
   build-depends:        base                            >= 4.12         && < 4.13
                       , cardano-explorer-api
+                      , cardano-db
+                      , optparse-applicative
+                      , warp
                       , Cabal
 
 executable cardano-explorer-api-compare

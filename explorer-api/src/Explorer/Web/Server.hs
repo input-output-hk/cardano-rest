@@ -1,15 +1,13 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Explorer.Web.Server (runServer) where
+module Explorer.Web.Server
+  ( runServer
+  , WebserverConfig(..)
+  ) where
 
 import Cardano.Db
-    ( Ada
-    , Block (..)
-    , queryTotalSupply
-    , readPGPassFileEnv
-    , toConnectionString
-    )
+    ( Ada, Block (..), PGConfig (..), queryTotalSupply, toConnectionString )
 import Control.Monad.IO.Class
     ( liftIO )
 import Control.Monad.Logger
@@ -18,6 +16,10 @@ import Control.Monad.Trans.Except
     ( ExceptT (..), runExceptT, throwE )
 import Data.ByteString
     ( ByteString )
+import Data.ByteString.Char8
+    ( unpack )
+import Data.Function
+    ( (&) )
 import Data.Text
     ( Text )
 import Database.Persist.Postgresql
@@ -65,13 +67,16 @@ import qualified Data.Text.Encoding as Text
 import qualified Network.Wai.Handler.Warp as Warp
 import qualified Servant
 
-runServer :: IO ()
-runServer = do
-  putStrLn "Running full server on http://localhost:8100/"
-  pgconfig <- readPGPassFileEnv
+runServer :: WebserverConfig -> PGConfig -> IO ()
+runServer webserverConfig pgConfig = do
+  let warpSettings = toWarpSettings webserverConfig
+      pgurl = pgcHost pgConfig <> ":" <> pgcPort pgConfig
+      warpUrl = show (Warp.getHost warpSettings) <> ":" <> show (Warp.getPort warpSettings)
+  putStrLn $ "Connecting to database at " <> unpack pgurl
+  putStrLn $ "Running full server on " <> warpUrl
   runStdoutLoggingT .
-    withPostgresqlConn (toConnectionString pgconfig) $ \backend ->
-      liftIO $ Warp.run 8100 (explorerApp backend)
+    withPostgresqlConn (toConnectionString pgConfig) $ \backend ->
+      liftIO $ Warp.runSettings warpSettings (explorerApp backend)
 
 explorerApp :: SqlBackend -> Application
 explorerApp backend = Servant.serve explorerApi (explorerHandlers backend)
@@ -148,3 +153,15 @@ blocksSummary backend (CHash blkHashTxt) = runExceptT $ do
             }
         Nothing -> throwE $ Internal "slot missing"
     _ -> throwE $ Internal "No block found"
+
+------------------------------------------------------------
+
+data WebserverConfig =
+  WebserverConfig
+    { wcHost :: Warp.HostPreference
+    , wcPort :: Warp.Port
+    }
+  deriving (Show, Eq)
+
+toWarpSettings (WebserverConfig {wcHost, wcPort}) =
+  Warp.defaultSettings & Warp.setHost wcHost & Warp.setPort wcPort
