@@ -10,8 +10,8 @@ import Options.Applicative
 import Options.Applicative
     ( auto, help, long, metavar, option, showDefault, value )
 
-pWebserverConfig :: Parser WebserverConfig
-pWebserverConfig = WebserverConfig <$> pHostPreferenceOption <*> pPortOption
+pWebserverConfig :: Port -> Parser WebserverConfig
+pWebserverConfig defaultPort = WebserverConfig <$> pHostPreferenceOption <*> pPortOption defaultPort
 
 pHostPreferenceOption :: Parser HostPreference
 pHostPreferenceOption =
@@ -23,9 +23,9 @@ pHostPreferenceOption =
      "Can be an IPv[46] address, hostname, or '*'.") <>
   value "127.0.0.1" <> showDefault
 
-pPortOption :: Parser Port
-pPortOption =
+pPortOption :: Port -> Parser Port
+pPortOption defaultPort =
   option auto $
   long "port" <>
   metavar "INT" <>
-  help "Port used for the API server." <> value 8090 <> showDefault
+  help "Port used for the API server." <> value defaultPort <> showDefault

@@ -18,7 +18,7 @@ main = do
   where
     opts =
       Opt.info
-        (Opt.helper <*> pWebserverConfig)
+        (Opt.helper <*> pWebserverConfig 8100)
         (Opt.fullDesc <>
          Opt.header
            "cardano-explorer-api - A block explorer for the cardano network")
