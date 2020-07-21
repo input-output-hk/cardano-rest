@@ -21,6 +21,6 @@ main = do
         (Opt.helper <*> pWebserverConfig)
         (Opt.fullDesc <>
          Opt.header
-           "cardano-explorer-api - Run a reporting API server that explores the blockchain")
+           "cardano-explorer-api - A block explorer for the cardano network")
     prefs :: ParserPrefs
     prefs = Opt.prefs $ Opt.showHelpOnEmpty <> Opt.showHelpOnError

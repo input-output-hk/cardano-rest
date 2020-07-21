@@ -1,4 +1,5 @@
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE StrictData #-}
 
 module Cardano.Rest.Types
   ( WebserverConfig(..)
