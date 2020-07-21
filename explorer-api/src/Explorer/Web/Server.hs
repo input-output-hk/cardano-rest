@@ -68,13 +68,12 @@ import qualified Network.Wai.Handler.Warp as Warp
 import qualified Servant
 
 runServer :: WebserverConfig -> PGConfig -> IO ()
-runServer webserverConfig pgConfig = do
-  let warpSettings = toWarpSettings webserverConfig
-      pgurl = pgcHost pgConfig <> ":" <> pgcPort pgConfig
-      warpUrl = show (Warp.getHost warpSettings) <> ":" <> show (Warp.getPort warpSettings)
-  putStrLn $ "Connecting to database at " <> unpack pgurl
-  putStrLn $ "Running full server on " <> warpUrl
-  runStdoutLoggingT .
+runServer webserverConfig pgConfig =
+  runStdoutLoggingT $ do
+    let warpSettings = toWarpSettings webserverConfig
+        pgurl = pgcHost pgConfig <> ":" <> pgcPort pgConfig
+    logInfoN $ "Connecting to database at " <> decodeUtf8 pgurl
+    logInfoN $ "Running full server on " <> pack (show webserverConfig)
     withPostgresqlConn (toConnectionString pgConfig) $ \backend ->
       liftIO $ Warp.runSettings warpSettings (explorerApp backend)
 
