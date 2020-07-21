@@ -9,7 +9,8 @@ import Cardano.Api.Protocol
     ( Protocol (..) )
 import Cardano.Api.Typed
     ( NetworkId (..) )
-import Cardano.TxSubmit.Types
+import Cardano.Rest.Types
+    ( WebserverConfig )
 
 -- | The product type of all command line arguments
 data TxSubmitNodeParams = TxSubmitNodeParams
@@ -17,7 +18,7 @@ data TxSubmitNodeParams = TxSubmitNodeParams
   , tspProtocol :: !Protocol
   , tspNetworkId :: !NetworkId
   , tspSocketPath :: !SocketPath
-  , tspWebPort :: !TxSubmitPort
+  , tspWebserverConfig :: !WebserverConfig
   }
 
 newtype ConfigFile = ConfigFile

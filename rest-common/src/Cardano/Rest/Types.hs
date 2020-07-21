@@ -16,7 +16,9 @@ data WebserverConfig =
     { wcHost :: Warp.HostPreference
     , wcPort :: Warp.Port
     }
-  deriving (Show, Eq)
+
+instance Show WebserverConfig where
+  show (WebserverConfig {wcHost, wcPort}) = show wcHost <> ":" <> show wcPort
 
 toWarpSettings :: WebserverConfig -> Warp.Settings
 toWarpSettings (WebserverConfig {wcHost, wcPort}) =

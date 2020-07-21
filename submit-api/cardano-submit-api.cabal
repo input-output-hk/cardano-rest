@@ -63,6 +63,7 @@ library
                       , cardano-crypto-class
                       , cardano-crypto-wrapper
                       , cardano-prelude
+                      , cardano-rest-common
                       , cardano-ledger
                       , containers
                       , contra-tracer
