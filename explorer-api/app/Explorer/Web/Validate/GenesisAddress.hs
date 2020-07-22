@@ -8,8 +8,6 @@ import Cardano.Db
     ( EntityField (..), LookupFail (..), listToMaybe )
 import Control.Monad.IO.Class
     ( MonadIO, liftIO )
-import Control.Monad.Trans.Reader
-    ( ReaderT )
 import Data.Text.ANSI
     ( green, red )
 import Database.Esqueleto
@@ -25,13 +23,9 @@ import Database.Esqueleto
     , (^.)
     )
 import Database.Persist.Sql
-    ( SqlBackend )
+    ( SqlPersistT )
 import Explorer.Web
-    ( CAddress (..)
-    , CGenesisAddressInfo (..)
-    , queryAllGenesisAddresses
-    , runQuery
-    )
+    ( CAddress (..), CGenesisAddressInfo (..), queryAllGenesisAddresses )
 import Explorer.Web.Api.Legacy.Types
     ( PageNo (..), PageSize (..) )
 import Explorer.Web.Validate.ErrorHandling
@@ -45,23 +39,23 @@ import qualified Data.List as List
 import qualified Data.Text.IO as Text
 
 -- | Validate that all address have a balance >= 0.
-validateGenesisAddressPaging :: SqlBackend -> IO ()
-validateGenesisAddressPaging backend = do
-  (addr1, addr2) <- runQuery backend $ do
-                      pageSize <- genRandomPageSize
-                      pageNo <- handleLookupFail =<< genRandomPageNo pageSize
-                      page1 <- queryAllGenesisAddresses pageNo pageSize
-                      page2 <- queryAllGenesisAddresses (nextPageNo pageNo) pageSize
-                      pure (extractAddresses page1, extractAddresses page2)
+validateGenesisAddressPaging :: MonadIO m => SqlPersistT m ()
+validateGenesisAddressPaging = do
+  (addr1, addr2) <- do
+    pageSize <- genRandomPageSize
+    pageNo <- handleLookupFail =<< genRandomPageNo pageSize
+    page1 <- queryAllGenesisAddresses pageNo pageSize
+    page2 <- queryAllGenesisAddresses (nextPageNo pageNo) pageSize
+    pure (extractAddresses page1, extractAddresses page2)
   if length (List.nub $ addr1 ++ addr2) == length addr1 + length addr2
-    then Text.putStrLn $ "  Adjacent pages for Genesis addresses do not overlap: " <> green "ok"
-    else reportIntersectFail addr1 addr2
+    then liftIO $ Text.putStrLn $ "  Adjacent pages for Genesis addresses do not overlap: " <> green "ok"
+    else liftIO $ reportIntersectFail addr1 addr2
 
 
 extractAddresses :: [CGenesisAddressInfo] -> [CAddress]
 extractAddresses = List.map cgaiCardanoAddress
 
-genRandomPageNo :: MonadIO m => PageSize -> ReaderT SqlBackend m (Either LookupFail PageNo)
+genRandomPageNo :: MonadIO m => PageSize -> SqlPersistT m (Either LookupFail PageNo)
 genRandomPageNo (PageSize pageSize) = do
   res <- select . from $ \ (txOut `InnerJoin` tx `InnerJoin` blk) -> do
             on (blk ^. BlockId ==. tx ^. TxBlock)
@@ -77,7 +71,7 @@ genRandomPageNo (PageSize pageSize) = do
           offset <- max addrCount <$> liftIO (randomRIO (1, addrCount - 3 * pageSize))
           pure $ Right (PageNo $ offset `div` pageSize)
 
-genRandomPageSize :: MonadIO m => ReaderT SqlBackend m PageSize
+genRandomPageSize :: MonadIO m => SqlPersistT m PageSize
 genRandomPageSize = PageSize <$> liftIO (randomRIO (2, 50))
 
 nextPageNo :: PageNo -> PageNo

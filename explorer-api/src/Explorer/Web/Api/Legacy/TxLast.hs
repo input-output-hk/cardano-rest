@@ -8,8 +8,6 @@ import Cardano.Db
     ( EntityField (..), Tx, isJust )
 import Control.Monad.IO.Class
     ( MonadIO )
-import Control.Monad.Trans.Reader
-    ( ReaderT )
 import Data.ByteString.Char8
     ( ByteString )
 import Data.Fixed
@@ -37,22 +35,19 @@ import Database.Esqueleto
     , (^.)
     )
 import Database.Persist.Sql
-    ( SqlBackend )
+    ( SqlPersistT )
 import Explorer.Web.Api.Legacy.Util
 import Explorer.Web.ClientTypes
     ( CHash (..), CTxEntry (..), CTxHash (..), mkCCoin )
 import Explorer.Web.Error
     ( ExplorerError (..) )
-import Servant
-    ( Handler )
 
 
-getLastTxs :: SqlBackend -> Handler (Either ExplorerError [CTxEntry])
-getLastTxs backend =
-  runQuery backend $ Right <$> queryCTxEntry
+getLastTxs :: MonadIO m => SqlPersistT m (Either ExplorerError [CTxEntry])
+getLastTxs = Right <$> queryCTxEntry
 
 
-queryCTxEntry :: MonadIO m => ReaderT SqlBackend m [CTxEntry]
+queryCTxEntry :: MonadIO m => SqlPersistT m [CTxEntry]
 queryCTxEntry = do
     txRows <- select . from $ \ (blk `InnerJoin` tx) -> do
                 on (blk ^. BlockId ==. tx ^. TxBlock)

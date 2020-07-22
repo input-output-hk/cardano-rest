@@ -5,43 +5,59 @@ module Explorer.Web.Validate.Address
   , validateRedeemAddressSummary
   ) where
 
-import           Data.Text (Text)
+import Control.Monad.IO.Class
+    ( MonadIO, liftIO )
+import Data.Text
+    ( Text )
 import qualified Data.Text as Text
-import           Data.Text.ANSI (green, red)
+import Data.Text.ANSI
+    ( green, red )
 import qualified Data.Text.IO as Text
 
-import           Database.Persist.Sql (SqlBackend)
+import Database.Persist.Sql
+    ( SqlPersistT )
 
-import           Explorer.Web (CAddress (..), CAddressSummary (..), CCoin (..), CHash (..),
-                    CTxBrief (..), CTxHash (..),
-                    queryAddressSummary, runQuery)
-import           Explorer.Web.Api.Legacy.Util (decodeTextAddress, textShow)
-import           Explorer.Web.Validate.Random (queryRandomAddress, queryRandomRedeemAddress)
-import           Explorer.Web.Validate.ErrorHandling (handleLookupFail, handleExplorerError)
+import Explorer.Web
+    ( CAddress (..)
+    , CAddressSummary (..)
+    , CCoin (..)
+    , CHash (..)
+    , CTxBrief (..)
+    , CTxHash (..)
+    , queryAddressSummary
+    )
+import Explorer.Web.Api.Legacy.Util
+    ( decodeTextAddress, textShow )
+import Explorer.Web.Validate.ErrorHandling
+    ( handleExplorerError, handleLookupFail )
+import Explorer.Web.Validate.Random
+    ( queryRandomAddress, queryRandomRedeemAddress )
 
-import           System.Exit (exitFailure)
+import System.Exit
+    ( exitFailure )
 
 -- | Validate that all address have a balance >= 0.
-validateAddressSummary :: SqlBackend -> IO ()
-validateAddressSummary backend = do
-  addrSum <- runQuery backend $ do
-                addrTxt <- handleLookupFail =<< queryRandomAddress
-                addr <- handleExplorerError $ decodeTextAddress addrTxt
-                handleExplorerError =<< queryAddressSummary addrTxt addr
-  if unCCoin (caBalance addrSum) >= 0
+validateAddressSummary :: MonadIO m => SqlPersistT m ()
+validateAddressSummary = do
+  addrSum <- do
+    addrTxt <- handleLookupFail =<< queryRandomAddress
+    addr <- handleExplorerError $ decodeTextAddress addrTxt
+    handleExplorerError =<< queryAddressSummary addrTxt addr
+  liftIO $ do
+    if unCCoin (caBalance addrSum) >= 0
     then reportAddressSummaryOk addrSum
     else reportAddressSummaryFail addrSum
-  validateAddressTotalFees addrSum
-  validateTxFeeNonNegative addrSum
+    validateAddressTotalFees addrSum
+    validateTxFeeNonNegative addrSum
 
 -- | Validate that all redeem address have a balance >= 0.
-validateRedeemAddressSummary :: SqlBackend -> IO ()
-validateRedeemAddressSummary backend = do
-  addrSum <- runQuery backend $ do
-                addrTxt <- handleLookupFail =<< queryRandomRedeemAddress
-                addr <- handleExplorerError $ decodeTextAddress addrTxt
-                handleExplorerError =<< queryAddressSummary addrTxt addr
-  if unCCoin (caBalance addrSum) >= 0
+validateRedeemAddressSummary :: MonadIO m => SqlPersistT m ()
+validateRedeemAddressSummary = do
+  addrSum <- do
+    addrTxt <- handleLookupFail =<< queryRandomRedeemAddress
+    addr <- handleExplorerError $ decodeTextAddress addrTxt
+    handleExplorerError =<< queryAddressSummary addrTxt addr
+  liftIO $ if unCCoin (caBalance addrSum) >= 0
     then reportAddressSummaryOk addrSum
     else reportAddressSummaryFail addrSum
 

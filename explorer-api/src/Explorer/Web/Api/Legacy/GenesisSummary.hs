@@ -9,8 +9,6 @@ import Cardano.Db
     ( EntityField (..), txOutSpentP )
 import Control.Monad.IO.Class
     ( MonadIO )
-import Control.Monad.Trans.Reader
-    ( ReaderT )
 import Data.Fixed
     ( Fixed (..), Uni )
 import Data.Maybe
@@ -30,20 +28,14 @@ import Database.Esqueleto
     , (^.)
     )
 import Database.Persist.Sql
-    ( SqlBackend )
-import Explorer.Web.Api.Legacy.Util
-    ( runQuery )
+    ( SqlPersistT )
 import Explorer.Web.ClientTypes
     ( CGenesisSummary (..), mkCCoin )
 import Explorer.Web.Error
     ( ExplorerError (..) )
-import Servant
-    ( Handler )
 
-
-genesisSummary :: SqlBackend -> Handler (Either ExplorerError CGenesisSummary)
-genesisSummary backend =
-  runQuery backend $ Right <$> do
+genesisSummary :: MonadIO m => SqlPersistT m (Either ExplorerError CGenesisSummary)
+genesisSummary = Right <$> do
     (numTotal,valTotal) <- queryInitialGenesis
     (redTotal, valRedeemed) <- queryGenesisRedeemed
     pure $ CGenesisSummary
@@ -54,7 +46,7 @@ genesisSummary backend =
             , cgsNonRedeemedAmountTotal = mkCCoin $ valTotal - valRedeemed
             }
 
-queryInitialGenesis :: MonadIO m => ReaderT SqlBackend m (Word, Integer)
+queryInitialGenesis :: MonadIO m => SqlPersistT m (Word, Integer)
 queryInitialGenesis = do
     res <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
               on (tx ^. TxId ==. txOut ^. TxOutTxId)
@@ -64,7 +56,7 @@ queryInitialGenesis = do
               pure (countRows, sum_ (txOut ^. TxOutValue))
     pure $ maybe (0, 0) convertPair (listToMaybe res)
 
-queryGenesisRedeemed :: MonadIO m => ReaderT SqlBackend m (Word, Integer)
+queryGenesisRedeemed :: MonadIO m => SqlPersistT m (Word, Integer)
 queryGenesisRedeemed = do
     res <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
               on (tx ^. TxId ==. txOut ^. TxOutTxId)

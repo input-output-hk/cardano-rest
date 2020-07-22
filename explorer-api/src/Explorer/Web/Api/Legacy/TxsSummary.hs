@@ -17,12 +17,12 @@ import Cardano.Db
     )
 import Control.Monad.IO.Class
     ( MonadIO )
+import Control.Monad.Trans
+    ( lift )
 import Control.Monad.Trans.Except
     ( runExceptT )
 import Control.Monad.Trans.Except.Extra
     ( hoistEither, left )
-import Control.Monad.Trans.Reader
-    ( ReaderT )
 import Data.ByteString
     ( ByteString )
 import Data.Maybe
@@ -45,7 +45,7 @@ import Database.Esqueleto
     , (^.)
     )
 import Database.Persist.Sql
-    ( SqlBackend )
+    ( SqlPersistT )
 import Explorer.Web.Api.Legacy.Util
 import Explorer.Web.ClientTypes
     ( CAddress (..)
@@ -58,8 +58,6 @@ import Explorer.Web.ClientTypes
     )
 import Explorer.Web.Error
     ( ExplorerError (..) )
-import Servant
-    ( Handler )
 
 
 -- Example queries:
@@ -69,12 +67,13 @@ import Servant
 --  /api/txs/summary/c8f98baea0b6eb8709398c2b16a17a25d722e1600bed39128a3e9ea4b0d8b5c1
 
 txsSummary
-    :: SqlBackend -> CTxHash
-    -> Handler (Either ExplorerError CTxSummary)
-txsSummary backend (CTxHash (CHash hashTxt)) =
+    :: MonadIO m
+    => CTxHash
+    -> SqlPersistT m (Either ExplorerError CTxSummary)
+txsSummary (CTxHash (CHash hashTxt)) =
   runExceptT $ do
     txhash <- hoistEither $ textBase16Decode hashTxt
-    mTxblk <- runQuery backend $ queryTxSummary txhash
+    mTxblk <- lift $ queryTxSummary txhash
     case mTxblk of
       Nothing -> left $ Internal "tx not found" -- TODO, give the same error as before?
       Just (tx, blk, inputs, outputs) -> do
@@ -99,7 +98,7 @@ txsSummary backend (CTxHash (CHash hashTxt)) =
               }
           Nothing -> left $ Internal "cant find slot# of block"
 
-queryTxSummary :: MonadIO m => ByteString -> ReaderT SqlBackend m (Maybe (Tx, Block, [CTxAddressBrief], [CTxAddressBrief]))
+queryTxSummary :: MonadIO m => ByteString -> SqlPersistT m (Maybe (Tx, Block, [CTxAddressBrief], [CTxAddressBrief]))
 queryTxSummary txhash = do
   eTx <- queryTx txhash
   case eTx of
@@ -114,14 +113,14 @@ queryTxSummary txhash = do
     Left _ -> pure Nothing -- TODO
 
 
-queryTx :: MonadIO m => ByteString -> ReaderT SqlBackend m (Either LookupFail (TxId, Tx))
+queryTx :: MonadIO m => ByteString -> SqlPersistT m (Either LookupFail (TxId, Tx))
 queryTx hash = do
   res <- select . from $ \ tx -> do
             where_ (tx ^. TxHash ==. val hash)
             pure tx
   pure $ maybeToEither (DbLookupTxHash hash) entityPair (listToMaybe res)
 
-queryTxOutputs :: MonadIO m => TxId -> ReaderT SqlBackend m [CTxAddressBrief]
+queryTxOutputs :: MonadIO m => TxId -> SqlPersistT m [CTxAddressBrief]
 queryTxOutputs txid = do
     rows <- select . from $ \ (tx `InnerJoin` txOut) -> do
               on (tx ^. TxId ==. txOut ^. TxOutTxId)
@@ -138,14 +137,14 @@ queryTxOutputs txid = do
         , ctaTxIndex = fromIntegral index
         }
 
-queryBlockById :: MonadIO m => BlockId -> ReaderT SqlBackend m (Maybe Block)
+queryBlockById :: MonadIO m => BlockId -> SqlPersistT m (Maybe Block)
 queryBlockById blockid = do
   rows <- select . from $ \blk -> do
       where_ $ blk ^. BlockId ==. val blockid
       pure blk
   pure $ fmap entityVal (listToMaybe rows)
 
-queryTxInputs :: MonadIO m => TxId -> ReaderT SqlBackend m [CTxAddressBrief]
+queryTxInputs :: MonadIO m => TxId -> SqlPersistT m [CTxAddressBrief]
 queryTxInputs txid = do
     rows <- select . from $ \(txIn `InnerJoin` txOut  `InnerJoin` tx) -> do
               on (tx ^. TxId ==. txOut ^. TxOutTxId)

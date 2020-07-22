@@ -10,8 +10,6 @@ import Cardano.Db
     ( Block (..), BlockId, EntityField (..) )
 import Control.Monad.IO.Class
     ( MonadIO )
-import Control.Monad.Trans.Reader
-    ( ReaderT )
 import Data.ByteString
     ( ByteString )
 import Data.Fixed
@@ -36,14 +34,12 @@ import Database.Esqueleto
     , (^.)
     )
 import Database.Persist.Sql
-    ( SqlBackend )
+    ( SqlPersistT )
 import Explorer.Web.Api.Legacy.Util
 import Explorer.Web.ClientTypes
     ( CBlockEntry (..), CHash (..), mkCCoin )
 import Explorer.Web.Error
     ( ExplorerError (..) )
-import Servant
-    ( Handler )
 
 
 -- Example queries:
@@ -54,13 +50,13 @@ import Servant
 
 -- Why does this return a list? There can only be a single block at a give epoch/slot pair.
 epochSlot
-    :: SqlBackend -> EpochNumber -> Word16
-    -> Handler (Either ExplorerError [CBlockEntry])
-epochSlot backend (EpochNumber epochNo) slotInEpoch =
+    :: MonadIO m
+    => EpochNumber -> Word16
+    -> SqlPersistT m (Either ExplorerError [CBlockEntry])
+epochSlot (EpochNumber epochNo) slotInEpoch =
   if fromIntegral slotInEpoch >= 10 * k
     then pure $ Left (Internal "Invalid slot number")
-    else
-      runQuery backend $ do
+    else do
         xs <- queryBlockBySlotNo $ 10 * k * epochNo + fromIntegral slotInEpoch
         case xs of
           [] -> pure $ Left (Internal "Not found")
@@ -68,7 +64,7 @@ epochSlot backend (EpochNumber epochNo) slotInEpoch =
 
 -- This query is a pain in the neck. Was not to figure out how to do it
 -- in less than three separate select statements.
-queryBlockBySlotNo :: MonadIO m => Word64 -> ReaderT SqlBackend m [(BlockId, CBlockEntry)]
+queryBlockBySlotNo :: MonadIO m => Word64 -> SqlPersistT m [(BlockId, CBlockEntry)]
 queryBlockBySlotNo flatSlotNo = do
     rows <- select . from $ \ (blk `InnerJoin` sl) -> do
               on (blk ^. BlockSlotLeader ==. sl ^. SlotLeaderId)
@@ -91,7 +87,7 @@ queryBlockBySlotNo flatSlotNo = do
                 , cbeFees = mkCCoin 0
                 })
 
-queryBlockTx :: MonadIO m => (BlockId, CBlockEntry) -> ReaderT SqlBackend m CBlockEntry
+queryBlockTx :: MonadIO m => (BlockId, CBlockEntry) -> SqlPersistT m CBlockEntry
 queryBlockTx (blkId, entry) = do
     res <- select . from $ \ (blk `InnerJoin` tx) -> do
               on (tx ^. TxBlock ==. blk ^. BlockId)
@@ -99,7 +95,7 @@ queryBlockTx (blkId, entry) = do
               pure (countRows, sum_ (tx ^. TxFee))
     maybe (pure entry) queryBlockTxOutValue (listToMaybe res)
   where
-    queryBlockTxOutValue :: MonadIO m => (Value Word, Value (Maybe Uni)) -> ReaderT SqlBackend m CBlockEntry
+    queryBlockTxOutValue :: MonadIO m => (Value Word, Value (Maybe Uni)) -> SqlPersistT m CBlockEntry
     queryBlockTxOutValue (Value txCount, mFee) = do
       res <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
                 on (tx ^. TxId ==. txOut ^. TxOutTxId)

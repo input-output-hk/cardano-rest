@@ -24,8 +24,6 @@ import Cardano.Db
     ( Block (..), TxId )
 import Control.Monad.IO.Class
     ( MonadIO, liftIO )
-import Control.Monad.Trans.Reader
-    ( ReaderT )
 import Data.Bifunctor
     ( first )
 import Data.ByteString
@@ -43,7 +41,7 @@ import Data.Time.Clock.POSIX
 import Data.Word
     ( Word16, Word64 )
 import Database.Persist.Sql
-    ( IsolationLevel (..), SqlBackend, runSqlConnWithIsolation )
+    ( IsolationLevel (..), SqlBackend, runSqlConnWithIsolation, SqlPersistT)
 import Explorer.Web.Api.Legacy.Types
     ( PageSize (..) )
 import Explorer.Web.ClientTypes
@@ -100,7 +98,7 @@ genesisDistributionTxHash = CTxHash (CHash "Genesis Distribution")
 k :: Word64
 k = 2160
 
-runQuery :: MonadIO m => SqlBackend -> ReaderT SqlBackend IO a -> m a
+runQuery :: MonadIO m => SqlBackend -> SqlPersistT IO a -> m a
 runQuery backend query =
   liftIO $ runSqlConnWithIsolation query backend Serializable
 

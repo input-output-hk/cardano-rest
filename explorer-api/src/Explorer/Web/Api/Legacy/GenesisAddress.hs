@@ -10,8 +10,6 @@ import Control.Monad
     ( when )
 import Control.Monad.IO.Class
     ( MonadIO )
-import Control.Monad.Trans.Reader
-    ( ReaderT )
 import Data.Maybe
     ( fromMaybe )
 import Data.Text
@@ -36,38 +34,37 @@ import Database.Esqueleto
     , (^.)
     )
 import Database.Persist.Sql
-    ( SqlBackend )
+    ( SqlPersistT )
 import Explorer.Web.Api.Legacy.Types
     ( PageNo (..), PageSize (..) )
 import Explorer.Web.Api.Legacy.Util
-    ( runQuery, toPageSize )
+    ( toPageSize )
 import Explorer.Web.ClientTypes
     ( CAddress (..), CAddressesFilter (..), CGenesisAddressInfo (..), mkCCoin )
 import Explorer.Web.Error
     ( ExplorerError (..) )
-import Servant
-    ( Handler )
 
 
 genesisAddressInfo
-    :: SqlBackend -> Maybe PageNo -> Maybe PageSize -> Maybe CAddressesFilter
-    -> Handler (Either ExplorerError [CGenesisAddressInfo])
+    :: MonadIO m
+    => Maybe PageNo -> Maybe PageSize -> Maybe CAddressesFilter
+    -> SqlPersistT m (Either ExplorerError [CGenesisAddressInfo])
 -- filter redeemed addresses
-genesisAddressInfo backend mPage mPageSize mAddrFilter =
+genesisAddressInfo mPage mPageSize mAddrFilter =
    if unPageSize pageSize < 1
      then pure $ Left (Internal "Page size must be greater than 1.")
-     else genesisAddrInfo backend page pageSize addrFilter
+     else genesisAddrInfo page pageSize addrFilter
   where
     pageSize = toPageSize mPageSize
     page = fromMaybe (PageNo 0) mPage
     addrFilter = fromMaybe AllAddresses mAddrFilter
 
 genesisAddrInfo
-    :: SqlBackend -> PageNo -> PageSize -> CAddressesFilter
-    -> Handler (Either ExplorerError [CGenesisAddressInfo])
+    :: MonadIO m
+    => PageNo -> PageSize -> CAddressesFilter
+    -> SqlPersistT m (Either ExplorerError [CGenesisAddressInfo])
 -- filter redeemed addresses
-genesisAddrInfo backend page pageSize addrFilter =
-  runQuery backend $
+genesisAddrInfo page pageSize addrFilter =
     case addrFilter of
       RedeemedAddresses -> Right <$> queryRedeemedGenesisAddresses page pageSize
       NonRedeemedAddresses -> Right <$> queryNonRedeemedGenesisAddresses page pageSize
@@ -76,7 +73,7 @@ genesisAddrInfo backend page pageSize addrFilter =
 queryRedeemedGenesisAddresses
     :: MonadIO m
     => PageNo -> PageSize
-    -> ReaderT SqlBackend m [CGenesisAddressInfo]
+    -> SqlPersistT m [CGenesisAddressInfo]
 queryRedeemedGenesisAddresses pageNo pageSize = do
   rows <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
             on (tx ^. TxId ==. txOut ^. TxOutTxId)
@@ -92,7 +89,7 @@ queryRedeemedGenesisAddresses pageNo pageSize = do
 queryNonRedeemedGenesisAddresses
     :: MonadIO m
     => PageNo -> PageSize
-    -> ReaderT SqlBackend m [CGenesisAddressInfo]
+    -> SqlPersistT m [CGenesisAddressInfo]
 queryNonRedeemedGenesisAddresses pageNo pageSize = do
   rows <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
             on (tx ^. TxId ==. txOut ^. TxOutTxId)
@@ -108,7 +105,7 @@ queryNonRedeemedGenesisAddresses pageNo pageSize = do
 queryAllGenesisAddresses
     :: MonadIO m
     => PageNo -> PageSize
-    -> ReaderT SqlBackend m [CGenesisAddressInfo]
+    -> SqlPersistT m [CGenesisAddressInfo]
 queryAllGenesisAddresses pageNo pageSize = do
   rows <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
             on (tx ^. TxId ==. txOut ^. TxOutTxId)

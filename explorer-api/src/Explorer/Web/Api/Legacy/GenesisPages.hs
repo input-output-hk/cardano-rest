@@ -6,8 +6,6 @@ import Cardano.Db
     ( EntityField (..), txOutSpentP, txOutUnspentP )
 import Control.Monad.IO.Class
     ( MonadIO )
-import Control.Monad.Trans.Reader
-    ( ReaderT )
 import Data.Maybe
     ( listToMaybe )
 import Database.Esqueleto
@@ -24,27 +22,25 @@ import Database.Esqueleto
     , (^.)
     )
 import Database.Persist.Sql
-    ( SqlBackend )
+    ( SqlPersistT )
 import Explorer.Web.Api.Legacy
     ( PageNumber )
 import Explorer.Web.Api.Legacy.Types
     ( PageSize (..) )
 import Explorer.Web.Api.Legacy.Util
-    ( divRoundUp, runQuery, toPageSize )
+    ( divRoundUp, toPageSize )
 import Explorer.Web.ClientTypes
     ( CAddressesFilter (..) )
 import Explorer.Web.Error
     ( ExplorerError (..) )
-import Servant
-    ( Handler )
 
 
 genesisPages
-    :: SqlBackend -> Maybe PageSize
+    :: MonadIO m
+    => Maybe PageSize
     -> Maybe CAddressesFilter
-    -> Handler (Either ExplorerError PageNumber)
-genesisPages backend mPageSize mAddrFilter =
-    runQuery backend $
+    -> SqlPersistT m (Either ExplorerError PageNumber)
+genesisPages mPageSize mAddrFilter =
       case mAddrFilter of
         Just RedeemedAddresses -> Right <$> queryRedeemedGenesisAddressCount pageSize
         Just NonRedeemedAddresses -> Right <$> queryUnRedeemedGenesisAddressCount pageSize
@@ -52,7 +48,7 @@ genesisPages backend mPageSize mAddrFilter =
   where
     pageSize = toPageSize mPageSize
 
-queryGenesisAddressCount :: MonadIO m => PageSize -> ReaderT SqlBackend m Word
+queryGenesisAddressCount :: MonadIO m => PageSize -> SqlPersistT m Word
 queryGenesisAddressCount (PageSize pageSize) = do
   res <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
             on (tx ^. TxId ==. txOut ^. TxOutTxId)
@@ -62,7 +58,7 @@ queryGenesisAddressCount (PageSize pageSize) = do
             pure countRows
   pure $ maybe 0 (dividePageSize pageSize) (listToMaybe res)
 
-queryRedeemedGenesisAddressCount :: MonadIO m => PageSize -> ReaderT SqlBackend m Word
+queryRedeemedGenesisAddressCount :: MonadIO m => PageSize -> SqlPersistT m Word
 queryRedeemedGenesisAddressCount (PageSize pageSize) = do
   res <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
             on (tx ^. TxId ==. txOut ^. TxOutTxId)
@@ -73,7 +69,7 @@ queryRedeemedGenesisAddressCount (PageSize pageSize) = do
             pure countRows
   pure $ maybe 0 (dividePageSize pageSize) (listToMaybe res)
 
-queryUnRedeemedGenesisAddressCount :: MonadIO m => PageSize -> ReaderT SqlBackend m Word
+queryUnRedeemedGenesisAddressCount :: MonadIO m => PageSize -> SqlPersistT m Word
 queryUnRedeemedGenesisAddressCount (PageSize pageSize) = do
   res <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
             on (tx ^. TxId ==. txOut ^. TxOutTxId)

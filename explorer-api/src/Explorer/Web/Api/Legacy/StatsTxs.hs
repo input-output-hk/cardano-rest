@@ -11,8 +11,6 @@ import Control.Monad.Extra
     ( concatMapM )
 import Control.Monad.IO.Class
     ( MonadIO )
-import Control.Monad.Trans.Reader
-    ( ReaderT )
 import Data.ByteString.Char8
     ( ByteString )
 import Data.Word
@@ -34,19 +32,17 @@ import Database.Esqueleto
     , (^.)
     )
 import Database.Persist.Sql
-    ( SqlBackend )
+    ( SqlPersistT )
 import Explorer.Web.Api.Legacy
     ( PageNumber, TxsStats )
 import Explorer.Web.Api.Legacy.Types
     ( PageNo (..) )
 import Explorer.Web.Api.Legacy.Util
-    ( bsBase16Encode, runQuery )
+    ( bsBase16Encode )
 import Explorer.Web.ClientTypes
     ( CHash (..), CTxHash (..) )
 import Explorer.Web.Error
     ( ExplorerError (..) )
-import Servant
-    ( Handler )
 
 import qualified Data.List as List
 
@@ -61,10 +57,10 @@ import qualified Data.List as List
 
 -- type TxsStats = (PageNumber, [(CTxHash, Word64)])
 statsTxs
-    :: SqlBackend -> Maybe PageNo
-    -> Handler (Either ExplorerError TxsStats)
-statsTxs backend mPageNo = do
-    runQuery backend $ do
+    :: MonadIO m
+    => Maybe PageNo
+    -> SqlPersistT m (Either ExplorerError TxsStats)
+statsTxs mPageNo = do
       blockHeight <- queryBlockHeight
       let currentPageNo = toPageNo blockHeight
       case mPageNo of
@@ -88,7 +84,7 @@ statsTxs backend mPageNo = do
         y -> fromIntegral y
 
 
-queryLatestBlockTx :: MonadIO m => Int -> ReaderT SqlBackend m [(CTxHash, Word64)]
+queryLatestBlockTx :: MonadIO m => Int -> SqlPersistT m [(CTxHash, Word64)]
 queryLatestBlockTx count = do
   rows <- select . from $ \ blk -> do
           where_ (isJust (blk ^. BlockBlockNo))
@@ -97,7 +93,7 @@ queryLatestBlockTx count = do
           pure (blk ^. BlockId)
   concatMapM queryBlockTx rows
 
-queryBlockTxPageNo :: MonadIO m => PageNo -> ReaderT SqlBackend m [(CTxHash, Word64)]
+queryBlockTxPageNo :: MonadIO m => PageNo -> SqlPersistT m [(CTxHash, Word64)]
 queryBlockTxPageNo (PageNo page) = do
   rows <- select . from $ \ blk -> do
           where_ (isJust (blk ^. BlockBlockNo))
@@ -107,7 +103,7 @@ queryBlockTxPageNo (PageNo page) = do
           pure (blk ^. BlockId)
   concatMapM queryBlockTx $ List.reverse rows
 
-queryBlockTx :: MonadIO m => Value BlockId -> ReaderT SqlBackend m [(CTxHash, Word64)]
+queryBlockTx :: MonadIO m => Value BlockId -> SqlPersistT m [(CTxHash, Word64)]
 queryBlockTx (Value blkid) = do
     rows <- select . from $ \ (blk `InnerJoin` tx) -> do
             on (blk ^. BlockId ==. tx ^. TxBlock)
