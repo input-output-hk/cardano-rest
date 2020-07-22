@@ -47,9 +47,9 @@ validateGenesisAddressPaging = do
     page1 <- queryAllGenesisAddresses pageNo pageSize
     page2 <- queryAllGenesisAddresses (nextPageNo pageNo) pageSize
     pure (extractAddresses page1, extractAddresses page2)
-  if length (List.nub $ addr1 ++ addr2) == length addr1 + length addr2
-    then liftIO $ Text.putStrLn $ "  Adjacent pages for Genesis addresses do not overlap: " <> green "ok"
-    else liftIO $ reportIntersectFail addr1 addr2
+  liftIO $ if length (List.nub $ addr1 ++ addr2) == length addr1 + length addr2
+    then Text.putStrLn $ "  Adjacent pages for Genesis addresses do not overlap: " <> green "ok"
+    else reportIntersectFail addr1 addr2
 
 
 extractAddresses :: [CGenesisAddressInfo] -> [CAddress]
