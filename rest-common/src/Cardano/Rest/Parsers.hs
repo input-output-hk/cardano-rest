@@ -8,12 +8,23 @@ module Cardano.Rest.Parsers
 
 import Cardano.Rest.Types
     ( WebserverConfig (..) )
+import Data.String
+    ( fromString )
 import Network.Wai.Handler.Warp
     ( HostPreference, Port )
 import Options.Applicative
     ( Parser )
 import Options.Applicative
-    ( auto, help, long, metavar, option, showDefault, switch, value )
+    ( auto
+    , help
+    , long
+    , metavar
+    , option
+    , showDefault
+    , strOption
+    , switch
+    , value
+    )
 
 pWebserverConfig :: Port -> Parser WebserverConfig
 pWebserverConfig defaultPort = do
@@ -31,13 +42,14 @@ pWebserverConfig defaultPort = do
 
 pHostPreferenceOption :: Parser HostPreference
 pHostPreferenceOption =
-  option auto $
-  long "listen-address" <>
-  metavar "HOST" <>
-  help
-    ("Specification of which host to the bind API server to. " <>
-     "Can be an IPv[46] address, hostname, or '*'.") <>
-  value "127.0.0.1" <> showDefault
+  fromString <$>
+  strOption
+    (long "listen-address" <>
+     metavar "HOST" <>
+     help
+       ("Specification of which host to the bind API server to. " <>
+        "Can be an IPv[46] address, hostname, or '*'.") <>
+     value "127.0.0.1" <> showDefault)
 
 pPortOption :: Port -> Parser Port
 pPortOption defaultPort =
