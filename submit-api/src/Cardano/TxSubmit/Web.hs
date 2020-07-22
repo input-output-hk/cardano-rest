@@ -7,6 +7,7 @@ module Cardano.TxSubmit.Web
   ( runTxSubmitServer
   ) where
 
+import Cardano.Rest.Web as Web
 import Cardano.TxSubmit.CLI.Types
 import Cardano.TxSubmit.JsonOrphans
     ()
@@ -52,30 +53,27 @@ import Servant.Server.Generic
     ( AsServerT )
 
 import qualified Cardano.Crypto.Hash.Class as Crypto
+import Cardano.Rest.Types
+    ( WebserverConfig (..), toWarpSettings )
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.Char as Char
 import qualified Data.Text as Text
 import qualified Data.Text.Encoding as Text
-import qualified Network.Wai.Handler.Warp as Warp
 import qualified Servant
 import qualified System.Metrics.Prometheus.Metric.Gauge as Gauge
 
 runTxSubmitServer
   :: Trace IO Text
   -> TxSubmitMetrics
-  -> TxSubmitPort
+  -> WebserverConfig
   -> Protocol
   -> NetworkId
   -> SocketPath
   -> IO ()
-runTxSubmitServer trce metrics (TxSubmitPort port) protocol networkId (SocketPath sockPath) = do
-  logInfo trce $
-    "Running tx-submit web server on http://localhost:"
-      <> textShow port
-      <> "/"
+runTxSubmitServer trce metrics webserverConfig protocol networkId (SocketPath sockPath) = do
   logException trce "tx-submit-webapi." $
-    Warp.run port (withlocalNodeConnectInfo protocol networkId sockPath $ txSubmitApp trce metrics)
+    Web.runSettings (toWarpSettings webserverConfig) (withlocalNodeConnectInfo protocol networkId sockPath $ txSubmitApp trce metrics)
   logInfo trce "txSubmitApp: exiting"
 
 txSubmitApp

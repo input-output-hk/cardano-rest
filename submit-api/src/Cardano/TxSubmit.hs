@@ -34,7 +34,7 @@ runTxSubmitWebapi tsnp = do
     trce <- mkTracer tsnc
     (metrics, metricsServer) <- registerMetricsServer
     txSubmitServer <- Async.async $
-      runTxSubmitServer trce metrics tspWebPort tspProtocol tspNetworkId tspSocketPath
+      runTxSubmitServer trce metrics tspWebserverConfig tspProtocol tspNetworkId tspSocketPath
     void $ Async.waitAnyCancel
       [ txSubmitServer
       , metricsServer
@@ -45,7 +45,7 @@ runTxSubmitWebapi tsnp = do
       { tspProtocol
       , tspNetworkId
       , tspSocketPath
-      , tspWebPort
+      , tspWebserverConfig
       } = tsnp
 
 mkTracer :: TxSubmitNodeConfig -> IO (Trace IO Text)

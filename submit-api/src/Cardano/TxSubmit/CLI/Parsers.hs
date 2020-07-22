@@ -8,26 +8,29 @@ module Cardano.TxSubmit.CLI.Parsers
   , pNetworkId
   , pProtocol
   , pSocketPath
-  , pWebPort
   ) where
 
-import           Prelude (read)
-import           Cardano.Prelude
+import Cardano.Prelude
 
-import           Options.Applicative (Parser, ParserInfo, (<**>))
+import Options.Applicative
+    ( Parser, ParserInfo, (<**>) )
 import qualified Options.Applicative as Opt
 
-import           Cardano.Api.Protocol (Protocol (..))
-import           Cardano.Api.Typed (NetworkId (..), NetworkMagic (..))
+import Cardano.Api.Protocol
+    ( Protocol (..) )
+import Cardano.Api.Typed
+    ( NetworkId (..), NetworkMagic (..) )
 
-import           Cardano.Chain.Slotting (EpochSlots (..))
+import Cardano.Chain.Slotting
+    ( EpochSlots (..) )
 
-import           Cardano.TxSubmit.CLI.Types (ConfigFile (..), SocketPath (..),
-                    TxSubmitNodeParams (..))
-import           Cardano.TxSubmit.Types (TxSubmitPort (..))
+import Cardano.TxSubmit.CLI.Types
+    ( ConfigFile (..), SocketPath (..), TxSubmitNodeParams (..) )
 
-import           Ouroboros.Consensus.Cardano (SecurityParam (..))
-
+import Cardano.Rest.Parsers
+    ( pWebserverConfig )
+import Ouroboros.Consensus.Cardano
+    ( SecurityParam (..) )
 opts :: ParserInfo TxSubmitNodeParams
 opts =
   Opt.info (pTxSubmitNodeParams <**> Opt.helper)
@@ -42,7 +45,7 @@ pTxSubmitNodeParams =
     <*> pProtocol
     <*> pNetworkId
     <*> pSocketPath
-    <*> pWebPort
+    <*> pWebserverConfig 8090
 
 pConfigFile :: Parser ConfigFile
 pConfigFile =
@@ -150,12 +153,4 @@ pSocketPath =
     <> Opt.help "Path to a cardano-node socket"
     <> Opt.completer (Opt.bashCompleter "file")
     <> Opt.metavar "FILEPATH"
-    )
-
-pWebPort :: Parser TxSubmitPort
-pWebPort =
-  TxSubmitPort . read <$> Opt.strOption
-    ( Opt.long "port"
-    <> Opt.help "The port the web API should listen on"
-    <> Opt.metavar "PORT"
     )

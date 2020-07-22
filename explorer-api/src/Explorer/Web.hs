@@ -1,5 +1,6 @@
 module Explorer.Web
   ( runServer
+  , WebserverConfig(..)
 
   -- For testing.
   , CAddress (..)
@@ -24,4 +25,4 @@ import Explorer.Web.Api.Legacy.Util (runQuery)
 import Explorer.Web.ClientTypes (CAddress (..), CTxAddressBrief (..), CAddressSummary (..),
         CCoin (..), CGenesisAddressInfo (..), CHash (..), CTxBrief (..), CTxHash (..))
 import Explorer.Web.Query (queryChainTip)
-import Explorer.Web.Server (runServer)
+import Explorer.Web.Server (runServer, WebserverConfig(..))

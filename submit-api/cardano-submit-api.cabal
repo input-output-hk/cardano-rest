@@ -35,10 +35,6 @@ library
                         -Wno-all-missed-specialisations
                         -Wno-missing-import-lists
 
-                        -threaded
-                        -rtsopts
-                        "-with-rtsopts=-T -I0"
-
   exposed-modules:      Cardano.TxSubmit
 
   other-modules:        Cardano.TxSubmit.CLI.Parsers
@@ -63,6 +59,7 @@ library
                       , cardano-crypto-class
                       , cardano-crypto-wrapper
                       , cardano-prelude
+                      , cardano-rest-common
                       , cardano-ledger
                       , containers
                       , contra-tracer
@@ -113,6 +110,10 @@ executable cardano-submit-api
                         -fwarn-unused-imports
                         -Wincomplete-record-updates
                         -Wincomplete-uni-patterns
+
+                        -threaded
+                        -rtsopts
+                        "-with-rtsopts=-T -I0"
 
   -- other-modules:
 

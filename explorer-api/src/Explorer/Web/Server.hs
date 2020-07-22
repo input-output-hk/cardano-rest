@@ -1,25 +1,29 @@
-{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Explorer.Web.Server (runServer) where
+module Explorer.Web.Server
+  ( runServer
+  , WebserverConfig(..)
+  ) where
 
 import Cardano.Db
-    ( Ada
-    , Block (..)
-    , queryTotalSupply
-    , readPGPassFileEnv
-    , toConnectionString
-    )
+    ( Ada, Block (..), PGConfig (..), queryTotalSupply, toConnectionString )
+import Cardano.Rest.Types
+    ( WebserverConfig (..), toWarpSettings )
+import Cardano.Rest.Web as Web
 import Control.Monad.IO.Class
     ( liftIO )
 import Control.Monad.Logger
-    ( runStdoutLoggingT )
+    ( logInfoN, runStdoutLoggingT )
 import Control.Monad.Trans.Except
     ( ExceptT (..), runExceptT, throwE )
 import Data.ByteString
     ( ByteString )
+import qualified Data.ByteString.Base16 as Base16
 import Data.Text
     ( Text )
+import Data.Text.Encoding
+    ( decodeUtf8 )
+import qualified Data.Text.Encoding as Text
 import Database.Persist.Postgresql
     ( withPostgresqlConn )
 import Database.Persist.Sql
@@ -53,6 +57,7 @@ import Explorer.Web.Query
     ( queryBlockSummary )
 import Servant
     ( Application, Handler, Server )
+import qualified Servant
 import Servant.API
     ( (:<|>) ((:<|>)) )
 import Servant.API.Generic
@@ -60,18 +65,13 @@ import Servant.API.Generic
 import Servant.Server.Generic
     ( AsServerT )
 
-import qualified Data.ByteString.Base16 as Base16
-import qualified Data.Text.Encoding as Text
-import qualified Network.Wai.Handler.Warp as Warp
-import qualified Servant
-
-runServer :: IO ()
-runServer = do
-  putStrLn "Running full server on http://localhost:8100/"
-  pgconfig <- readPGPassFileEnv
-  runStdoutLoggingT .
-    withPostgresqlConn (toConnectionString pgconfig) $ \backend ->
-      liftIO $ Warp.run 8100 (explorerApp backend)
+runServer :: WebserverConfig -> PGConfig -> IO ()
+runServer webserverConfig pgConfig =
+  runStdoutLoggingT $ do
+    let pgurl = pgcHost pgConfig <> ":" <> pgcPort pgConfig
+    logInfoN $ "Connecting to database at " <> decodeUtf8 pgurl
+    withPostgresqlConn (toConnectionString pgConfig) $ \backend ->
+      liftIO $ Web.runSettings (toWarpSettings webserverConfig) (explorerApp backend)
 
 explorerApp :: SqlBackend -> Application
 explorerApp backend = Servant.serve explorerApi (explorerHandlers backend)
