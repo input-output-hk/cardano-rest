@@ -1,17 +1,33 @@
+{-# LANGUAGE ApplicativeDo #-}
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Cardano.Rest.Parsers (pWebserverConfig) where
+
+module Cardano.Rest.Parsers
+  ( pWebserverConfig
+  ) where
 
 import Cardano.Rest.Types
-    ( WebserverConfig (WebserverConfig) )
+    ( WebserverConfig (..) )
 import Network.Wai.Handler.Warp
     ( HostPreference, Port )
 import Options.Applicative
     ( Parser )
 import Options.Applicative
-    ( auto, help, long, metavar, option, showDefault, value )
+    ( auto, help, long, metavar, option, showDefault, switch, value )
 
 pWebserverConfig :: Port -> Parser WebserverConfig
-pWebserverConfig defaultPort = WebserverConfig <$> pHostPreferenceOption <*> pPortOption defaultPort
+pWebserverConfig defaultPort = do
+  wcHost <- pHostPreferenceOption
+  isRandom <- pRandomPortOption
+  wcPort <- pPortOption defaultPort
+  pure
+    WebserverConfig
+      { wcHost
+      , wcPort =
+          if isRandom
+            then 0
+            else wcPort
+      }
 
 pHostPreferenceOption :: Parser HostPreference
 pHostPreferenceOption =
@@ -29,3 +45,9 @@ pPortOption defaultPort =
   long "port" <>
   metavar "INT" <>
   help "Port used for the API server." <> value defaultPort <> showDefault
+
+pRandomPortOption :: Parser Bool
+pRandomPortOption =
+  switch $
+  long "random-port" <>
+  help "Serve API on any available port (overrides --port)"

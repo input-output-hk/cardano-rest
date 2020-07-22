@@ -1,4 +1,3 @@
-{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Explorer.Web.Server
@@ -10,6 +9,7 @@ import Cardano.Db
     ( Ada, Block (..), PGConfig (..), queryTotalSupply, toConnectionString )
 import Cardano.Rest.Types
     ( WebserverConfig (..), toWarpSettings )
+import Cardano.Rest.Web as Web
 import Control.Monad.IO.Class
     ( liftIO )
 import Control.Monad.Logger
@@ -18,10 +18,12 @@ import Control.Monad.Trans.Except
     ( ExceptT (..), runExceptT, throwE )
 import Data.ByteString
     ( ByteString )
+import qualified Data.ByteString.Base16 as Base16
 import Data.Text
-    ( Text, pack )
+    ( Text )
 import Data.Text.Encoding
     ( decodeUtf8 )
+import qualified Data.Text.Encoding as Text
 import Database.Persist.Postgresql
     ( withPostgresqlConn )
 import Database.Persist.Sql
@@ -55,6 +57,7 @@ import Explorer.Web.Query
     ( queryBlockSummary )
 import Servant
     ( Application, Handler, Server )
+import qualified Servant
 import Servant.API
     ( (:<|>) ((:<|>)) )
 import Servant.API.Generic
@@ -62,20 +65,13 @@ import Servant.API.Generic
 import Servant.Server.Generic
     ( AsServerT )
 
-import qualified Data.ByteString.Base16 as Base16
-import qualified Data.Text.Encoding as Text
-import qualified Network.Wai.Handler.Warp as Warp
-import qualified Servant
-
 runServer :: WebserverConfig -> PGConfig -> IO ()
 runServer webserverConfig pgConfig =
   runStdoutLoggingT $ do
-    let warpSettings = toWarpSettings webserverConfig
-        pgurl = pgcHost pgConfig <> ":" <> pgcPort pgConfig
+    let pgurl = pgcHost pgConfig <> ":" <> pgcPort pgConfig
     logInfoN $ "Connecting to database at " <> decodeUtf8 pgurl
-    logInfoN $ "Running full server on " <> pack (show webserverConfig)
     withPostgresqlConn (toConnectionString pgConfig) $ \backend ->
-      liftIO $ Warp.runSettings warpSettings (explorerApp backend)
+      liftIO $ Web.runSettings (toWarpSettings webserverConfig) (explorerApp backend)
 
 explorerApp :: SqlBackend -> Application
 explorerApp backend = Servant.serve explorerApi (explorerHandlers backend)

@@ -37,10 +37,16 @@ library
 
   exposed-modules:      Cardano.Rest.Parsers
                       , Cardano.Rest.Types
+                      , Cardano.Rest.Web
 
   -- other-modules:
 
   build-depends:        base                            >= 4.12         && < 4.13
                       , cardano-db
                       , optparse-applicative
+                      , monad-logger
+                      , text
+                      , streaming-commons
+                      , network
+                      , servant-server
                       , warp
