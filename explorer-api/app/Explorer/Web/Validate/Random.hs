@@ -1,5 +1,7 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Explorer.Web.Validate.Random
   ( queryRandomAddress
@@ -8,16 +10,9 @@ module Explorer.Web.Validate.Random
   ) where
 
 import Cardano.Db
-    ( BlockId
-    , EntityField (..)
-    , Key (..)
-    , LookupFail (..)
-    , TxOut (..)
-    , TxOutId
-    , maybeToEither
-    )
+    ( BlockId, EntityField (..), Key (..), LookupFail (..), maybeToEither )
 import Control.Monad.IO.Class
-    ( MonadIO, liftIO )
+    ( MonadIO )
 import Control.Monad.Trans.Reader
     ( ReaderT )
 import Data.ByteString.Char8
@@ -27,15 +22,14 @@ import Data.Maybe
 import Data.Text
     ( Text )
 import Database.Esqueleto
-    ( Entity (..)
-    , InnerJoin (..)
+    ( InnerJoin (..)
+    , SqlBackend
     , SqlExpr
+    , SqlQuery
     , Value (..)
     , asc
-    , countRows
     , from
     , limit
-    , offset
     , on
     , orderBy
     , select
@@ -45,45 +39,28 @@ import Database.Esqueleto
     , (>.)
     , (^.)
     )
-import Database.Persist.Sql
-    ( SqlBackend )
-import System.Random
-    ( randomRIO )
-
+import Database.Esqueleto.PostgreSQL
+    ( random_ )
 
 -- | Get a random address.
 queryRandomAddress :: MonadIO m => ReaderT SqlBackend m (Either LookupFail Text)
 queryRandomAddress = do
-    res <- select . from $ \ (_ :: SqlExpr (Entity TxOut)) ->
-              pure countRows
-    case listToMaybe res of
-      Nothing -> pure $ Left (DbLookupMessage "queryRandomAddress: Empty TxOut table")
-      Just (Value txoCount) -> do
-        txoid <- liftIO $ randomRIO (1, txoCount - 1)
-        res1 <- select . from $ \ txOut -> do
-                  where_ (txOut ^. TxOutId ==. val (mkTxOutId txoid))
-                  pure (txOut ^. TxOutAddress)
-        pure $ maybeToEither errMsg unValue (listToMaybe res1)
+    res <- select . from $ \ txOut -> do
+             firstRandomRow
+             pure (txOut ^. TxOutAddress)
+    pure $ maybeToEither errMsg unValue (listToMaybe res)
   where
     errMsg :: LookupFail
-    errMsg = DbLookupMessage "queryRandomAddress: Lookup address by index failed"
+    errMsg = DbLookupMessage "queryRandomAddress: Lookup address"
 
 queryRandomBlockHash :: MonadIO m => ReaderT SqlBackend m (Either LookupFail ByteString)
 queryRandomBlockHash = do
     res <- select . from $ \ blk -> do
-              where_ (blk ^. BlockTxCount >. val 0)
-              pure countRows
-    case listToMaybe res of
-      Nothing -> pure $ Left (DbLookupMessage "queryRandomBlockHash: Empty Block table")
-      Just (Value blkCount) -> do
-        blkid <- liftIO $ randomRIO (1, blkCount - 1)
-        res1 <- select . from $ \ blk -> do
-                  where_ (blk ^. BlockTxCount >. val 0)
-                  orderBy [asc (blk ^. BlockId)]
-                  offset blkid
-                  limit 1
-                  pure (blk ^. BlockHash)
-        pure $ maybeToEither errMsg unValue (listToMaybe res1)
+             where_ (blk ^. BlockTxCount >. val 0)
+             firstRandomRow
+             limit 1
+             pure (blk ^. BlockHash)
+    pure $ maybeToEither errMsg unValue (listToMaybe res)
   where
     errMsg :: LookupFail
     errMsg = DbLookupMessage "queryRandomBlockHash: Lookup block by index failed"
@@ -91,24 +68,25 @@ queryRandomBlockHash = do
 queryRandomRedeemAddress :: MonadIO m => ReaderT SqlBackend m (Either LookupFail Text)
 queryRandomRedeemAddress = do
     res <- select . from $ \ (tx `InnerJoin` txOut) -> do
-              on (tx ^. TxId ==. txOut ^. TxOutTxId)
-              -- Block 1 contains all the TxOuts from the Genesis Distribution.
-              where_ (tx ^. TxBlock ==. val (mkBlockId 1))
-              pure countRows
-    case listToMaybe res of
-      Nothing -> pure $ Left (DbLookupMessage "queryRandomAddress: Empty TxOut table")
-      Just (Value txoCount) -> do
-        txoid <- liftIO $ randomRIO (1, txoCount - 1)
-        res1 <- select . from $ \ txOut -> do
-                  where_ (txOut ^. TxOutId ==. val (mkTxOutId txoid))
-                  pure (txOut ^. TxOutAddress)
-        pure $ maybeToEither errMsg unValue (listToMaybe res1)
+             -- Block 1 contains all the TxOuts from the Genesis Distribution.
+             where_ (tx ^. TxBlock ==. val (mkBlockId 1))
+             on (tx ^. TxId ==. txOut ^. TxOutTxId)
+             firstRandomRow
+             pure (txOut ^. TxOutAddress)
+    pure $ maybeToEither errMsg unValue (listToMaybe res)
   where
-    errMsg :: LookupFail
-    errMsg = DbLookupMessage "queryRandomRedeemAddress: Lookup address by index failed"
-
-mkTxOutId :: Word -> TxOutId
-mkTxOutId = TxOutKey . fromIntegral
+    errMsg ::  LookupFail
+    errMsg = DbLookupMessage "queryRandomRedeemAddress: Lookup address"
 
 mkBlockId :: Word -> BlockId
 mkBlockId = BlockKey . fromIntegral
+
+-- | Filter a table to pick a row at random row from the database.
+--
+-- Note: This will be fine for ad-hoc queries, but if you use it for
+-- anything high-performance, you should test it thoroughly first and
+-- consider alternative approaches.
+firstRandomRow :: SqlQuery ()
+firstRandomRow = do
+  orderBy [asc (random_ :: SqlExpr (Value Int))]
+  limit 1
