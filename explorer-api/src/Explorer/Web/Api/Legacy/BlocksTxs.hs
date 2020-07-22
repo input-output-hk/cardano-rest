@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TupleSections #-}
 
 module Explorer.Web.Api.Legacy.BlocksTxs
   ( blocksTxs
