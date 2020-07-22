@@ -53,7 +53,9 @@ pCommand =
 
     pCount :: Parser Word
     pCount =
-      read <$> Opt.strOption
+      Opt.option Opt.auto
         (  Opt.long "count"
-        <> Opt.help "The number of validations to run (default is 10)."
+        <> Opt.help "The number of validations to run."
+        <> Opt.value 10
+        <> Opt.showDefault
         )
