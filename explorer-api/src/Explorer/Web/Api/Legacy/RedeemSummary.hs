@@ -47,7 +47,6 @@ import Explorer.Web.ClientTypes
     , CTxAddressBrief (..)
     , CTxBrief (..)
     , CTxHash (..)
-    , mkCCoin
     )
 import Explorer.Web.Error
     ( ExplorerError (..) )
@@ -68,7 +67,7 @@ queryRedeemSummary chainTip addrTxt = do
               pure (txOut ^. TxOutValue)
     case rows of
       [] -> pure $ Left (Internal "queryRedeemSummary: Address not found")
-      [value] -> Right <$> queryRedeemed (mkCCoin . fromIntegral $ unValue value)
+      [value] -> Right <$> queryRedeemed (fromIntegral $ unValue value)
       _ -> pure $ Left (Internal "queryRedeemSummary: More than one entry")
   where
     queryRedeemed :: MonadIO m => CCoin -> ReaderT SqlBackend m CAddressSummary
@@ -93,9 +92,9 @@ queryRedeemSummary chainTip addrTxt = do
         , caChainTip = chainTip
         , caTxNum = 0
         , caBalance = balance
-        , caTotalInput = mkCCoin 0
-        , caTotalOutput = mkCCoin 0
-        , caTotalFee = mkCCoin 0
+        , caTotalInput = 0
+        , caTotalOutput = 0
+        , caTotalFee = 0
         , caTxList = []
         }
 
@@ -106,10 +105,10 @@ queryRedeemSummary chainTip addrTxt = do
         , caType = CRedeemAddress
         , caChainTip = chainTip
         , caTxNum = 1
-        , caBalance = mkCCoin 0
+        , caBalance = 0
         , caTotalInput = outval
         , caTotalOutput = outval
-        , caTotalFee = mkCCoin 0
+        , caTotalFee = 0
         , caTxList =
             [ CTxBrief
                 { ctbId = CTxHash . CHash $ bsBase16Encode txhash
@@ -132,7 +131,7 @@ queryRedeemSummary chainTip addrTxt = do
                     ]
                 , ctbInputSum = outval
                 , ctbOutputSum = outval
-                , ctbFees = mkCCoin 0
+                , ctbFees = 0
                 }
             ]
         }

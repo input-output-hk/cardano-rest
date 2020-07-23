@@ -30,7 +30,7 @@ import Database.Esqueleto
 import Database.Persist.Sql
     ( SqlPersistT )
 import Explorer.Web.ClientTypes
-    ( CGenesisSummary (..), mkCCoin )
+    ( CGenesisSummary (..) )
 import Explorer.Web.Error
     ( ExplorerError (..) )
 
@@ -42,8 +42,8 @@ genesisSummary = Right <$> do
             { cgsNumTotal = numTotal
             , cgsNumRedeemed = redTotal
             , cgsNumNotRedeemed = numTotal - redTotal
-            , cgsRedeemedAmountTotal = mkCCoin valRedeemed
-            , cgsNonRedeemedAmountTotal = mkCCoin $ valTotal - valRedeemed
+            , cgsRedeemedAmountTotal = fromIntegral valRedeemed
+            , cgsNonRedeemedAmountTotal = fromIntegral $ valTotal - valRedeemed
             }
 
 queryInitialGenesis :: MonadIO m => SqlPersistT m (Word, Integer)

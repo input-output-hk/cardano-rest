@@ -48,12 +48,10 @@ import Database.Persist.Sql
 import Explorer.Web.Api.Legacy.Util
 import Explorer.Web.ClientTypes
     ( CAddress (..)
-    , CCoin (..)
     , CHash (..)
     , CTxAddressBrief (..)
     , CTxHash (..)
     , CTxSummary (..)
-    , mkCCoin
     )
 import Explorer.Web.Error
     ( ExplorerError (..) )
@@ -89,9 +87,9 @@ txsSummary (CTxHash (CHash hashTxt)) =
               , ctsBlockSlot       = Just $ fromIntegral slot
               , ctsBlockHash       = Just . CHash $ bsBase16Encode (blockHash blk)
               , ctsRelayedBy       = Nothing
-              , ctsTotalInput      = mkCCoin . sum $ map (unCCoin . ctaAmount) inputs
-              , ctsTotalOutput     = mkCCoin . sum $ map (unCCoin . ctaAmount) outputs
-              , ctsFees            = mkCCoin $ fromIntegral (txFee tx)
+              , ctsTotalInput      = sum $ map ctaAmount inputs
+              , ctsTotalOutput     = sum $ map ctaAmount outputs
+              , ctsFees            = fromIntegral $ txFee tx
               , ctsInputs          = inputs
               , ctsOutputs         = outputs
               }
@@ -131,7 +129,7 @@ queryTxOutputs txid = do
     convert (Value addr, Value amount, Value txhash, Value index) =
       CTxAddressBrief
         { ctaAddress = CAddress addr
-        , ctaAmount = mkCCoin $ fromIntegral amount
+        , ctaAmount = fromIntegral amount
         , ctaTxHash = CTxHash $ CHash (bsBase16Encode txhash)
         , ctaTxIndex = fromIntegral index
         }
@@ -156,7 +154,7 @@ queryTxInputs txid = do
     convert (Value addr, Value amount, Value txhash, Value index) =
       CTxAddressBrief
         { ctaAddress = CAddress addr
-        , ctaAmount = mkCCoin $ fromIntegral amount
+        , ctaAmount = fromIntegral amount
         , ctaTxHash = CTxHash $ CHash (bsBase16Encode txhash)
         , ctaTxIndex = fromIntegral index
         }

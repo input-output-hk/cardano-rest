@@ -62,8 +62,6 @@ import Explorer.Web.ClientTypes
     , CTxAddressBrief (..)
     , CTxBrief (..)
     , CTxHash (..)
-    , mkCCoin
-    , sumCCoin
     )
 import Explorer.Web.Error
     ( ExplorerError (..) )
@@ -107,7 +105,7 @@ queryRedeemSummary chainTip blkHash addrTxt = do
               pure (txOut ^. TxOutValue)
     case rows of
       [] -> pure $ Left (Internal "queryRedeemSummary: Address not found")
-      [value] -> Right <$> queryRedeemed (mkCCoin . fromIntegral $ unValue value)
+      [value] -> Right <$> queryRedeemed (fromIntegral $ unValue value)
       _ -> pure $ Left (Internal "queryRedeemSummary: More than one entry")
   where
     queryRedeemed :: MonadIO m => CCoin -> SqlPersistT m CAddressSummary
@@ -133,9 +131,9 @@ queryRedeemSummary chainTip blkHash addrTxt = do
         , caChainTip = chainTip
         , caTxNum = 0
         , caBalance = balance
-        , caTotalInput = mkCCoin 0
-        , caTotalOutput = mkCCoin 0
-        , caTotalFee = mkCCoin 0
+        , caTotalInput = 0
+        , caTotalOutput = 0
+        , caTotalFee = 0
         , caTxList = []
         }
 
@@ -146,10 +144,10 @@ queryRedeemSummary chainTip blkHash addrTxt = do
         , caType = CRedeemAddress
         , caChainTip = chainTip
         , caTxNum = 1
-        , caBalance = mkCCoin 0
+        , caBalance = 0
         , caTotalInput = outval
         , caTotalOutput = outval
-        , caTotalFee = mkCCoin 0
+        , caTotalFee = 0
         , caTxList =
             [ CTxBrief
                 { ctbId = CTxHash . CHash $ bsBase16Encode txhash
@@ -172,7 +170,7 @@ queryRedeemSummary chainTip blkHash addrTxt = do
                     ]
                 , ctbInputSum = outval
                 , ctbOutputSum = outval
-                , ctbFees = mkCCoin 0
+                , ctbFees = 0
                 }
             ]
         }
@@ -203,17 +201,17 @@ queryAddressSummary chainTip blkHash addr = do
   where
     cAddressSummary :: [CTxBrief] -> [CTxBrief] -> CAddressSummary
     cAddressSummary itxs otxs =
-      let insum = sumCCoin . map ctaAmount $ filter isTargetAddress (concatMap ctbOutputs itxs)
-          outsum = sumCCoin . map ctaAmount $ filter isTargetAddress (concatMap ctbInputs otxs)
+      let insum = sum . map ctaAmount $ filter isTargetAddress (concatMap ctbOutputs itxs)
+          outsum = sum . map ctaAmount $ filter isTargetAddress (concatMap ctbInputs otxs)
           txs = List.sortOn ctbTimeIssued (itxs ++ otxs)
-          fees = sumCCoin $ map ctbFees txs
+          fees = sum $ map ctbFees txs
       in
       CAddressSummary
         { caAddress = CAddress addr
         , caType = CPubKeyAddress
         , caChainTip = chainTip
         , caTxNum = fromIntegral $ length txs
-        , caBalance = mkCCoin $ unCCoin insum - unCCoin outsum
+        , caBalance = insum - outsum
         , caTotalInput = insum
         , caTotalOutput = outsum
         , caTotalFee = fees
@@ -256,7 +254,7 @@ convert (Value txid, Value addr, Value coin, Value txhash, Value index) =
   ( txid
   , CTxAddressBrief
       { ctaAddress = CAddress addr
-      , ctaAmount = mkCCoin $ fromIntegral coin
+      , ctaAmount = fromIntegral coin
       , ctaTxHash = CTxHash . CHash $ bsBase16Encode txhash
       , ctaTxIndex = fromIntegral index
       }

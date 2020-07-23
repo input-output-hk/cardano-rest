@@ -40,7 +40,7 @@ import Explorer.Web.Api.Legacy.Types
 import Explorer.Web.Api.Legacy.Util
     ( toPageSize )
 import Explorer.Web.ClientTypes
-    ( CAddress (..), CAddressesFilter (..), CGenesisAddressInfo (..), mkCCoin )
+    ( CAddress (..), CAddressesFilter (..), CGenesisAddressInfo (..) )
 import Explorer.Web.Error
     ( ExplorerError (..) )
 
@@ -127,6 +127,6 @@ mkCGenesisAddressInfo :: (Value Text, Value Word64, Value Bool) -> CGenesisAddre
 mkCGenesisAddressInfo (vaddr, vvalue, vRedeemed) =
   CGenesisAddressInfo
     { cgaiCardanoAddress = CAddress (unValue vaddr)
-    , cgaiGenesisAmount = mkCCoin (fromIntegral $ unValue vvalue)
+    , cgaiGenesisAmount = fromIntegral $ unValue vvalue
     , cgaiIsRedeemed = unValue vRedeemed
     }

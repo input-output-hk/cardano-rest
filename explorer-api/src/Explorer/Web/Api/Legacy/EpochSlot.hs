@@ -37,7 +37,7 @@ import Database.Persist.Sql
     ( SqlPersistT )
 import Explorer.Web.Api.Legacy.Util
 import Explorer.Web.ClientTypes
-    ( CBlockEntry (..), CHash (..), mkCCoin )
+    ( CBlockEntry (..), CHash (..) )
 import Explorer.Web.Error
     ( ExplorerError (..) )
 
@@ -81,10 +81,10 @@ queryBlockBySlotNo flatSlotNo = do
                 , cbeBlkHash = CHash $ bsBase16Encode (blockHash block)
                 , cbeTimeIssued = Just $ blockPosixTime block
                 , cbeTxNum = 0
-                , cbeTotalSent = mkCCoin 0
+                , cbeTotalSent = 0
                 , cbeSize = blockSize block
                 , cbeBlockLead = Just $ bsBase16Encode sl
-                , cbeFees = mkCCoin 0
+                , cbeFees = 0
                 })
 
 queryBlockTx :: MonadIO m => (BlockId, CBlockEntry) -> SqlPersistT m CBlockEntry
@@ -108,12 +108,13 @@ queryBlockTx (blkId, entry) = do
     convert txCount fee mValue =
       entry
         { cbeTxNum = txCount
-        , cbeTotalSent = mkCCoin $ unSumValue mValue
-        , cbeFees = mkCCoin fee
+        , cbeTotalSent = unSumValue mValue
+        , cbeFees = fromIntegral fee
         }
 
-unSumValue :: Value (Maybe Uni) -> Integer
+unSumValue :: Num a => Value (Maybe Uni) -> a
 unSumValue mvi =
+  fromIntegral $
   case unValue mvi of
     Just (MkFixed x) -> x
     _ -> 0

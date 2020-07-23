@@ -38,7 +38,7 @@ import Database.Persist.Sql
     ( SqlPersistT )
 import Explorer.Web.Api.Legacy.Util
 import Explorer.Web.ClientTypes
-    ( CHash (..), CTxEntry (..), CTxHash (..), mkCCoin )
+    ( CHash (..), CTxEntry (..), CTxHash (..) )
 import Explorer.Web.Error
     ( ExplorerError (..) )
 
@@ -62,7 +62,7 @@ queryCTxEntry = do
       CTxEntry
         { cteId = CTxHash . CHash $ bsBase16Encode (unValue vhash)
         , cteTimeIssued = Just $ utcTimeToPOSIXSeconds (unValue vtime)
-        , cteAmount = mkCCoin (unTotal vtotal)
+        , cteAmount = unTotal vtotal
         }
 
 txOutValue :: SqlExpr (Entity Tx) -> SqlExpr (Value (Maybe Uni))
@@ -72,8 +72,9 @@ txOutValue tx =
     where_ (txOut ^. TxOutTxId ==. tx ^. TxId)
     pure $ sum_ (txOut ^. TxOutValue)
 
-unTotal :: Value (Maybe Uni) -> Integer
+unTotal :: Num a => Value (Maybe Uni) -> a
 unTotal mvi =
+  fromIntegral $
   case unValue mvi of
     Just (MkFixed x) -> x
     _ -> 0

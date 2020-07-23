@@ -45,12 +45,10 @@ import Database.Persist.Sql
 import Explorer.Web.Api.Legacy.Types
     ( PageSize (..) )
 import Explorer.Web.ClientTypes
-    ( CCoin (..)
-    , CHash (..)
+    ( CHash (..)
     , CTxAddressBrief (..)
     , CTxBrief (..)
     , CTxHash (..)
-    , mkCCoin
     )
 import Explorer.Web.Error
     ( ExplorerError (..) )
@@ -122,7 +120,7 @@ unflattenSlotNo w = fromIntegral (w `mod` slotsPerEpoch)
 
 zipTxBrief :: [(TxId, ByteString, UTCTime)] -> [(TxId, [CTxAddressBrief])] -> [(TxId, [CTxAddressBrief])] -> [CTxBrief]
 zipTxBrief xs ins outs =
-    mapMaybe build $ map fst3 xs
+    mapMaybe (build . fst3) xs
   where
     idMap :: Map TxId (ByteString, UTCTime)
     idMap = Map.fromList $ map (\(a, b, c) -> (a, (b, c))) xs
@@ -138,14 +136,14 @@ zipTxBrief xs ins outs =
       (hash, time) <- Map.lookup txid idMap
       inputs <- Map.lookup txid inMap
       outputs <- Map.lookup txid outMap
-      inSum <- Just $ sum (map (unCCoin . ctaAmount) inputs)
-      outSum <- Just $ sum (map (unCCoin . ctaAmount) outputs)
+      inSum <- Just $ sum (map ctaAmount inputs)
+      outSum <- Just $ sum (map ctaAmount outputs)
       pure $ CTxBrief
               { ctbId = CTxHash . CHash $ bsBase16Encode hash
               , ctbTimeIssued = Just $ utcTimeToPOSIXSeconds time
               , ctbInputs = inputs
               , ctbOutputs = outputs
-              , ctbInputSum = mkCCoin inSum
-              , ctbOutputSum = mkCCoin outSum
-              , ctbFees = mkCCoin (inSum - outSum)
+              , ctbInputSum = inSum
+              , ctbOutputSum = outSum
+              , ctbFees = inSum - outSum
               }
