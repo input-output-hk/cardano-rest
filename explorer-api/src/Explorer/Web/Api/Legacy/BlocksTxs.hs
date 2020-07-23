@@ -120,7 +120,7 @@ queryTxInputs txids = do
             CTxAddressBrief
               { ctaAddress = CAddress addr
               , ctaAmount = mkCCoin $ fromIntegral coin
-              , ctaTxHash = if True then genesisDistributionTxHash else CTxHash (CHash "queryTxInputs Genesis")
+              , ctaTxHash = genesisDistributionTxHash
               , ctaTxIndex = 0
               }
           else
