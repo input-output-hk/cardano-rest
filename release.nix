@@ -129,6 +129,7 @@ let
     in pkgs.runCommand "${name}-macos64" {
       buildInputs = with pkgs.buildPackages; [ gnutar gzip binutils nix ];
     } ''
+      mkdir -p ${name}/bin
       cp -R ${jobs.native.cardano-explorer-api.x86_64-darwin}/bin ${name}
       cp -R ${jobs.native.cardano-submit-api.x86_64-darwin}/bin ${name}
       chmod -R 755 ${name}
