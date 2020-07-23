@@ -7,15 +7,15 @@ packages:
 
 package cardano-rest-common
   tests: True
-  ghc-options: -Wall -Werror -fwarn-redundant-constraints
+  ghc-options: -Wall -Werror -fwarn-redundant-constraints -Wno-error=missing-local-signatures
 
 package cardano-explorer-api
   tests: True
-  ghc-options: -Wall -Werror -fwarn-redundant-constraints
+  ghc-options: -Wall -Werror -fwarn-redundant-constraints -Wno-error=missing-local-signatures
 
 package cardano-submit-api
   tests: True
-  ghc-options: -Wall -Werror -fwarn-redundant-constraints
+  ghc-options: -Wall -Werror -fwarn-redundant-constraints -Wno-error=missing-local-signatures
 
 package cardano-db-sync
   tests: False
