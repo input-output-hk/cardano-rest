@@ -17,7 +17,7 @@ import Cardano.Db
     , blockSlotNo
     , isJust
     , querySelectCount
-    , querySlotPosixTime
+    , querySlotUtcTime
     , unValueSumAda
     )
 import Control.Monad.IO.Class
@@ -27,7 +27,7 @@ import Data.ByteString
 import Data.Maybe
     ( listToMaybe )
 import Data.Time.Clock.POSIX
-    ( POSIXTime )
+    ( POSIXTime, utcTimeToPOSIXSeconds )
 import Data.Word
     ( Word64 )
 import Database.Esqueleto
@@ -127,7 +127,7 @@ queryBlockSummary blkHash = do
 
 querySlotTimeSeconds :: MonadIO m => Word64 -> SqlPersistT m (Maybe POSIXTime)
 querySlotTimeSeconds slotNo =
-  either (const Nothing) Just <$> querySlotPosixTime slotNo
+  either (const Nothing) (Just . utcTimeToPOSIXSeconds) <$> querySlotUtcTime slotNo
 
 queryTotalFeeInBlock :: MonadIO m => BlockId -> SqlPersistT m Ada
 queryTotalFeeInBlock blockid = do

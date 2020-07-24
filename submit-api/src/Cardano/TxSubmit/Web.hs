@@ -178,4 +178,4 @@ renderMediumTxId (TxId hash) = renderMediumHash hash
 -- | Render the first 16 characters of a hex-encoded hash.
 renderMediumHash :: Crypto.Hash crypto a -> Text
 renderMediumHash =
-  Text.take 16 . Text.decodeLatin1 . Crypto.getHashBytesAsHex
+  Text.take 16 . Text.decodeLatin1 . Crypto.hashToBytesAsHex

@@ -42,7 +42,7 @@ module Explorer.Web.ClientTypes
        ) where
 
 import Cardano.Crypto.Hash.Class
-    ( Hash (getHash) )
+    ( Hash(..), hashToBytes )
 import Cardano.Db
     ( Ada (..) )
 import Control.DeepSeq
@@ -291,7 +291,7 @@ instance ToJSON CAddressBalanceError where
 --------------------------------------------------------------------------------
 
 toCHash :: Hash h a -> CHash
-toCHash = CHash . T.decodeLatin1 . B16.encode . getHash
+toCHash = CHash . T.decodeLatin1 . B16.encode . hashToBytes
 
 instance FromHttpApiData CHash where
     parseUrlPiece url = case B16.decode (B8.pack (T.unpack url)) of
