@@ -89,7 +89,7 @@ pProtocol :: Parser Protocol
 pProtocol =
     (  Opt.flag' ()
         (  Opt.long "shelley-mode"
-        <> Opt.help "For talking to a node running in Shelley-only mode (default)."
+        <> Opt.help "For talking to a node running in Shelley-only mode."
         )
     *> pShelley
     )
@@ -103,13 +103,16 @@ pProtocol =
   <|>
     (  Opt.flag' ()
         (  Opt.long "cardano-mode"
-        <> Opt.help "For talking to a node running in full Cardano mode."
+        <> Opt.help "For talking to a node running in full Cardano mode (default)."
         )
     *> pCardano
     )
   <|>
-    -- Default to the Shelley protocol for now, due to the testnet.
-    pure ShelleyProtocol
+    -- Default to the Cardano protocol.
+    pure
+      (CardanoProtocol
+        (EpochSlots defaultByronEpochSlots)
+        (SecurityParam defaultSecurityParam))
   where
     pByron :: Parser Protocol
     pByron = ByronProtocol <$> pEpochSlots <*> pSecurityParam
@@ -123,28 +126,30 @@ pProtocol =
     pEpochSlots :: Parser EpochSlots
     pEpochSlots =
       EpochSlots <$>
-        ( Opt.option Opt.auto
-            (  Opt.long "epoch-slots"
-            <> Opt.metavar "NATURAL"
-            <> Opt.help "The number of slots per epoch (default is 21600)."
-            )
-        <|>
-          -- Default to the mainnet value.
-          pure 21600
-        )
+        Opt.option Opt.auto
+          (  Opt.long "epoch-slots"
+          <> Opt.metavar "NATURAL"
+          <> Opt.help "The number of slots per epoch for the Byron era."
+          <> Opt.value defaultByronEpochSlots -- Default to the mainnet value.
+          <> Opt.showDefault
+          )
 
     pSecurityParam :: Parser SecurityParam
     pSecurityParam =
       SecurityParam <$>
-        ( Opt.option Opt.auto
-            (  Opt.long "security-param"
-            <> Opt.metavar "NATURAL"
-            <> Opt.help "The security parameter (default is 2160)."
-            )
-        <|>
-          -- Default to the mainnet value.
-          pure 2160
-        )
+        Opt.option Opt.auto
+          (  Opt.long "security-param"
+          <> Opt.metavar "NATURAL"
+          <> Opt.help "The security parameter."
+          <> Opt.value defaultSecurityParam -- Default to the mainnet value.
+          <> Opt.showDefault
+          )
+
+    defaultByronEpochSlots :: Word64
+    defaultByronEpochSlots = 21600
+
+    defaultSecurityParam :: Word64
+    defaultSecurityParam = 2160
 
 pSocketPath :: Parser SocketPath
 pSocketPath =
