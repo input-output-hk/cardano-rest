@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -36,10 +37,8 @@ module Explorer.Web.ClientTypes
        , CCoin(..)
        , CByteString (..)
        , toCHash
-       , mkCCoin
        , adaToCCoin
        , cCoinToAda
-       , sumCCoin
        ) where
 
 import Cardano.Crypto.Hash.Class
@@ -128,22 +127,16 @@ newtype CNetwork = CNetwork Text
 newtype CCoin = CCoin
     { unCCoin :: Integer
     } deriving (Show, Generic, Eq)
+      deriving newtype (Num, Ord)
 
 instance ToJSON CCoin where
   toJSON (CCoin coin) = Aeson.object [ ("getCoin", Aeson.String (T.pack $ show coin)) ]
-
-mkCCoin :: Integer -> CCoin
-mkCCoin = CCoin
 
 adaToCCoin :: Ada -> CCoin
 adaToCCoin (Ada (MkFixed ll)) = CCoin ll
 
 cCoinToAda :: CCoin -> Ada
 cCoinToAda (CCoin ll) = Ada (MkFixed ll)
-
-
-sumCCoin :: [CCoin] -> CCoin
-sumCCoin = mkCCoin . sum . map unCCoin
 
 -- | List of block entries is returned from "get latest N blocks" endpoint
 data CBlockEntry = CBlockEntry

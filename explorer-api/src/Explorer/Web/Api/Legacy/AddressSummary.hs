@@ -57,13 +57,10 @@ import Explorer.Web.ClientTypes
     , CAddressSummary (..)
     , CAddressType (..)
     , CChainTip (..)
-    , CCoin (..)
     , CHash (..)
     , CTxAddressBrief (..)
     , CTxBrief (..)
     , CTxHash (..)
-    , mkCCoin
-    , sumCCoin
     )
 import Explorer.Web.Error
     ( ExplorerError (..) )
@@ -130,17 +127,17 @@ queryNonRedeemSummary chainTip addr = do
   where
     cAddressSummary :: [CTxBrief] -> [CTxBrief] -> CAddressSummary
     cAddressSummary itxs otxs =
-      let insum = sumCCoin . map ctaAmount $ filter isTargetAddress (concatMap ctbOutputs itxs)
-          outsum = sumCCoin . map ctaAmount $ filter isTargetAddress (concatMap ctbInputs otxs)
+      let insum = sum . map ctaAmount $ filter isTargetAddress (concatMap ctbOutputs itxs)
+          outsum = sum . map ctaAmount $ filter isTargetAddress (concatMap ctbInputs otxs)
           txs = List.sortOn ctbTimeIssued (itxs ++ otxs)
-          fees = sumCCoin $ map ctbFees txs
+          fees = sum $ map ctbFees txs
       in
       CAddressSummary
         { caAddress = CAddress addr
         , caType = CPubKeyAddress
         , caChainTip = chainTip
         , caTxNum = fromIntegral $ length txs
-        , caBalance = mkCCoin $ unCCoin insum - unCCoin outsum
+        , caBalance = insum - outsum
         , caTotalInput = insum
         , caTotalOutput = outsum
         , caTotalFee = fees
@@ -176,14 +173,14 @@ queryTxInputs txids = do
           then
             CTxAddressBrief
               { ctaAddress = CAddress addr
-              , ctaAmount = mkCCoin $ fromIntegral coin
-              , ctaTxHash = if True then genesisDistributionTxHash else CTxHash (CHash "queryTxInputs Genesis")
+              , ctaAmount = fromIntegral coin
+              , ctaTxHash = genesisDistributionTxHash
               , ctaTxIndex = 0
               }
           else
             CTxAddressBrief
               { ctaAddress = CAddress addr
-              , ctaAmount = mkCCoin $ fromIntegral coin
+              , ctaAmount = fromIntegral coin
               , ctaTxHash = CTxHash $ CHash (bsBase16Encode txh)
               , ctaTxIndex = fromIntegral index
               }
@@ -202,7 +199,7 @@ queryTxOutputs txids = do
       ( txid
       , CTxAddressBrief
           { ctaAddress = CAddress addr
-          , ctaAmount = mkCCoin $ fromIntegral coin
+          , ctaAmount = fromIntegral coin
           , ctaTxHash = CTxHash . CHash $ bsBase16Encode txhash
           , ctaTxIndex = fromIntegral index
           }

@@ -20,11 +20,11 @@ import Database.Persist.Sql
 import Explorer.Web
     ( CAddress (..)
     , CAddressSummary (..)
-    , CCoin (..)
     , CHash (..)
     , CTxBrief (..)
     , CTxHash (..)
     , queryAddressSummary
+    , unCCoin
     )
 import Explorer.Web.Api.Legacy.Util
     ( decodeTextAddress, textShow )
@@ -44,7 +44,7 @@ validateAddressSummary = do
     addr <- handleExplorerError $ decodeTextAddress addrTxt
     handleExplorerError =<< queryAddressSummary addrTxt addr
   liftIO $ do
-    if unCCoin (caBalance addrSum) >= 0
+    if caBalance addrSum >= 0
     then reportAddressSummaryOk addrSum
     else reportAddressSummaryFail addrSum
     validateAddressTotalFees addrSum
@@ -57,7 +57,7 @@ validateRedeemAddressSummary = do
     addrTxt <- handleLookupFail =<< queryRandomRedeemAddress
     addr <- handleExplorerError $ decodeTextAddress addrTxt
     handleExplorerError =<< queryAddressSummary addrTxt addr
-  liftIO $ if unCCoin (caBalance addrSum) >= 0
+  liftIO $ if caBalance addrSum >= 0
     then reportAddressSummaryOk addrSum
     else reportAddressSummaryFail addrSum
 
@@ -65,7 +65,7 @@ validateRedeemAddressSummary = do
 
 validateAddressTotalFees :: CAddressSummary -> IO ()
 validateAddressTotalFees addrSum =
-    if unCCoin (caBalance addrSum) >= 0
+    if caBalance addrSum >= 0
       then reportAddressFeesOk
       else reportAddressFeesFail
   where
@@ -85,7 +85,7 @@ validateAddressTotalFees addrSum =
 
 validateTxFeeNonNegative :: CAddressSummary -> IO ()
 validateTxFeeNonNegative addrSum =
-    case filter (\x -> unCCoin (ctbFees x) < 0) (caTxList addrSum) of
+    case filter (\x -> ctbFees x < 0) (caTxList addrSum) of
       [] -> reportAddressSummaryTxFeeOk
       xs -> reportAddressSummaryTxFeeFail xs
   where
@@ -129,15 +129,17 @@ reportCAddressSummary addrSum =
     , "    type: " <> textShow (caType addrSum)
     , "    tx count: " <> textShow (caTxNum addrSum)
     , "    balance: " <>
-            let balance = unCCoin (caBalance addrSum) in
-            if balance < 0
-              then red (textShow balance)
-              else green (textShow balance)
+            let balance = caBalance addrSum in
+            (if balance < 0
+               then red
+               else green) $
+              textShow $ unCCoin balance
     , "    fees: " <>
-            let fees = unCCoin (caTotalFee addrSum) in
-            if fees < 0
-              then red (textShow fees)
-              else green (textShow fees)
+            let fees = caTotalFee addrSum in
+            (if fees < 0
+               then red
+               else green) $
+              textShow $ unCCoin fees
     , ""
     ]
 
@@ -148,10 +150,11 @@ reportCTxBrief tx =
     , "    input count: " <> textShow (length $ ctbInputs tx)
     , "    output count: " <> textShow (length $ ctbOutputs tx)
     , "    fees: " <>
-            let fees = unCCoin (ctbFees tx) in
-            if fees < 0
-              then red (textShow fees)
-              else green (textShow fees)
+            let fees = ctbFees tx in
+            (if fees < 0
+               then red
+               else green) $
+              textShow $ unCCoin fees
     , ""
     ]
 

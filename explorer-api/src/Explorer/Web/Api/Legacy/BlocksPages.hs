@@ -42,7 +42,7 @@ import Explorer.Web.Api.Legacy.Types
 import Explorer.Web.Api.Legacy.Util
     ( bsBase16Encode, slotsPerEpoch )
 import Explorer.Web.ClientTypes
-    ( CBlockEntry (..), CHash (..), mkCCoin )
+    ( CBlockEntry (..), CHash (..) )
 import Explorer.Web.Error
     ( ExplorerError (..) )
 import qualified Data.List as List
@@ -135,8 +135,8 @@ queryCBlockEntry (Entity blkId block, Value slHash) = do
         , cbeBlkHash = CHash $ bsBase16Encode (blockHash block)
         , cbeTimeIssued = Just $ utcTimeToPOSIXSeconds (blockTime block)
         , cbeTxNum = fromIntegral $ length xs
-        , cbeTotalSent = mkCCoin $ fromIntegral (sum $ map fst xs)
+        , cbeTotalSent = fromIntegral (sum $ map fst xs)
         , cbeSize = blockSize block
         , cbeBlockLead = Just $ bsBase16Encode slHash
-        , cbeFees = mkCCoin $ fromIntegral (sum $ map snd xs)
+        , cbeFees = fromIntegral (sum $ map snd xs)
         }

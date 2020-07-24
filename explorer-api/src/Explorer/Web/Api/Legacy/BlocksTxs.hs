@@ -55,7 +55,6 @@ import Explorer.Web.ClientTypes
     , CTxAddressBrief (..)
     , CTxBrief (..)
     , CTxHash (..)
-    , mkCCoin
     )
 import Explorer.Web.Error
     ( ExplorerError (..) )
@@ -119,14 +118,14 @@ queryTxInputs txids = do
           then
             CTxAddressBrief
               { ctaAddress = CAddress addr
-              , ctaAmount = mkCCoin $ fromIntegral coin
-              , ctaTxHash = if True then genesisDistributionTxHash else CTxHash (CHash "queryTxInputs Genesis")
+              , ctaAmount = fromIntegral coin
+              , ctaTxHash = genesisDistributionTxHash
               , ctaTxIndex = 0
               }
           else
             CTxAddressBrief
               { ctaAddress = CAddress addr
-              , ctaAmount = mkCCoin $ fromIntegral coin
+              , ctaAmount = fromIntegral coin
               , ctaTxHash = CTxHash $ CHash (bsBase16Encode txh)
               , ctaTxIndex = fromIntegral index
               }
@@ -145,7 +144,7 @@ queryTxOutputs txids = do
       ( txid
       , CTxAddressBrief
           { ctaAddress = CAddress addr
-          , ctaAmount = mkCCoin $ fromIntegral coin
+          , ctaAmount = fromIntegral coin
           , ctaTxHash = CTxHash . CHash $ bsBase16Encode txhash
           , ctaTxIndex = fromIntegral index
           }

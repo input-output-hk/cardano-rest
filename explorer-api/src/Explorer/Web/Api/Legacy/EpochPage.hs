@@ -50,7 +50,7 @@ import Explorer.Web.Api.Legacy.Types
 import Explorer.Web.Api.Legacy.Util
     ( bsBase16Encode, divRoundUp, slotsPerEpoch, textShow )
 import Explorer.Web.ClientTypes
-    ( CBlockEntry (..), CHash (..), mkCCoin )
+    ( CBlockEntry (..), CHash (..) )
 import Explorer.Web.Error
     ( ExplorerError (..) )
 
@@ -110,14 +110,15 @@ queryEpochBlocks epoch epochBlocks (PageNo page) = do
         , cbeBlkHash = CHash $ bsBase16Encode (blockHash blk)
         , cbeTimeIssued = Just $ utcTimeToPOSIXSeconds (blockTime blk)
         , cbeTxNum = fromIntegral (blockTxCount blk)
-        , cbeTotalSent = mkCCoin $ unTotal vmOutSum
+        , cbeTotalSent = unTotal vmOutSum
         , cbeSize = blockSize blk
         , cbeBlockLead = Just $ bsBase16Encode slh
-        , cbeFees = mkCCoin $ unTotal vmFee
+        , cbeFees = unTotal vmFee
         }
 
-unTotal :: Value (Maybe Uni) -> Integer
+unTotal :: Num a => Value (Maybe Uni) -> a
 unTotal mvi =
+  fromIntegral $
   case unValue mvi of
     Just (MkFixed x) -> x
     _ -> 0
