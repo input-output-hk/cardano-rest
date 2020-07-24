@@ -5,7 +5,6 @@
 
 module Cardano.TxSubmit.Config
   ( TxSubmitNodeConfig
-  , GenesisHash (..)
   , GenTxSubmitNodeConfig (..)
   , readTxSubmitNodeConfig
   ) where
@@ -13,8 +12,6 @@ module Cardano.TxSubmit.Config
 import qualified Cardano.BM.Configuration as Logging
 import qualified Cardano.BM.Configuration.Model as Logging
 import qualified Cardano.BM.Data.Configuration as Logging
-
-import           Cardano.Crypto (RequiresNetworkMagic (..))
 
 import           Cardano.Prelude
 
@@ -24,7 +21,6 @@ import           Data.Aeson (FromJSON (..), Object, Value (..), (.:))
 import           Data.Aeson.Types (Parser)
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString.Char8 as BS
-import           Data.Text (Text)
 import qualified Data.Text as Text
 import qualified Data.Yaml as Yaml
 
@@ -32,16 +28,9 @@ type TxSubmitNodeConfig = GenTxSubmitNodeConfig Logging.Configuration
 
 data GenTxSubmitNodeConfig a = GenTxSubmitNodeConfig
   { tscLoggingConfig :: !a
-  , tscGenesisHash :: !GenesisHash
   , tscEnableLogging :: !Bool
   , tscEnableMetrics :: !Bool
-  , tscRequiresNetworkMagic :: !RequiresNetworkMagic
   }
-
-newtype GenesisHash = GenesisHash
-  { unGenesisHash :: Text
-  }
-
 
 readTxSubmitNodeConfig :: FilePath -> IO TxSubmitNodeConfig
 readTxSubmitNodeConfig fp = do
@@ -70,7 +59,5 @@ parseGenTxSubmitNodeConfig :: Object -> Parser (GenTxSubmitNodeConfig Logging.Re
 parseGenTxSubmitNodeConfig o =
   GenTxSubmitNodeConfig
     <$> parseJSON (Object o)
-    <*> fmap GenesisHash (o .: "GenesisHash")
     <*> o .: "EnableLogging"
     <*> o .: "EnableLogMetrics"
-    <*> o .: "RequiresNetworkMagic"

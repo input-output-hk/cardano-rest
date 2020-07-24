@@ -1,7 +1,5 @@
-# Explorer DB Node configuration
+# Tx Submission Server Configuration
 
-RequiresNetworkMagic: RequiresNoMagic
-GenesisHash: 5f20df933584822601f9e3f8c024eb5eb252fe8cefb24d1317dc3d432e940ebb
 EnableLogMetrics: False
 EnableLogging: True
 
@@ -100,4 +98,3 @@ options:
       - AggregationBK
     '#aggregation.cardano.epoch-validation.benchmark':
       - EKGViewBK
-
