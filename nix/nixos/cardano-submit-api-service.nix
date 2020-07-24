@@ -26,9 +26,14 @@ in {
         type = lib.types.nullOr lib.types.path;
         default = null;
       };
+      config = lib.mkOption {
+        type = lib.types.nullOr lib.types.attrs;
+        default = localPkgs.iohkNix.cardanoLib.defaultExplorerLogConfig;
+      };
       network = lib.mkOption {
         type = lib.types.nullOr lib.types.str;
         description = "network name";
+        default = null;
       };
       environment = lib.mkOption {
         type = lib.types.nullOr lib.types.attrs;
@@ -36,17 +41,20 @@ in {
       };
     };
   };
-  config = lib.mkIf cfg.enable {
+  config = let
+    envNodeCfg = cfg.environment.nodeConfig;
+    shelleyGenesisParams = __fromJSON (__readFile envNodeCfg.ShelleyGenesisFile);
+    envFlag = if cfg.network == "mainnet" then "--mainnet" else "--testnet-magic ${toString shelleyGenesisParams.networkMagic}";
+  in lib.mkIf cfg.enable {
     services.cardano-submit-api.script = pkgs.writeShellScript "cardano-submit-api" ''
       ${if (cfg.socketPath == null) then ''if [ -z "$CARDANO_NODE_SOCKET_PATH" ]
       then
         echo "You must set \$CARDANO_NODE_SOCKET_PATH"
         exit 1
       fi'' else "export \"CARDANO_NODE_SOCKET_PATH=${cfg.socketPath}\""}
-      exec ${cfg.package}/bin/cardano-submit-api --socket-path "$CARDANO_NODE_SOCKET_PATH" \
-            --genesis-file ${envConfig.genesisFile} \
+      exec ${cfg.package}/bin/cardano-submit-api --socket-path "$CARDANO_NODE_SOCKET_PATH" ${envFlag} \
             --port ${toString cfg.port} \
-            --config ${builtins.toFile "submit-api.json" (builtins.toJSON cfg.environment.submitApiConfig)}
+            --config ${builtins.toFile "submit-api.json" (builtins.toJSON cfg.config)}
     '';
     systemd.services.cardano-submit-api = {
       serviceConfig = {
