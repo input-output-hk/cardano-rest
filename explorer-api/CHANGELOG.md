@@ -1,4 +1,14 @@
-# Revision history for cardano-explorer-api
+# Changelog
+
+## 2.1.0 -- July 2020
+
+ * You can now specify the webserver settings on the command line.
+ * Moving some sharable code into a cardano-rest-common/ package.
+ * Tidyied the way the explorer prints its connection details on startup.
+ * Adding a '--random-port' flag..
+ * Internal refactoring.
+ * Bugfixes for cardano-explorer-api-validate.
+ * Fixed defaults for the command line flags.
 
 ## 2.0.0 -- March 2020
 
