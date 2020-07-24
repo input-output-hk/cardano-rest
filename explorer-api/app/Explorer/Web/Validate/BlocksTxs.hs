@@ -5,32 +5,42 @@ module Explorer.Web.Validate.BlocksTxs
   ( validateBlocksTxs
   ) where
 
+import Control.Monad.IO.Class
+    ( MonadIO, liftIO )
 import qualified Data.List as List
-import           Data.Text (Text)
+import Data.Text
+    ( Text )
 import qualified Data.Text as Text
-import           Data.Text.ANSI (green, red)
+import Data.Text.ANSI
+    ( green, red )
 import qualified Data.Text.IO as Text
 
-import           Database.Persist.Sql (SqlBackend)
+import Database.Persist.Sql
+    ( SqlPersistT )
 
-import           Explorer.Web (CTxBrief (..), CTxAddressBrief (..), CTxBrief (..),
-                    queryBlocksTxs, runQuery)
-import           Explorer.Web.Api.Legacy.Util (bsBase16Encode)
-import           Explorer.Web.Validate.Random (queryRandomBlockHash)
-import           Explorer.Web.Validate.ErrorHandling (handleLookupFail, handleExplorerError)
+import Explorer.Web
+    ( CTxAddressBrief (..), CTxBrief (..), queryBlocksTxs )
+import Explorer.Web.Api.Legacy.Util
+    ( bsBase16Encode )
+import Explorer.Web.Validate.ErrorHandling
+    ( handleExplorerError, handleLookupFail )
+import Explorer.Web.Validate.Random
+    ( queryRandomBlockHash )
 
-import           System.Exit (exitFailure)
+import System.Exit
+    ( exitFailure )
 
-import           Text.Show.Pretty (ppShow)
+import Text.Show.Pretty
+    ( ppShow )
 
-validateBlocksTxs :: SqlBackend -> IO ()
-validateBlocksTxs backend = do
-  (blkHash, txs) <- runQuery backend $ do
-                      blkHash <- handleLookupFail =<< queryRandomBlockHash
-                      (blkHash,) <$> (handleExplorerError =<< queryBlocksTxs blkHash 100 0)
-
-  validateInputsUnique (bsBase16Encode blkHash) $ List.sortOn ctaAddress (concatMap ctbInputs txs)
-  validateOutputsUnique (bsBase16Encode blkHash) $ List.sortOn ctaAddress (concatMap ctbOutputs txs)
+validateBlocksTxs :: MonadIO m => SqlPersistT m ()
+validateBlocksTxs = do
+  (blkHash, txs) <- do
+     blkHash <- handleLookupFail =<< queryRandomBlockHash
+     (blkHash,) <$> (handleExplorerError =<< queryBlocksTxs blkHash 100 0)
+  liftIO $ do
+    validateInputsUnique (bsBase16Encode blkHash) $ List.sortOn ctaAddress (concatMap ctbInputs txs)
+    validateOutputsUnique (bsBase16Encode blkHash) $ List.sortOn ctaAddress (concatMap ctbOutputs txs)
 
 
 -- -------------------------------------------------------------------------------------------------

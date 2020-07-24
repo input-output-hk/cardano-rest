@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TupleSections #-}
 
 module Explorer.Web.Api.Legacy.BlocksTxs
   ( blocksTxs
@@ -12,8 +11,6 @@ import Cardano.Db
     ( EntityField (..), TxId, unValue3 )
 import Control.Monad.IO.Class
     ( MonadIO )
-import Control.Monad.Trans.Reader
-    ( ReaderT )
 import Data.ByteString.Char8
     ( ByteString )
 import Data.Int
@@ -44,12 +41,11 @@ import Database.Esqueleto
     , (^.)
     )
 import Database.Persist.Sql
-    ( SqlBackend )
+    ( SqlPersistT )
 import Explorer.Web.Api.Legacy.Util
     ( bsBase16Encode
     , collapseTxGroup
     , genesisDistributionTxHash
-    , runQuery
     , textBase16Decode
     , zipTxBrief
     )
@@ -63,8 +59,6 @@ import Explorer.Web.ClientTypes
     )
 import Explorer.Web.Error
     ( ExplorerError (..) )
-import Servant
-    ( Handler )
 
 -- Example queries:
 --
@@ -75,20 +69,21 @@ import Servant
 --  /api/blocks/txs/619457f25781b1c32c935e711a019d8c584574b363b27f3ae1393bddb895017a
 
 blocksTxs
-    :: SqlBackend -> CHash
+    :: MonadIO m
+    => CHash
     -> Maybe Int64
     -> Maybe Int64
-    -> Handler (Either ExplorerError [CTxBrief])
-blocksTxs backend (CHash blkHashTxt) mLimit mOffset =
+    -> SqlPersistT m (Either ExplorerError [CTxBrief])
+blocksTxs (CHash blkHashTxt) mLimit mOffset =
     case textBase16Decode blkHashTxt of
       Left err -> pure $ Left err
-      Right blkHash -> runQuery backend $ queryBlocksTxs blkHash pageSize page
+      Right blkHash -> queryBlocksTxs blkHash pageSize page
   where
     pageSize = fromMaybe 10 mLimit
     page = fromMaybe 0 mOffset
 
 
-queryBlocksTxs :: MonadIO m => ByteString -> Int64 -> Int64 -> ReaderT SqlBackend m (Either ExplorerError [CTxBrief])
+queryBlocksTxs :: MonadIO m => ByteString -> Int64 -> Int64 -> SqlPersistT m (Either ExplorerError [CTxBrief])
 queryBlocksTxs blkHash _limitNum _offsetNum  = do
     res <- select . from $ \  (blk `InnerJoin` tx) -> do
             on (blk ^. BlockId ==. tx ^. TxBlock)
@@ -100,13 +95,13 @@ queryBlocksTxs blkHash _limitNum _offsetNum  = do
       [] -> pure $ Left (Internal "No block found")
       xs -> Right <$> queryCTxBriefs xs
 
-queryCTxBriefs :: MonadIO m => [(TxId, ByteString, UTCTime)] -> ReaderT SqlBackend m [CTxBrief]
+queryCTxBriefs :: MonadIO m => [(TxId, ByteString, UTCTime)] -> SqlPersistT m [CTxBrief]
 queryCTxBriefs [] = pure []
 queryCTxBriefs xs = do
   let txids = map fst3 xs
   zipTxBrief xs <$> queryTxInputs txids <*> queryTxOutputs txids
 
-queryTxInputs :: MonadIO m => [TxId] -> ReaderT SqlBackend m [(TxId, [CTxAddressBrief])]
+queryTxInputs :: MonadIO m => [TxId] -> SqlPersistT m [(TxId, [CTxAddressBrief])]
 queryTxInputs txids = do
     rows <- select . distinct . from $ \(tx `InnerJoin` txIn `InnerJoin` txOut `InnerJoin` txInTx) -> do
               on (txInTx ^. TxId ==. txIn ^. TxInTxOutId)
@@ -137,7 +132,7 @@ queryTxInputs txids = do
               }
       )
 
-queryTxOutputs :: MonadIO m => [TxId] -> ReaderT SqlBackend m [(TxId, [CTxAddressBrief])]
+queryTxOutputs :: MonadIO m => [TxId] -> SqlPersistT m [(TxId, [CTxAddressBrief])]
 queryTxOutputs txids = do
     rows <- select . from $ \ (tx `InnerJoin` txOut) -> do
               on (tx ^. TxId ==. txOut ^. TxOutTxId)

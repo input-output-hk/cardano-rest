@@ -16,8 +16,6 @@ import Control.Monad.IO.Class
     ( MonadIO )
 import Control.Monad.Trans.Except.Extra
     ( hoistEither, newExceptT, runExceptT )
-import Control.Monad.Trans.Reader
-    ( ReaderT )
 import Data.ByteString.Char8
     ( ByteString )
 import Data.List.Extra
@@ -44,7 +42,7 @@ import Database.Esqueleto
     , (^.)
     )
 import Database.Persist.Sql
-    ( SqlBackend )
+    ( SqlPersistT )
 import Explorer.Web.Api.Legacy.RedeemSummary
     ( queryRedeemSummary )
 import Explorer.Web.Api.Legacy.Util
@@ -52,7 +50,6 @@ import Explorer.Web.Api.Legacy.Util
     , collapseTxGroup
     , decodeTextAddress
     , genesisDistributionTxHash
-    , runQuery
     , zipTxBrief
     )
 import Explorer.Web.ClientTypes
@@ -72,8 +69,6 @@ import Explorer.Web.Error
     ( ExplorerError (..) )
 import Explorer.Web.Query
     ( queryChainTip )
-import Servant
-    ( Handler )
 
 import qualified Data.List as List
 
@@ -97,23 +92,23 @@ import qualified Data.List as List
 
 
 addressSummary
-    :: SqlBackend -> CAddress
-    -> Handler (Either ExplorerError CAddressSummary)
-addressSummary backend (CAddress addrTxt) =
-  runExceptT $ do
+    :: MonadIO m
+    => CAddress
+    -> SqlPersistT m (Either ExplorerError CAddressSummary)
+addressSummary (CAddress addrTxt) = runExceptT $ do
     addr <- hoistEither $ decodeTextAddress addrTxt
-    newExceptT . runQuery backend $ queryAddressSummary addrTxt addr
+    newExceptT $ queryAddressSummary addrTxt addr
 
 -- -------------------------------------------------------------------------------------------------
 
-queryAddressSummary :: MonadIO m => Text -> Address -> ReaderT SqlBackend m (Either ExplorerError CAddressSummary)
+queryAddressSummary :: MonadIO m => Text -> Address -> SqlPersistT m (Either ExplorerError CAddressSummary)
 queryAddressSummary addrTxt addr = do
   chainTip <- queryChainTip
   if isRedeemAddress addr
     then queryRedeemSummary chainTip addrTxt
     else Right <$> queryNonRedeemSummary chainTip addrTxt
 
-queryNonRedeemSummary :: MonadIO m => CChainTip -> Text -> ReaderT SqlBackend m CAddressSummary
+queryNonRedeemSummary :: MonadIO m => CChainTip -> Text -> SqlPersistT m CAddressSummary
 queryNonRedeemSummary chainTip addr = do
     inrows <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
                 on (tx ^. TxId ==. txOut ^. TxOutTxId)
@@ -157,13 +152,13 @@ queryNonRedeemSummary chainTip addr = do
 
 -- -------------------------------------------------------------------------------------------------
 
-queryCTxBriefs :: MonadIO m => [(TxId, ByteString, UTCTime)] -> ReaderT SqlBackend m [CTxBrief]
+queryCTxBriefs :: MonadIO m => [(TxId, ByteString, UTCTime)] -> SqlPersistT m [CTxBrief]
 queryCTxBriefs [] = pure []
 queryCTxBriefs xs = do
   let txids = map fst3 xs
   zipTxBrief xs <$> queryTxInputs txids <*> queryTxOutputs txids
 
-queryTxInputs :: MonadIO m => [TxId] -> ReaderT SqlBackend m [(TxId, [CTxAddressBrief])]
+queryTxInputs :: MonadIO m => [TxId] -> SqlPersistT m [(TxId, [CTxAddressBrief])]
 queryTxInputs txids = do
     rows <- select . distinct . from $ \(tx `InnerJoin` txIn `InnerJoin` txOut `InnerJoin` txInTx) -> do
               on (txInTx ^. TxId ==. txIn ^. TxInTxOutId)
@@ -194,7 +189,7 @@ queryTxInputs txids = do
               }
       )
 
-queryTxOutputs :: MonadIO m => [TxId] -> ReaderT SqlBackend m [(TxId, [CTxAddressBrief])]
+queryTxOutputs :: MonadIO m => [TxId] -> SqlPersistT m [(TxId, [CTxAddressBrief])]
 queryTxOutputs txids = do
     rows <- select . from $ \ (tx `InnerJoin` txOut) -> do
               on (tx ^. TxId ==. txOut ^. TxOutTxId)

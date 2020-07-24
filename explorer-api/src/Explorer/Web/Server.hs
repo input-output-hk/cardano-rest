@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Explorer.Web.Server
   ( runServer
@@ -11,7 +12,7 @@ import Cardano.Rest.Types
     ( WebserverConfig (..), toWarpSettings )
 import Cardano.Rest.Web as Web
 import Control.Monad.IO.Class
-    ( liftIO )
+    ( MonadIO, liftIO )
 import Control.Monad.Logger
     ( logInfoN, runStdoutLoggingT )
 import Control.Monad.Trans.Except
@@ -27,7 +28,7 @@ import qualified Data.Text.Encoding as Text
 import Database.Persist.Postgresql
     ( withPostgresqlConn )
 import Database.Persist.Sql
-    ( SqlBackend )
+    ( SqlBackend, SqlPersistT )
 import Explorer.Web.Api
     ( ExplorerApi, explorerApi )
 import Explorer.Web.Api.HttpBridge
@@ -56,7 +57,7 @@ import Explorer.Web.Error
 import Explorer.Web.Query
     ( queryBlockSummary )
 import Servant
-    ( Application, Handler, Server )
+    ( Application, ServerT )
 import qualified Servant
 import Servant.API
     ( (:<|>) ((:<|>)) )
@@ -74,55 +75,58 @@ runServer webserverConfig pgConfig =
       liftIO $ Web.runSettings (toWarpSettings webserverConfig) (explorerApp backend)
 
 explorerApp :: SqlBackend -> Application
-explorerApp backend = Servant.serve explorerApi (explorerHandlers backend)
+explorerApp backend = Servant.serve explorerApi (Servant.hoistServer explorerApi (runQuery backend) explorerHandlers)
 
-explorerHandlers :: SqlBackend -> Server ExplorerApi
-explorerHandlers backend =
+explorerHandlers :: forall m. MonadIO m => ServerT ExplorerApi (SqlPersistT m)
+explorerHandlers =
     toServant oldHandlers
       :<|> toServant httpBridgeHandlers
   where
+    oldHandlers :: ExplorerApiRecord (AsServerT (SqlPersistT m))
     oldHandlers = ExplorerApiRecord
-      { _totalAda           = totalAda backend
-      , _blocksPages        = blocksPages backend
-      , _blocksPagesTotal   = blockPagesTotal backend
-      , _blocksSummary      = blocksSummary backend
-      , _blocksTxs          = blocksTxs backend
-      , _txsLast            = getLastTxs backend
-      , _txsSummary         = txsSummary backend
-      , _addressSummary     = addressSummary backend
-      , _epochPages         = epochPage backend
-      , _epochSlots         = epochSlot backend
-      , _genesisSummary     = genesisSummary backend
-      , _genesisPagesTotal  = genesisPages backend
-      , _genesisAddressInfo = genesisAddressInfo backend
-      , _statsTxs           = statsTxs backend
-      , _blockAddress       = blockAddress backend
-      } :: ExplorerApiRecord (AsServerT Handler)
+      { _totalAda           = totalAda
+      , _blocksPages        = blocksPages
+      , _blocksPagesTotal   = blockPagesTotal
+      , _blocksSummary      = blocksSummary
+      , _blocksTxs          = blocksTxs
+      , _txsLast            = getLastTxs
+      , _txsSummary         = txsSummary
+      , _addressSummary     = addressSummary
+      , _epochPages         = epochPage
+      , _epochSlots         = epochSlot
+      , _genesisSummary     = genesisSummary
+      , _genesisPagesTotal  = genesisPages
+      , _genesisAddressInfo = genesisAddressInfo
+      , _statsTxs           = statsTxs
+      , _blockAddress       = blockAddress
+      }
 
+    httpBridgeHandlers :: HttpBridgeApi (AsServerT (SqlPersistT m))
     httpBridgeHandlers = HttpBridgeApi
-      { _addressBalance        = addressBalance backend
-      } :: HttpBridgeApi (AsServerT Handler)
+      { _addressBalance     = addressBalance
+      }
 
 --------------------------------------------------------------------------------
 -- sample data --
 --------------------------------------------------------------------------------
 
-totalAda :: SqlBackend -> Handler (Either ExplorerError Ada)
-totalAda backend = Right <$> runQuery backend queryTotalSupply
+totalAda :: MonadIO m => SqlPersistT m (Either ExplorerError Ada)
+totalAda = Right <$> queryTotalSupply
 
-hexToBytestring :: Text -> ExceptT ExplorerError Handler ByteString
+hexToBytestring :: Monad m => Text -> ExceptT ExplorerError m ByteString
 hexToBytestring text = do
   case Base16.decode (Text.encodeUtf8 text) of
     (blob, "") -> pure blob
     (_partial, remain) -> throwE $ Internal $ "cant parse " <> Text.decodeUtf8 remain <> " as hex"
 
 blocksSummary
-    :: SqlBackend -> CHash
-    -> Handler (Either ExplorerError CBlockSummary)
-blocksSummary backend (CHash blkHashTxt) = runExceptT $ do
+    :: MonadIO m
+    => CHash
+    -> SqlPersistT m (Either ExplorerError CBlockSummary)
+blocksSummary (CHash blkHashTxt) = runExceptT $ do
   blkHash <- hexToBytestring blkHashTxt
   liftIO $ print (blkHashTxt, blkHash)
-  mBlk <- runQuery backend $ queryBlockSummary blkHash
+  mBlk <- ExceptT (Right <$> queryBlockSummary blkHash)
   case mBlk of
     Just (blk, prevHash, nextHash, txCount, fees, totalOut, slh, mts) ->
       case blockSlotNo blk of

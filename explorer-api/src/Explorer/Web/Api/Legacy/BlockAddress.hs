@@ -13,8 +13,6 @@ import Control.Monad.IO.Class
     ( MonadIO )
 import Control.Monad.Trans.Except.Extra
     ( hoistEither, newExceptT, runExceptT )
-import Control.Monad.Trans.Reader
-    ( ReaderT )
 import Data.ByteString.Char8
     ( ByteString )
 import Data.List.Extra
@@ -46,12 +44,11 @@ import Database.Esqueleto
     , (^.)
     )
 import Database.Persist.Sql
-    ( SqlBackend )
+    ( SqlPersistT )
 import Explorer.Web.Api.Legacy.Util
     ( bsBase16Encode
     , collapseTxGroup
     , decodeTextAddress
-    , runQuery
     , textBase16Decode
     , zipTxBrief
     )
@@ -72,8 +69,6 @@ import Explorer.Web.Error
     ( ExplorerError (..) )
 import Explorer.Web.Query
     ( queryChainTip )
-import Servant
-    ( Handler )
 
 import qualified Data.List as List
 
@@ -89,14 +84,14 @@ import qualified Data.List as List
 --  /api/block/{blkHash}/address/{address}
 
 blockAddress
-    :: SqlBackend -> CHash -> CAddress
-    -> Handler (Either ExplorerError CAddressSummary)
-blockAddress backend (CHash blkHashTxt) (CAddress addrTxt) =
+    :: MonadIO m
+    => CHash -> CAddress
+    -> SqlPersistT m (Either ExplorerError CAddressSummary)
+blockAddress (CHash blkHashTxt) (CAddress addrTxt) =
   runExceptT $ do
     addr <- hoistEither $ decodeTextAddress addrTxt
     blkHash <- hoistEither $ textBase16Decode blkHashTxt
-    newExceptT .
-      runQuery backend $ do
+    newExceptT $ do
         chainTip <- queryChainTip
         if isRedeemAddress addr
           then queryRedeemSummary chainTip blkHash addrTxt
@@ -104,7 +99,7 @@ blockAddress backend (CHash blkHashTxt) (CAddress addrTxt) =
 
 -- -------------------------------------------------------------------------------------------------
 
-queryRedeemSummary :: MonadIO m => CChainTip -> ByteString -> Text -> ReaderT SqlBackend m (Either ExplorerError CAddressSummary)
+queryRedeemSummary :: MonadIO m => CChainTip -> ByteString -> Text -> SqlPersistT m (Either ExplorerError CAddressSummary)
 queryRedeemSummary chainTip blkHash addrTxt = do
     -- Find the initial value assigned to this address at Genesis
     rows <- select . from $ \ txOut -> do
@@ -115,7 +110,7 @@ queryRedeemSummary chainTip blkHash addrTxt = do
       [value] -> Right <$> queryRedeemed (mkCCoin . fromIntegral $ unValue value)
       _ -> pure $ Left (Internal "queryRedeemSummary: More than one entry")
   where
-    queryRedeemed :: MonadIO m => CCoin -> ReaderT SqlBackend m CAddressSummary
+    queryRedeemed :: MonadIO m => CCoin -> SqlPersistT m CAddressSummary
     queryRedeemed value = do
       -- Query to see if the Genesis value has been spent.
       -- Will return [] if unspent and otherwise a single row.
@@ -184,7 +179,7 @@ queryRedeemSummary chainTip blkHash addrTxt = do
 
 -- -------------------------------------------------------------------------------------------------
 
-queryAddressSummary :: MonadIO m => CChainTip -> ByteString -> Text -> ReaderT SqlBackend m CAddressSummary
+queryAddressSummary :: MonadIO m => CChainTip -> ByteString -> Text -> SqlPersistT m CAddressSummary
 queryAddressSummary chainTip blkHash addr = do
     inrows <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
                 on (tx ^. TxId ==. txOut ^. TxOutTxId)
@@ -230,13 +225,13 @@ queryAddressSummary chainTip blkHash addr = do
 
 -- -------------------------------------------------------------------------------------------------
 
-queryCTxBriefs :: MonadIO m => [(TxId, ByteString, UTCTime)] -> ReaderT SqlBackend m [CTxBrief]
+queryCTxBriefs :: MonadIO m => [(TxId, ByteString, UTCTime)] -> SqlPersistT m [CTxBrief]
 queryCTxBriefs [] = pure []
 queryCTxBriefs xs = do
   let txids = map fst3 xs
   zipTxBrief xs <$> queryTxInputs txids <*> queryTxOutputs txids
 
-queryTxInputs :: MonadIO m => [TxId] -> ReaderT SqlBackend m [(TxId, [CTxAddressBrief])]
+queryTxInputs :: MonadIO m => [TxId] -> SqlPersistT m [(TxId, [CTxAddressBrief])]
 queryTxInputs txids = do
   rows <- select . distinct . from $ \(tx `InnerJoin` txIn `InnerJoin` txOut) -> do
             on (txIn ^. TxInTxOutId ==. txOut ^. TxOutTxId
@@ -246,7 +241,7 @@ queryTxInputs txids = do
             pure (tx ^. TxId, txOut ^. TxOutAddress, txOut ^. TxOutValue, tx ^. TxHash, txOut ^. TxOutIndex)
   pure $ map collapseTxGroup (groupOn fst $ map convert rows)
 
-queryTxOutputs :: MonadIO m => [TxId] -> ReaderT SqlBackend m [(TxId, [CTxAddressBrief])]
+queryTxOutputs :: MonadIO m => [TxId] -> SqlPersistT m [(TxId, [CTxAddressBrief])]
 queryTxOutputs txids = do
   rows <- select . from $ \ (tx `InnerJoin` txOut) -> do
             on (tx ^. TxId ==. txOut ^. TxOutTxId)

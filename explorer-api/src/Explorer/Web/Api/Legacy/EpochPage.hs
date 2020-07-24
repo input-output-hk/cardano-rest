@@ -1,4 +1,3 @@
-{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Explorer.Web.Api.Legacy.EpochPage
   ( epochPage
@@ -10,8 +9,6 @@ import Cardano.Db
     ( Block (..), EntityField (..) )
 import Control.Monad.IO.Class
     ( MonadIO )
-import Control.Monad.Trans.Reader
-    ( ReaderT )
 import Data.ByteString
     ( ByteString )
 import Data.Fixed
@@ -47,17 +44,15 @@ import Database.Esqueleto
     , (^.)
     )
 import Database.Persist.Sql
-    ( SqlBackend )
+    ( SqlPersistT )
 import Explorer.Web.Api.Legacy.Types
     ( PageNo (..) )
 import Explorer.Web.Api.Legacy.Util
-    ( bsBase16Encode, divRoundUp, runQuery, slotsPerEpoch, textShow )
+    ( bsBase16Encode, divRoundUp, slotsPerEpoch, textShow )
 import Explorer.Web.ClientTypes
     ( CBlockEntry (..), CHash (..), mkCCoin )
 import Explorer.Web.Error
     ( ExplorerError (..) )
-import Servant
-    ( Handler )
 
 import qualified Data.List as List
 
@@ -69,10 +64,10 @@ import qualified Data.List as List
 --  /api/epochs/1?page=2
 
 epochPage
-    :: SqlBackend -> EpochNumber -> Maybe PageNo
-    -> Handler (Either ExplorerError (Int, [CBlockEntry]))
-epochPage backend (EpochNumber epoch) mPageNo = do
-    runQuery backend $ do
+    :: MonadIO m
+    => EpochNumber -> Maybe PageNo
+    -> SqlPersistT m (Either ExplorerError (Int, [CBlockEntry]))
+epochPage (EpochNumber epoch) mPageNo = do
       mEpochBlocks <- queryEpochBlockCount epoch
       case mEpochBlocks of
         Nothing -> pure $ Left (noBlocksFound epoch mPageNo)
@@ -80,7 +75,7 @@ epochPage backend (EpochNumber epoch) mPageNo = do
         Just epochBlocks -> queryEpochBlocks epoch epochBlocks (fromMaybe (PageNo 1) mPageNo)
 
 
-queryEpochBlockCount :: MonadIO m => Word64 -> ReaderT SqlBackend m (Maybe Int)
+queryEpochBlockCount :: MonadIO m => Word64 -> SqlPersistT m (Maybe Int)
 queryEpochBlockCount epoch = do
   res <- select . from $ \ blk -> do
           where_ (blk ^. BlockEpochNo ==. just (val epoch))
@@ -90,7 +85,7 @@ queryEpochBlockCount epoch = do
 queryEpochBlocks
     :: MonadIO m
     => Word64 -> Int -> PageNo
-    -> ReaderT SqlBackend m (Either ExplorerError (Int, [CBlockEntry]))
+    -> SqlPersistT m (Either ExplorerError (Int, [CBlockEntry]))
 queryEpochBlocks epoch epochBlocks (PageNo page) = do
     rows <- select . from $ \ ((sl `InnerJoin` blk) `LeftOuterJoin` tx) -> do
               on (just (blk ^. BlockId) ==. tx ?. TxBlock)
@@ -133,4 +128,3 @@ noBlocksFound epoch mPageNo =
   where
     msg :: Text
     msg = "No blocks found for epoch #" <> textShow epoch
-

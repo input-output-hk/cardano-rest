@@ -8,8 +8,6 @@ import Cardano.Db
     ( Block (..), EntityField (..), isJust, queryBlockHeight, unValue2 )
 import Control.Monad.IO.Class
     ( MonadIO )
-import Control.Monad.Trans.Reader
-    ( ReaderT )
 import Data.ByteString.Char8
     ( ByteString )
 import Data.Maybe
@@ -36,20 +34,17 @@ import Database.Esqueleto
     , (^.)
     )
 import Database.Persist.Sql
-    ( SqlBackend )
+    ( SqlPersistT )
 import Explorer.Web.Api.Legacy
     ( PageNumber )
 import Explorer.Web.Api.Legacy.Types
     ( PageNo (..), PageSize (..) )
 import Explorer.Web.Api.Legacy.Util
-    ( bsBase16Encode, runQuery, slotsPerEpoch )
+    ( bsBase16Encode, slotsPerEpoch )
 import Explorer.Web.ClientTypes
     ( CBlockEntry (..), CHash (..), mkCCoin )
 import Explorer.Web.Error
     ( ExplorerError (..) )
-import Servant
-    ( Handler )
-
 import qualified Data.List as List
 
 -- Example queries:
@@ -59,10 +54,10 @@ import qualified Data.List as List
 --  /api/blocks/pages?page=1
 
 blocksPages
-    :: SqlBackend -> Maybe PageNo -> Maybe PageSize
-    -> Handler (Either ExplorerError (PageNumber, [CBlockEntry]))
-blocksPages backend mPageNo _mPageSize =
-    runQuery backend $
+    :: MonadIO m
+    => Maybe PageNo -> Maybe PageSize
+    -> SqlPersistT m (Either ExplorerError (PageNumber, [CBlockEntry]))
+blocksPages mPageNo _mPageSize =
       case mPageNo of
         Nothing -> queryLatestBlocksPage
         Just (PageNo 0) -> pure $ Left (Internal "Page number must be greater than 0")
@@ -70,7 +65,7 @@ blocksPages backend mPageNo _mPageSize =
 
 queryLatestBlocksPage
     :: MonadIO m
-    => ReaderT SqlBackend m (Either ExplorerError (PageNumber, [CBlockEntry]))
+    => SqlPersistT m (Either ExplorerError (PageNumber, [CBlockEntry]))
 queryLatestBlocksPage = do
   res <- select . from $ \ (blk `InnerJoin` sl) -> do
           on (blk ^. BlockSlotLeader ==. sl ^. SlotLeaderId)
@@ -85,7 +80,7 @@ queryLatestBlocksPage = do
 queryBlocksPageNo
     :: MonadIO m
     => PageNo
-    -> ReaderT SqlBackend m (Either ExplorerError (PageNumber, [CBlockEntry]))
+    -> SqlPersistT m (Either ExplorerError (PageNumber, [CBlockEntry]))
 queryBlocksPageNo (PageNo page) = do
   res <- select . from $ \ (blk `InnerJoin` sl) -> do
           on (blk ^. BlockSlotLeader ==. sl ^. SlotLeaderId)
@@ -101,7 +96,7 @@ queryBlocksPageNo (PageNo page) = do
 createCBlockEntry
     :: MonadIO m
     => Maybe Word -> [(Entity Block, Value ByteString)]
-    -> ReaderT SqlBackend m (PageNumber, [CBlockEntry])
+    -> SqlPersistT m (PageNumber, [CBlockEntry])
 createCBlockEntry mPageNo xs = do
     blockHeight <- queryBlockHeight
     let pageEntries = maybe (calculatePageEntries blockHeight) (const 10) mPageNo
@@ -123,7 +118,7 @@ createCBlockEntry mPageNo xs = do
 queryCBlockEntry
     :: MonadIO m
     => (Entity Block, Value ByteString)
-    -> ReaderT SqlBackend m CBlockEntry
+    -> SqlPersistT m CBlockEntry
 queryCBlockEntry (Entity blkId block, Value slHash) = do
     rows <- select . from $ \ (blk `InnerJoin` tx) -> do
               on (blk ^. BlockId ==. tx ^. TxBlock)
