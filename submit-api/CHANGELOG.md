@@ -1,11 +1,19 @@
-# Revision history for cardano-submit-api
+# Changelog
+
+## 2.1.0 -- July 2020
+
+ * Fixing a cabal warning caused by flags in the wrong place.
+ * Adding a '--random-port' flag..
+ * You can now specify the webserver settings on the command line.
+ * Add support for multiple protocol modes, defaulting to Cardano
+ * Internal refactoring.
 
 ## 2.0.0 -- March 2020
 
 * Moved 'cardano-explorer-api' into its own repository
 * Renamed service and build artifacts
 * Add swagger documentation for cardano-submit-api
-* API **breaking** changes: 
+* API **breaking** changes:
   * returns 400 Bad Request on errors, and 202 for successful submission.
   * returns plain text transaction id on success, and plain text error on errors (cf API documentation)
 
