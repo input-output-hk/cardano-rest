@@ -271,7 +271,3 @@ class TestGenesis:
         assert(new_api_response.status_code == 200)
 
         assert(existing_api_response.content == new_api_response.content)
-
-
-if __name__ == '__main__':
-    unittest.main()

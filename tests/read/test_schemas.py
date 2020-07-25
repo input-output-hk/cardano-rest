@@ -1598,7 +1598,3 @@ class TestGenesis:
             pytest.fail("well-formed but invalid JSON:")
         except json.decoder.JSONDecodeError:
             pytest.fail("poorly-formed text, not JSON:")
-
-
-if __name__ == '__main__':
-    unittest.main()
