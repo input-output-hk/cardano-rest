@@ -10,7 +10,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macOS-latest]
         plan:
-        - { build: stack, resolver: "--resolver lts-13.26"  }
+        - { build: stack, resolver: "--resolver lts-14.25"  }
         include: []
 
     runs-on: ${{ matrix.os }}
