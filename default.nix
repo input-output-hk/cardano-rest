@@ -36,6 +36,7 @@ let
   in pkgs.callPackage ./nix/docker.nix {
     inherit (self) cardano-explorer-api;
     inherit (self) cardano-submit-api;
+    inherit customConfig;
     scripts = callPackage ./nix/scripts.nix { customConfig = customConfig'; };
   };
 

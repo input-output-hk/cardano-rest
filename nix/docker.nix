@@ -54,12 +54,15 @@
 , writeScriptBin
 , runtimeShell
 , lib
+, customConfig
 
 , explorerApiRepoName ? "inputoutput/cardano-explorer-api"
 , submitApiRepoName ? "inputoutput/cardano-submit-api"
 }:
 
 let
+  submitApiPort = customConfig.services.cardano-submit-api.port or 8090;
+  explorerApiPort = customConfig.services.cardano-explorer-api.port or 8100;
 
   # Layer of tools which aren't going to change much between versions.
   baseImage = dockerTools.buildImage {
@@ -120,7 +123,7 @@ let
     config = {
       EntryPoint = [ "${entry-point}/bin/entry-point" ];
       ExposedPorts = {
-        "8100/tcp" = {};
+        "${toString explorerApiPort}/tcp" = {};
       };
     };
   };
@@ -160,7 +163,7 @@ let
     config = {
       EntryPoint = [ "${entry-point}/bin/entry-point" ];
       ExposedPorts = {
-        "8090/tcp" = {};
+        "${toString submitApiPort}/tcp" = {};
       };
     };
   };
