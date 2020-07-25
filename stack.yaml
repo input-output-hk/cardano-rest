@@ -5,6 +5,7 @@ allow-newer: true
 
 packages:
   - explorer-api
+  - rest-common
   - submit-api
 
 extra-deps:
@@ -23,3 +24,9 @@ ghc-options:
 
 nix:
   shell-file: nix/stack-shell.nix
+
+flags:
+  # Bundle VRF crypto in libsodium and do not rely on an external fork to have it.
+  # This still requires the host system to have the 'standard' libsodium installed.
+  cardano-crypto-praos:
+    external-libsodium-vrf: false
