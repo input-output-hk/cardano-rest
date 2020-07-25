@@ -15,10 +15,10 @@
 #
 #    docker run -e NETWORK=testnet inputoutput/cardano-submit-api:<TAG>
 #
-#  To launch with custom configuration, mount a dir containing configuration.yaml, genesis.json,
-#  into /configuration
+#   Provide a complete command otherwise:
 #
-#    docker run -v $PATH_TO/configuration:/configuration inputoutput/cardano-submit-api:<TAG>
+#    docker run -v $PWD/config.yaml:/config.yaml inputoutput/cardano-submit-api:<TAG> \
+#      --config /config.yaml --mainnet --socket-path /node-ipc/node.socket
 #
 #  cardano-explorer-api
 #    docker run -v $PATH_TO/pgpass:/configuration/pgpass inputoutput/cardano-explorer-api:<TAG>
@@ -109,7 +109,7 @@ let
         ${genPgPass} /run/secrets
       fi
       export PGPASSFILE="/configuration/pgpass";
-      exec ${cardano-explorer-api}/bin/cardano-explorer-api
+      exec ${cardano-explorer-api}/bin/cardano-explorer-api $@
     '';
   in dockerTools.buildImage {
     name = "${explorerApiRepoName}";
@@ -143,16 +143,12 @@ let
       #!${runtimeShell}
       # set up /tmp (override with TMPDIR variable)
       mkdir -p -m 1777 tmp
-      if [[ -d /configuration ]]; then
-         exec ${cardano-submit-api}/bin/cardano-submit-api \
-           --socket-path /node-ipc/node.socket \
-           --genesis-file /configuration/genesis.json \
-           --port 8101 \
-           --config /configuration/configuration.yaml
-      ${clusterStatements}
-      else
-        echo "Please set a NETWORK environment variable to one of: mainnet/testnet"
-        echo "Or mount a /configuration volume containing: configuration.yaml and genesis.json"
+      if [[ -z "$NETWORK" ]]; then
+         exec ${cardano-submit-api}/bin/cardano-submit-api $@
+         ${clusterStatements}
+         else
+           echo "Managed configuration for network "$NETWORK" does not exist"
+         fi
       fi
     '';
   in dockerTools.buildImage {
@@ -164,7 +160,7 @@ let
     config = {
       EntryPoint = [ "${entry-point}/bin/entry-point" ];
       ExposedPorts = {
-        "8101/tcp" = {};
+        "8090/tcp" = {};
       };
     };
   };
