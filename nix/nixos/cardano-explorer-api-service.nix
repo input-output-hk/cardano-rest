@@ -10,6 +10,14 @@ in {
         internal = true;
         type = lib.types.package;
       };
+      port = lib.mkOption {
+        type = lib.types.port;
+        default = 8100;
+      };
+      listenAddress = lib.mkOption {
+        type = lib.types.str;
+        default = "127.0.0.1";
+      };
       pgpass = lib.mkOption {
         internal = true;
         type = lib.types.path;
@@ -47,7 +55,9 @@ in {
       pgpass = builtins.toFile "pgpass" "${cfg.postgres.socketdir}:${toString cfg.postgres.port}:${cfg.postgres.database}:${cfg.postgres.user}:*";
       script = pkgs.writeShellScript "cardano-explorer-api" ''
         export PGPASSFILE=${cfg.pgpass}
-        exec ${cfg.package}/bin/cardano-explorer-api
+        exec ${cfg.package}/bin/cardano-explorer-api \
+          --port ${toString cfg.port} \
+          --listen-address ${cfg.listenAddress}
       '';
     };
     systemd.services.cardano-explorer-api = {

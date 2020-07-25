@@ -20,7 +20,11 @@ in {
       };
       port = lib.mkOption {
         type = lib.types.port;
-        default = 8101;
+        default = 8090;
+      };
+      listenAddress = lib.mkOption {
+        type = lib.types.str;
+        default = "127.0.0.1";
       };
       socketPath = lib.mkOption {
         type = lib.types.nullOr lib.types.path;
@@ -54,6 +58,7 @@ in {
       fi'' else "export \"CARDANO_NODE_SOCKET_PATH=${cfg.socketPath}\""}
       exec ${cfg.package}/bin/cardano-submit-api --socket-path "$CARDANO_NODE_SOCKET_PATH" ${envFlag} \
             --port ${toString cfg.port} \
+            --listen-address ${cfg.listenAddress} \
             --config ${builtins.toFile "submit-api.json" (builtins.toJSON cfg.config)}
     '';
     systemd.services.cardano-submit-api = {
