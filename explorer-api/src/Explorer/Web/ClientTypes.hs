@@ -42,7 +42,7 @@ module Explorer.Web.ClientTypes
        ) where
 
 import Cardano.Crypto.Hash.Class
-    ( Hash(..), hashToBytes )
+    ( Hash, hashToBytes )
 import Cardano.Db
     ( Ada (..) )
 import Control.DeepSeq
