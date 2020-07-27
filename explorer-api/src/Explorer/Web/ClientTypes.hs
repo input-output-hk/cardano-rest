@@ -291,7 +291,7 @@ instance ToJSON CAddressBalanceError where
 --------------------------------------------------------------------------------
 
 toCHash :: Hash h a -> CHash
-toCHash = CHash . T.decodeLatin1 . B16.encode . hashToBytes
+toCHash = CHash . hashToTextAsHex
 
 instance FromHttpApiData CHash where
     parseUrlPiece url = case B16.decode (B8.pack (T.unpack url)) of
