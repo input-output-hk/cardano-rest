@@ -42,7 +42,7 @@ module Explorer.Web.ClientTypes
        ) where
 
 import Cardano.Crypto.Hash.Class
-    ( Hash, hashToBytes )
+    ( Hash, hashToTextAsHex )
 import Cardano.Db
     ( Ada (..) )
 import Control.DeepSeq
@@ -76,7 +76,6 @@ import qualified Data.Aeson as Aeson
 import qualified Data.ByteString.Base16 as B16
 import qualified Data.ByteString.Char8 as B8
 import qualified Data.Text as T
-import qualified Data.Text.Encoding as T
 
 -------------------------------------------------------------------------------------
 -- Hash types

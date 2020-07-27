@@ -90,7 +90,7 @@ packages:
       - tracer-transformers
 
   - git: https://github.com/input-output-hk/cardano-base
-    commit: 7d795c3040ea7785812efa1c97864bbb41b15d3e
+    commit: 17a7cb777abbb0a8d9d6b3df66298a24422d1b22
     subdirs:
       - binary
       - binary/test
