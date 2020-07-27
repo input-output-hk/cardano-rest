@@ -137,10 +137,7 @@ let
   submitApiDockerImage = let
     clusterStatements = lib.concatStringsSep "\n" (lib.mapAttrsToList (_: value: value) (commonLib.forEnvironments (env: ''
       elif [[ "$NETWORK" == "${env.name}" ]]; then
-        ${if (env ? submitApiConfig) then "exec ${scripts.${env.name}.submit-api}"
-        else ''
-          tx submission not supported on ${env.name}
-            exit 1''}
+        exec ${scripts.${env.name}.submit-api}
     '')));
     entry-point = writeScriptBin "entry-point" ''
       #!${runtimeShell}
