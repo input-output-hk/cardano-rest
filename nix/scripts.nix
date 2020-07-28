@@ -1,5 +1,7 @@
 { pkgs, lib, iohkNix, customConfig }:
 let
+  blacklistedEnvs = [ "selfnode" "shelley_selfnode" "latency-tests" "mainnet-ci" "shelley_testnet" ];
+  environments = lib.filterAttrs (k: v: (!builtins.elem k blacklistedEnvs)) iohkNix.cardanoLib.environments;
   mkStartScripts = envConfig: let
     extraModule = {
       services.cardano-explorer-api = {
@@ -26,4 +28,4 @@ let
     explorer-api = eval.config.services.cardano-explorer-api.script;
     submit-api = eval.config.services.cardano-submit-api.script;
   };
-in iohkNix.cardanoLib.forEnvironments mkStartScripts
+in iohkNix.cardanoLib.forEnvironmentsCustom mkStartScripts environments // { inherit environments; }

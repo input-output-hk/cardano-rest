@@ -135,10 +135,10 @@ let
     ];
   };
   submitApiDockerImage = let
-    clusterStatements = lib.concatStringsSep "\n" (lib.mapAttrsToList (_: value: value) (commonLib.forEnvironments (env: ''
+    clusterStatements = lib.concatStringsSep "\n" (lib.mapAttrsToList (_: value: value) (commonLib.forEnvironmentsCustom (env: ''
       elif [[ "$NETWORK" == "${env.name}" ]]; then
         exec ${scripts.${env.name}.submit-api}
-    '')));
+    '') scripts.environments));
     entry-point = writeScriptBin "entry-point" ''
       #!${runtimeShell}
       # set up /tmp (override with TMPDIR variable)
