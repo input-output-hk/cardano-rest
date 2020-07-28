@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.1 -- July 2020
+
+ * Update dependencies for compatibility with `cardano-node` 1.18.0.
+
 ## 2.1.0 -- July 2020
 
  * Fixing a cabal warning caused by flags in the wrong place.
