@@ -35,7 +35,7 @@ services:
         max-file: "10"
 
   cardano-db-sync:
-    image: inputoutput/cardano-db-sync:${CARDANO_DB_SYNC_VERSION:-3.0.0}
+    image: inputoutput/cardano-db-sync:${CARDANO_DB_SYNC_VERSION:-3.1.0}
     environment:
       - NETWORK=${NETWORK:-mainnet}
       - POSTGRES_HOST=postgres
@@ -62,6 +62,7 @@ services:
       - postgres
       - cardano-db-sync
     environment:
+      - NETWORK=${NETWORK:-mainnet}
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
     secrets:
@@ -86,7 +87,7 @@ services:
     volumes:
       - node-ipc:/node-ipc
     ports:
-      - 8101:8101
+      - 8090:8090
     restart: on-failure
     logging:
       driver: "json-file"

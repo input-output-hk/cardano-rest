@@ -101,6 +101,10 @@ let
       echo "''${POSTGRES_HOST}:''${POSTGRES_PORT}:''${POSTGRES_DB}:''${POSTGRES_USER}:''${POSTGRES_PASSWORD}" > /configuration/pgpass
       chmod 0600 /configuration/pgpass
     '';
+    clusterStatements = lib.concatStringsSep "\n" (lib.mapAttrsToList (_: value: value) (commonLib.forEnvironmentsCustom (env: ''
+      elif [[ "$NETWORK" == "${env.name}" ]]; then
+        exec ${scripts.${env.name}.explorer-api}
+    '') scripts.environments));
     entry-point = writeScriptBin "entry-point" ''
       #!${runtimeShell}
       set -euo pipefail
@@ -112,7 +116,13 @@ let
         ${genPgPass} /run/secrets
       fi
       export PGPASSFILE="/configuration/pgpass";
-      exec ${cardano-explorer-api}/bin/cardano-explorer-api $@
+      if [[ -z "$NETWORK" ]]; then
+         exec ${cardano-explorer-api}/bin/cardano-explorer-api $@
+         ${clusterStatements}
+         else
+           echo "Managed configuration for network "$NETWORK" does not exist"
+         fi
+      fi
     '';
   in dockerTools.buildImage {
     name = "${explorerApiRepoName}";

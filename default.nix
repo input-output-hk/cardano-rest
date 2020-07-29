@@ -31,6 +31,9 @@ let
   dockerImages = let
     defaultConfig = rec {
       services.cardano-submit-api.socketPath = "/node-ipc/node.socket";
+      services.cardano-explorer-api.listenAddress = "0.0.0.0";
+      services.cardano-explorer-api.pgpassFile = "/configuration/pgpass";
+      services.cardano-submit-api.listenAddress = "0.0.0.0";
     };
     customConfig' = lib.mkMerge [ defaultConfig customConfig ];
   in pkgs.callPackage ./nix/docker.nix {
