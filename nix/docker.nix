@@ -119,9 +119,8 @@ let
       if [[ -z "$NETWORK" ]]; then
          exec ${cardano-explorer-api}/bin/cardano-explorer-api $@
          ${clusterStatements}
-         else
-           echo "Managed configuration for network "$NETWORK" does not exist"
-         fi
+      else
+        echo "Managed configuration for network "$NETWORK" does not exist"
       fi
     '';
   in dockerTools.buildImage {
@@ -156,9 +155,8 @@ let
       if [[ -z "$NETWORK" ]]; then
          exec ${cardano-submit-api}/bin/cardano-submit-api $@
          ${clusterStatements}
-         else
-           echo "Managed configuration for network "$NETWORK" does not exist"
-         fi
+      else
+        echo "Managed configuration for network "$NETWORK" does not exist"
       fi
     '';
   in dockerTools.buildImage {
