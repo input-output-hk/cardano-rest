@@ -22,6 +22,10 @@ in {
         internal = true;
         type = lib.types.path;
       };
+      pgpassFile = lib.mkOption {
+        type = lib.types.path;
+        default = builtins.toFile "pgpass" "${cfg.postgres.socketdir}:${toString cfg.postgres.port}:${cfg.postgres.database}:${cfg.postgres.user}:*";
+      };
       package = lib.mkOption {
         type = lib.types.package;
         default = (import ../. {}).cardanoRestHaskellPackages.cardano-explorer-api.components.exes.cardano-explorer-api;
@@ -52,9 +56,8 @@ in {
   };
   config = lib.mkIf cfg.enable {
     services.cardano-explorer-api = {
-      pgpass = builtins.toFile "pgpass" "${cfg.postgres.socketdir}:${toString cfg.postgres.port}:${cfg.postgres.database}:${cfg.postgres.user}:*";
       script = pkgs.writeShellScript "cardano-explorer-api" ''
-        export PGPASSFILE=${cfg.pgpass}
+        export PGPASSFILE=${cfg.pgpassFile}
         exec ${cfg.package}/bin/cardano-explorer-api \
           --port ${toString cfg.port} \
           --listen-address ${cfg.listenAddress}
