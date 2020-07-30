@@ -16,3 +16,10 @@ steps:
     branches: master
     agents:
       system: x86_64-linux
+
+  - label: 'Integration Tests'
+    command:
+      - "cd ./tests/ && nix-shell shell.nix"
+      - "make data"
+    agents:
+      system: x86_64-linux
