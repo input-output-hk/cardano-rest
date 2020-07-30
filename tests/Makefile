@@ -6,3 +6,6 @@ regression-suite:
 
 check-schemas:
 	python3 -m pytest -m schemacheck
+
+data:
+	python3 -m pytest -m data
