@@ -5,7 +5,7 @@ API_HOST = "https://explorer.cardano.org/api/"
 NETWORK = "mainnet"
 
 
-@pytest.mark.data
+@pytest.mark.datavalidation
 class TestAddressData:
     def test_addresses_can_decode(self):
         """

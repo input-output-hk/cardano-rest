@@ -19,7 +19,6 @@ steps:
 
   - label: 'Integration Tests'
     command:
-      - "cd ./tests/ && nix-shell shell.nix"
-      - "make data"
+      - "cd ./tests/ && nix-shell shell.nix --run make data-validation"
     agents:
       system: x86_64-linux
