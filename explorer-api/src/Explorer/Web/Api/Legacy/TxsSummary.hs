@@ -75,16 +75,15 @@ txsSummary (CTxHash (CHash hashTxt)) =
       Nothing -> left $ Internal "tx not found" -- TODO, give the same error as before?
       Just (tx, blk, inputs, outputs) -> do
         case blockSlotNo blk of
-          Just slotno -> do
-            let (epoch, slot) = slotno `divMod` slotsPerEpoch
+          Just _ -> do
             pure $ CTxSummary
               { ctsId              = CTxHash . CHash . bsBase16Encode $ txHash tx
               -- Tx timestamp is the same as block timestamp.
               , ctsTxTimeIssued    = Just $ blockPosixTime blk
               , ctsBlockTimeIssued = Just $ blockPosixTime blk
               , ctsBlockHeight     = fromIntegral <$> blockBlockNo blk
-              , ctsBlockEpoch      = Just epoch
-              , ctsBlockSlot       = Just $ fromIntegral slot
+              , ctsBlockEpoch      = blockEpochNo blk
+              , ctsBlockSlot       = blockEpochSlotNo blk
               , ctsBlockHash       = Just . CHash $ bsBase16Encode (blockHash blk)
               , ctsRelayedBy       = Nothing
               , ctsTotalInput      = sum $ map ctaAmount inputs

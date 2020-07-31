@@ -76,7 +76,7 @@ queryBlockBySlotNo flatSlotNo = do
     convert (Entity blkId block, Value sl) =
       (blkId, CBlockEntry
                 { cbeEpoch = fromMaybe 0 $ blockEpochNo block
-                , cbeSlot = maybe 0 unflattenSlotNo $ blockSlotNo block
+                , cbeSlot = fromMaybe 0 (blockEpochSlotNo block)
                 , cbeBlkHeight = maybe 0 fromIntegral $ blockBlockNo block
                 , cbeBlkHash = CHash $ bsBase16Encode (blockHash block)
                 , cbeTimeIssued = Just $ blockPosixTime block

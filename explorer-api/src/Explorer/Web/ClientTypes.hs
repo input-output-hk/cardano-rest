@@ -140,7 +140,7 @@ cCoinToAda (CCoin ll) = Ada (MkFixed ll)
 -- | List of block entries is returned from "get latest N blocks" endpoint
 data CBlockEntry = CBlockEntry
     { cbeEpoch      :: !Word64
-    , cbeSlot       :: !Word16
+    , cbeSlot       :: !Word64
     , cbeBlkHeight  :: !Word
     , cbeBlkHash    :: !CHash
     , cbeTimeIssued :: !(Maybe POSIXTime)
@@ -223,7 +223,7 @@ data CTxSummary = CTxSummary
     , ctsBlockTimeIssued :: !(Maybe POSIXTime)
     , ctsBlockHeight     :: !(Maybe Word)
     , ctsBlockEpoch      :: !(Maybe Word64)
-    , ctsBlockSlot       :: !(Maybe Word16)
+    , ctsBlockSlot       :: !(Maybe Word64)
     , ctsBlockHash       :: !(Maybe CHash)
     , ctsRelayedBy       :: !(Maybe CNetworkAddress)
     , ctsTotalInput      :: !CCoin
