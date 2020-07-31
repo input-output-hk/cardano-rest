@@ -19,6 +19,8 @@ import Control.Monad.Trans.Except
     ( ExceptT (..), runExceptT, throwE )
 import Data.ByteString
     ( ByteString )
+import Data.Maybe
+    ( fromMaybe )
 import qualified Data.ByteString.Base16 as Base16
 import Data.Text
     ( Text )
@@ -130,12 +132,11 @@ blocksSummary (CHash blkHashTxt) = runExceptT $ do
   case mBlk of
     Just (blk, prevHash, nextHash, txCount, fees, totalOut, slh, mts) ->
       case blockSlotNo blk of
-        Just slotno -> do
-          let (epoch, slot) = slotno `divMod` slotsPerEpoch
+        Just _ -> do
           pure $ CBlockSummary
             { cbsEntry = CBlockEntry
-               { cbeEpoch = epoch
-               , cbeSlot = fromIntegral slot
+               { cbeEpoch = fromMaybe 0 (blockEpochNo blk)
+               , cbeSlot = fromMaybe 0 (blockEpochSlotNo blk)
                -- Use '0' for EBBs.
                , cbeBlkHeight = maybe 0 fromIntegral $ blockBlockNo blk
                , cbeBlkHash = CHash . bsBase16Encode $ blockHash blk

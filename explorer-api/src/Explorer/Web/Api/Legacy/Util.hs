@@ -10,11 +10,9 @@ module Explorer.Web.Api.Legacy.Util
   , genesisDistributionTxHash
   , k
   , runQuery
-  , slotsPerEpoch
   , textBase16Decode
   , textShow
   , toPageSize
-  , unflattenSlotNo
   , zipTxBrief
   ) where
 
@@ -39,7 +37,7 @@ import Data.Time.Clock
 import Data.Time.Clock.POSIX
     ( POSIXTime, utcTimeToPOSIXSeconds )
 import Data.Word
-    ( Word16, Word64 )
+    ( Word64 )
 import Database.Persist.Sql
     ( IsolationLevel (..), SqlBackend, runSqlConnWithIsolation, SqlPersistT)
 import Explorer.Web.Api.Legacy.Types
@@ -100,9 +98,6 @@ runQuery :: MonadIO m => SqlBackend -> SqlPersistT IO a -> m a
 runQuery backend query =
   liftIO $ runSqlConnWithIsolation query backend Serializable
 
-slotsPerEpoch :: Word64
-slotsPerEpoch = k * 10
-
 textBase16Decode :: Text -> Either ExplorerError ByteString
 textBase16Decode text = do
   case Base16.decode (Text.encodeUtf8 text) of
@@ -114,9 +109,6 @@ textShow = Text.pack . show
 
 toPageSize :: Maybe PageSize -> PageSize
 toPageSize = fromMaybe defaultPageSize
-
-unflattenSlotNo :: Word64 -> Word16
-unflattenSlotNo w = fromIntegral (w `mod` slotsPerEpoch)
 
 zipTxBrief :: [(TxId, ByteString, UTCTime)] -> [(TxId, [CTxAddressBrief])] -> [(TxId, [CTxAddressBrief])] -> [CTxBrief]
 zipTxBrief xs ins outs =

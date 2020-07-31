@@ -40,7 +40,7 @@ import Explorer.Web.Api.Legacy
 import Explorer.Web.Api.Legacy.Types
     ( PageNo (..), PageSize (..) )
 import Explorer.Web.Api.Legacy.Util
-    ( bsBase16Encode, slotsPerEpoch )
+    ( bsBase16Encode )
 import Explorer.Web.ClientTypes
     ( CBlockEntry (..), CHash (..) )
 import Explorer.Web.Error
@@ -130,7 +130,7 @@ queryCBlockEntry (Entity blkId block, Value slHash) = do
     mkCBlockEntry xs =
       CBlockEntry
         { cbeEpoch = fromMaybe 0 (blockEpochNo block)
-        , cbeSlot = maybe 0 (\x -> fromIntegral $ x `mod` slotsPerEpoch) (blockSlotNo block)
+        , cbeSlot = fromMaybe 0 (blockEpochSlotNo block)
         , cbeBlkHeight = maybe 0 fromIntegral $ blockBlockNo block
         , cbeBlkHash = CHash $ bsBase16Encode (blockHash block)
         , cbeTimeIssued = Just $ utcTimeToPOSIXSeconds (blockTime block)

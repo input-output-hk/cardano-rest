@@ -58,7 +58,7 @@ packages:
         - cborg
 
   - git: https://github.com/input-output-hk/cardano-node
-    commit: b218bca02d31f22407e586ec949c7d3637e8c1d3
+    commit: 3258fdbb2ce8c56ca175401630aa71d75a4d6ab2
     subdirs:
       - cardano-api
       - cardano-config
@@ -117,7 +117,7 @@ packages:
       - shelley/chain-and-ledger/executable-spec/test
 
   - git: https://github.com/input-output-hk/ouroboros-network
-    commit: fb473dca5880893d6070db2e2efc80d483ca930d
+    commit: ec74d1c463b6d18bdca2b714abe730c1d237cc32
     subdirs:
       - cardano-client
       - io-sim

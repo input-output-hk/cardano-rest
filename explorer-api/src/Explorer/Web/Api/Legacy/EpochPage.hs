@@ -48,7 +48,7 @@ import Database.Persist.Sql
 import Explorer.Web.Api.Legacy.Types
     ( PageNo (..) )
 import Explorer.Web.Api.Legacy.Util
-    ( bsBase16Encode, divRoundUp, slotsPerEpoch, textShow )
+    ( bsBase16Encode, divRoundUp, textShow )
 import Explorer.Web.ClientTypes
     ( CBlockEntry (..), CHash (..) )
 import Explorer.Web.Error
@@ -105,7 +105,7 @@ queryEpochBlocks epoch epochBlocks (PageNo page) = do
     convert (Entity _ blk, Value slh, vmOutSum, vmFee) =
       CBlockEntry
         { cbeEpoch = fromMaybe 0 (blockEpochNo blk)
-        , cbeSlot = maybe 0 (\x -> fromIntegral $ x `mod` slotsPerEpoch) (blockSlotNo blk)
+        , cbeSlot = fromMaybe 0 (blockEpochSlotNo blk)
         , cbeBlkHeight = maybe 0 fromIntegral (blockBlockNo blk)
         , cbeBlkHash = CHash $ bsBase16Encode (blockHash blk)
         , cbeTimeIssued = Just $ utcTimeToPOSIXSeconds (blockTime blk)

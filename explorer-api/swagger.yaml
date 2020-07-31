@@ -112,7 +112,7 @@ definitions:
       - cbeFees
     properties:
       cbeEpoch: *Word64
-      cbeSlot: *Word16
+      cbeSlot: *Word64
       cbeBlkHeight: *Word64
       cbeBlkHash: *CHash
       cbeTimeIssued: *POSIXTime

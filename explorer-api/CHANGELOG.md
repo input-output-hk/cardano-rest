@@ -1,4 +1,7 @@
 # Changelog
+## 2.1.2 -- July 2020
+ * Fix bug with cbeSlot (#77)
+ * Update dependencies for compatibility with `cardano-db-sync` 3.1.0.
 
 ## 2.1.1 -- July 2020
 
