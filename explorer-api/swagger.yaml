@@ -225,7 +225,7 @@ definitions:
       ctsBlockTimeIssued: *POSIXTime
       ctsBlockHeight: *Word64
       ctsBlockEpoch: *Word64
-      ctsBlockSlot: *Word16
+      ctsBlockSlot: *Word64
       ctsBlockHash: *CHash
       ctsRelayedBy: *CNetworkAddress
       ctsTotalInput: *CCoin
@@ -419,7 +419,7 @@ x-param-slotNumber: &param-slotNumber
   in: path
   name: slot
   required: true
-  <<: *Word16
+  <<: *Word64
 
 x-param-txId: &param-txId
   in: path
