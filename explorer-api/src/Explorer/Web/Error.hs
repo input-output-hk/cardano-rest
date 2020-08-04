@@ -27,7 +27,7 @@ import qualified Formatting.Buildable
 data ExplorerError
   = Internal Text  -- Stupid error constructor from the old code base.
   | EELookupFail !LookupFail
-  deriving (Generic)
+  deriving (Generic, Show)
 
 instance Buildable ExplorerError where
   build ee =
