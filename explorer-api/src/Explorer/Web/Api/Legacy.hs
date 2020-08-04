@@ -22,7 +22,7 @@ import Cardano.Db
 import Data.Int
     ( Int64 )
 import Data.Word
-    ( Word16, Word64 )
+    ( Word64 )
 import Explorer.Web.Api.Legacy.Types
     ( PageNo (..), PageSize (..) )
 import Explorer.Web.ClientTypes
@@ -128,7 +128,7 @@ data ExplorerApiRecord route = ExplorerApiRecord
         :- Summary "Get the slot information in an epoch."
         :> "epochs"
         :> Capture "epoch" EpochNumber
-        :> Capture "slot" Word16
+        :> Capture "slot" Word64
         :> ExRes Get [CBlockEntry]
 
   , _genesisSummary :: route

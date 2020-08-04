@@ -17,7 +17,7 @@ import Data.Fixed
 import Data.Maybe
     ( fromMaybe, listToMaybe )
 import Data.Word
-    ( Word16, Word64 )
+    ( Word64 )
 import Database.Esqueleto
     ( Entity (..)
     , InnerJoin (..)
@@ -51,24 +51,22 @@ import Explorer.Web.Error
 -- Why does this return a list? There can only be a single block at a give epoch/slot pair.
 epochSlot
     :: MonadIO m
-    => EpochNumber -> Word16
+    => EpochNumber -> Word64
     -> SqlPersistT m (Either ExplorerError [CBlockEntry])
-epochSlot (EpochNumber epochNo) slotInEpoch =
-  if fromIntegral slotInEpoch >= 10 * k
-    then pure $ Left (Internal "Invalid slot number")
-    else do
-        xs <- queryBlockBySlotNo $ 10 * k * epochNo + fromIntegral slotInEpoch
-        case xs of
-          [] -> pure $ Left (Internal "Not found")
-          _ -> Right <$> mapM queryBlockTx xs
+epochSlot (EpochNumber epochNo) slotInEpoch = do
+    xs <- queryBlockBySlotNo epochNo slotInEpoch
+    case xs of
+      [] -> pure $ Left (Internal "Not found")
+      _ -> Right <$> mapM queryBlockTx xs
 
 -- This query is a pain in the neck. Was not to figure out how to do it
 -- in less than three separate select statements.
-queryBlockBySlotNo :: MonadIO m => Word64 -> SqlPersistT m [(BlockId, CBlockEntry)]
-queryBlockBySlotNo flatSlotNo = do
+queryBlockBySlotNo :: MonadIO m => Word64 -> Word64 -> SqlPersistT m [(BlockId, CBlockEntry)]
+queryBlockBySlotNo epochNo slotNo = do
     rows <- select . from $ \ (blk `InnerJoin` sl) -> do
               on (blk ^. BlockSlotLeader ==. sl ^. SlotLeaderId)
-              where_ (blk ^. BlockSlotNo ==. just (val flatSlotNo))
+              where_ (blk ^. BlockEpochSlotNo ==. just (val slotNo))
+              where_ (blk ^. BlockEpochNo ==. just (val epochNo))
               pure (blk, sl ^. SlotLeaderHash)
     pure $ map convert rows
   where
