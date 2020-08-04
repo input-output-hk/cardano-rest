@@ -64,9 +64,10 @@ library
   -- other-modules:
 
   build-depends:        base                            >= 4.12         && < 4.13
-                      , QuickCheck
                       , aeson
                       , base16-bytestring
+                      , base58-bytestring
+                      , bech32
                       , bytestring
                       , cardano-crypto-class
                       , cardano-db
@@ -83,10 +84,13 @@ library
                       , memory
                       , monad-logger
                       , mtl
+                      , ouroboros-consensus-shelley
                       , persistent
                       , persistent-postgresql
+                      , QuickCheck
                       , servant
                       , servant-server
+                      , shelley-spec-ledger
                       , text
                       , time
                       , transformers
@@ -108,6 +112,7 @@ test-suite unit
                         -Wincomplete-uni-patterns
 
   other-modules:        Test.Explorer.Web.ClientTypesSpec
+                        Test.Explorer.Web.Api.Legacy.UtilSpec
 
   build-depends:        base                            >= 4.12         && < 4.13
                       , aeson

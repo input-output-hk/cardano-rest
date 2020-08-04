@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Explorer.Web.Api.Legacy.Util
@@ -14,18 +15,19 @@ module Explorer.Web.Api.Legacy.Util
   , textShow
   , toPageSize
   , zipTxBrief
+  , isRedeemAddress
   ) where
 
-import Cardano.Chain.Common
-    ( Address, decodeAddressBase58 )
 import Cardano.Db
     ( Block (..), TxId )
+import Control.Applicative
+    ( (<|>) )
 import Control.Monad.IO.Class
     ( MonadIO, liftIO )
-import Data.Bifunctor
-    ( first )
 import Data.ByteString
     ( ByteString )
+import Data.ByteString.Base58
+    ( bitcoinAlphabet, decodeBase58 )
 import Data.Map.Strict
     ( Map )
 import Data.Maybe
@@ -39,18 +41,20 @@ import Data.Time.Clock.POSIX
 import Data.Word
     ( Word64 )
 import Database.Persist.Sql
-    ( IsolationLevel (..), SqlBackend, runSqlConnWithIsolation, SqlPersistT)
+    ( IsolationLevel (..), SqlBackend, SqlPersistT, runSqlConnWithIsolation )
 import Explorer.Web.Api.Legacy.Types
     ( PageSize (..) )
 import Explorer.Web.ClientTypes
-    ( CHash (..)
-    , CTxAddressBrief (..)
-    , CTxBrief (..)
-    , CTxHash (..)
-    )
+    ( CHash (..), CTxAddressBrief (..), CTxBrief (..), CTxHash (..) )
 import Explorer.Web.Error
     ( ExplorerError (..) )
+import Ouroboros.Consensus.Shelley.Protocol.Crypto
+    ( TPraosStandardCrypto )
+import Shelley.Spec.Ledger.Address
+    ( Addr (..), BootstrapAddress (..), deserialiseAddr )
 
+import qualified Cardano.Chain.Common as Byron
+import qualified Codec.Binary.Bech32 as Bech32
 import qualified Data.ByteString.Base16 as Base16
 import qualified Data.Map.Strict as Map
 import qualified Data.Text as Text
@@ -72,11 +76,33 @@ collapseTxGroup xs =
     [] -> error "collapseTxGroup: groupOn produced [] on non-empty list (impossible)"
     (x:_) -> (fst x, map snd xs)
 
-decodeTextAddress :: Text -> Either ExplorerError Address
+decodeTextAddress :: Text -> Either ExplorerError (Addr TPraosStandardCrypto)
 decodeTextAddress txt =
-  first (const . Internal $ "Unable to decode address " <> txt <> ".")
-    $ decodeAddressBase58 txt
+    case tryBech32 <|> tryBase58 of
+        Nothing ->
+            Left $ Internal "Invalid address encoding. Neither Base58 nor Bech32."
+        Just bytes ->
+            case deserialiseAddr bytes of
+                Nothing ->
+                    Left $ Internal "Invalid address."
+                Just addr ->
+                    Right addr
+  where
+    -- | Attempt decoding an 'Address' using a Bech32 encoding.
+    tryBech32 :: Maybe ByteString
+    tryBech32 = do
+        (_, dp) <- either (const Nothing) Just (Bech32.decodeLenient txt)
+        Bech32.dataPartToBytes dp
 
+    -- | Attempt decoding a legacy 'Address' using a Base58 encoding.
+    tryBase58 :: Maybe ByteString
+    tryBase58 =
+        decodeBase58 bitcoinAlphabet (Text.encodeUtf8 txt)
+
+isRedeemAddress :: Addr crypto -> Bool
+isRedeemAddress = \case
+    Addr{} -> False
+    AddrBootstrap (BootstrapAddress addr) -> Byron.isRedeemAddress addr
 
 defaultPageSize :: PageSize
 defaultPageSize = PageSize 10

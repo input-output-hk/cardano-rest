@@ -8,8 +8,6 @@ module Explorer.Web.Api.Legacy.AddressSummary
   , queryAddressSummary
   ) where
 
-import Cardano.Chain.Common
-    ( Address, isRedeemAddress )
 import Cardano.Db
     ( EntityField (..), TxId, unValue3 )
 import Control.Monad.IO.Class
@@ -50,6 +48,7 @@ import Explorer.Web.Api.Legacy.Util
     , collapseTxGroup
     , decodeTextAddress
     , genesisDistributionTxHash
+    , isRedeemAddress
     , zipTxBrief
     )
 import Explorer.Web.ClientTypes
@@ -66,6 +65,8 @@ import Explorer.Web.Error
     ( ExplorerError (..) )
 import Explorer.Web.Query
     ( queryChainTip )
+import Shelley.Spec.Ledger.Address
+    ( Addr )
 
 import qualified Data.List as List
 
@@ -98,7 +99,7 @@ addressSummary (CAddress addrTxt) = runExceptT $ do
 
 -- -------------------------------------------------------------------------------------------------
 
-queryAddressSummary :: MonadIO m => Text -> Address -> SqlPersistT m (Either ExplorerError CAddressSummary)
+queryAddressSummary :: MonadIO m => Text -> Addr crypto -> SqlPersistT m (Either ExplorerError CAddressSummary)
 queryAddressSummary addrTxt addr = do
   chainTip <- queryChainTip
   if isRedeemAddress addr

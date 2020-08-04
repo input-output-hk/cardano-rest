@@ -5,8 +5,6 @@ module Explorer.Web.Api.Legacy.BlockAddress
   ( blockAddress
   ) where
 
-import Cardano.Chain.Common
-    ( isRedeemAddress )
 import Cardano.Db
     ( EntityField (..), TxId, unValue3 )
 import Control.Monad.IO.Class
@@ -49,6 +47,7 @@ import Explorer.Web.Api.Legacy.Util
     ( bsBase16Encode
     , collapseTxGroup
     , decodeTextAddress
+    , isRedeemAddress
     , textBase16Decode
     , zipTxBrief
     )
