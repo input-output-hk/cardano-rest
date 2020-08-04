@@ -58,7 +58,7 @@ packages:
         - cborg
 
   - git: https://github.com/input-output-hk/cardano-node
-    commit: 3258fdbb2ce8c56ca175401630aa71d75a4d6ab2
+    commit: ba0f96b1a9fc9232ed211e57835fd5018093069d
     subdirs:
       - cardano-api
       - cardano-config
@@ -102,7 +102,7 @@ packages:
     commit: 26d35ad52fe9ade3391532dbfeb2f416f07650bc
 
   - git: https://github.com/input-output-hk/cardano-ledger-specs
-    commit: 9dc2eab127849ad7b7cada13c6681dda540a88fe
+    commit: 183a70c001587d9b1977541deae28c3e44713907
     subdirs:
       - byron/chain/executable-spec
       - byron/crypto
