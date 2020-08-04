@@ -96,7 +96,7 @@ library
 test-suite unit
   default-language:     Haskell2010
   type:                 exitcode-stdio-1.0
-  main-is:              test.hs
+  main-is:              Main.hs
   hs-source-dirs:       test
 
   ghc-options:          -Wall
@@ -107,7 +107,7 @@ test-suite unit
                         -Wincomplete-record-updates
                         -Wincomplete-uni-patterns
 
-  other-modules:        Test.Explorer.Web.Property.Types
+  other-modules:        Test.Explorer.Web.ClientTypesSpec
 
   build-depends:        base                            >= 4.12         && < 4.13
                       , aeson
@@ -115,6 +115,8 @@ test-suite unit
                       , cardano-explorer-api
                       , cardano-ledger
                       , hedgehog
+                      , hspec
+                      , hspec-hedgehog
 
 executable cardano-explorer-api
   default-language:    Haskell2010

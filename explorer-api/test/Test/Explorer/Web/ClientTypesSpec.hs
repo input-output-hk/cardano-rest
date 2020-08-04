@@ -1,7 +1,5 @@
-{-# LANGUAGE TemplateHaskell #-}
-
-module Test.Explorer.Web.Property.Types
-  ( tests
+module Test.Explorer.Web.ClientTypesSpec
+  ( spec
   ) where
 
 import Cardano.Chain.Common
@@ -13,15 +11,18 @@ import Data.Word
 import Explorer.Web.ClientTypes
     ( adaToCCoin, cCoinToAda )
 import Hedgehog
-    ( Gen, Property, discover )
+    ( Gen, PropertyT )
+import Test.Hspec
+    ( Spec, describe, it )
+import Test.Hspec.Hedgehog
+    ( hedgehog )
 
 import qualified Hedgehog as H
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
 
-prop_roundtrip_ada_to_ccoin :: Property
-prop_roundtrip_ada_to_ccoin =
-  H.withTests 1000 . H.property $ do
+prop_roundtrip_ada_to_ccoin :: PropertyT IO ()
+prop_roundtrip_ada_to_ccoin = do
     ada <- H.forAll genAda
     H.tripping ada adaToCCoin (Just . cCoinToAda)
 
@@ -39,5 +40,6 @@ genAda =
 
 -- -----------------------------------------------------------------------------
 
-tests :: IO Bool
-tests = H.checkParallel $$discover
+spec :: Spec
+spec = describe "ClientTypesSpec" $ do
+    it "adaToCCoin . cCoinToAda" $ hedgehog prop_roundtrip_ada_to_ccoin
