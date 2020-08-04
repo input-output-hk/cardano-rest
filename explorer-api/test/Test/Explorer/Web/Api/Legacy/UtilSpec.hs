@@ -63,3 +63,14 @@ spec = do
             decodeTextAddress
                 "addr1g8ejymax5dh6srcj3sehf6lt0czdj9uklffzhc3fqgglnlf2pcqqc69etp"
                 `shouldSatisfy` isRight
+
+        it "✓ can decode Base16 Byron address" $ do
+            decodeTextAddress
+                "82d818582183581c4ad651d1c6afe6b3483eac69ab9\
+                \6575519376f136f024c35e5d27071a0001a453d0d11"
+                `shouldSatisfy` isRight
+
+        it "✓ can decode Base16 Shelley address" $ do
+            decodeTextAddress
+                "6079467c69a9ac66280174d09d62575ba955748b21dec3b483a9469a65"
+                `shouldSatisfy` isRight

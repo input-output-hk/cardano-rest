@@ -24,6 +24,8 @@ import Control.Applicative
     ( (<|>) )
 import Control.Monad.IO.Class
     ( MonadIO, liftIO )
+import Data.ByteArray.Encoding
+    ( Base (..), convertFromBase )
 import Data.ByteString
     ( ByteString )
 import Data.ByteString.Base58
@@ -78,9 +80,9 @@ collapseTxGroup xs =
 
 decodeTextAddress :: Text -> Either ExplorerError (Addr TPraosStandardCrypto)
 decodeTextAddress txt =
-    case tryBech32 <|> tryBase58 of
+    case tryBase16 <|> tryBech32 <|> tryBase58 of
         Nothing ->
-            Left $ Internal "Invalid address encoding. Neither Base58 nor Bech32."
+            Left $ Internal "Invalid address encoding. Neither Base16, Bech32 nor Base58."
         Just bytes ->
             case deserialiseAddr bytes of
                 Nothing ->
@@ -88,6 +90,11 @@ decodeTextAddress txt =
                 Just addr ->
                     Right addr
   where
+    -- | Attempt decoding an 'Address' using Base16 encoding
+    tryBase16 :: Maybe ByteString
+    tryBase16 =
+        either (const Nothing) Just $ convertFromBase Base16 (Text.encodeUtf8 txt)
+
     -- | Attempt decoding an 'Address' using a Bech32 encoding.
     tryBech32 :: Maybe ByteString
     tryBech32 = do
