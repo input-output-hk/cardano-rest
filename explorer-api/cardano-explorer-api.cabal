@@ -123,6 +123,8 @@ test-suite unit
                       , hspec
                       , hspec-hedgehog
 
+  build-tool-depends:   hspec-discover:hspec-discover
+
 executable cardano-explorer-api
   default-language:    Haskell2010
   main-is:             cardano-explorer-api.hs
