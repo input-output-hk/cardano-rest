@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.3 -- August 2020
+
+ * No changes. Bumping version to keep consistency with explorer-api.
+
 ## 2.1.1 -- July 2020
 
  * Update dependencies for compatibility with `cardano-node` 1.18.0.
