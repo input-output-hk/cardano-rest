@@ -23,7 +23,7 @@ jobs:
     - uses: actions/checkout@v1
 
     - name: Setup Stack
-      uses: mstksg/setup-stack@v1
+      uses: mstksg/setup-stack@69e4283f
 
     - name: Install Dependencies
       run: |
