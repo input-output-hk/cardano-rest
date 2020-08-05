@@ -10,15 +10,13 @@ packages:
 
 extra-deps:
   - git: https://github.com/input-output-hk/cardano-db-sync
-    commit: 9ac5586149e40eee8ffdd95b9e3aea799055b3a4
+    commit: 7f9959c9a0746d44d331cffcf7abb0ef4f4fb948
     subdirs:
       - cardano-db
       - cardano-db-sync
 
   - git: https://github.com/input-output-hk/cardano-crypto
     commit: 2547ad1e80aeabca2899951601079408becbc92c
-
-  - hspec-hedgehog-0.0.1.2
 
 ghc-options:
   cardano-explorer-api: -Wall -Werror -fwarn-redundant-constraints

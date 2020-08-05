@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Test.Explorer.Web.ClientTypesSpec
   ( spec
   ) where
@@ -13,9 +15,7 @@ import Explorer.Web.ClientTypes
 import Hedgehog
     ( Gen, PropertyT )
 import Test.Hspec
-    ( Spec, describe, it )
-import Test.Hspec.Hedgehog
-    ( hedgehog )
+    ( Spec, describe, it, shouldBe )
 
 import qualified Hedgehog as H
 import qualified Hedgehog.Gen as Gen
@@ -42,4 +42,10 @@ genAda =
 
 spec :: Spec
 spec = describe "ClientTypesSpec" $ do
-    it "adaToCCoin . cCoinToAda" $ hedgehog prop_roundtrip_ada_to_ccoin
+    it "properties" $ do
+        result <- H.checkParallel $ H.Group "ClientTypesSpec"
+            [ ( "adaToCCoin . cCoinToAda"
+              , H.property prop_roundtrip_ada_to_ccoin
+              )
+            ]
+        result `shouldBe` True

@@ -121,7 +121,6 @@ test-suite unit
                       , cardano-ledger
                       , hedgehog
                       , hspec
-                      , hspec-hedgehog
 
   build-tool-depends:   hspec-discover:hspec-discover
 
