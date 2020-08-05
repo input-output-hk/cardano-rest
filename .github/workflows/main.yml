@@ -18,7 +18,8 @@ jobs:
     - name: Install OS Packages
       uses: mstksg/get-package@v1
       with:
-        apt-get: libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev
+        apt-get: libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev libsodium-dev
+        brew: libsodium
 
     - uses: actions/checkout@v1
 
