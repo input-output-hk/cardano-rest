@@ -1,4 +1,4 @@
-index-state: 2020-02-11T00:00:00Z
+index-state: 2020-07-15T00:00:00Z
 
 packages:
   rest-common
@@ -21,9 +21,6 @@ package cardano-submit-api
   ghc-options: -Wall -Werror -fwarn-redundant-constraints
 
 package cardano-db-sync
-  tests: False
-
-package cardano-shell
   tests: False
 
 package ouroboros-consensus
@@ -53,23 +50,16 @@ source-repository-package
 source-repository-package
   type: git
   location: https://github.com/input-output-hk/cardano-db-sync
-  tag: 7f9959c9a0746d44d331cffcf7abb0ef4f4fb948
-  --sha256: 0yyqz0k4f3ma4w0wjxsjlnjikx9cha9k3cwz3ry6bar63a2s5n7g
+  tag: 9ac5586149e40eee8ffdd95b9e3aea799055b3a4
+  --sha256: 0a8ikwbwq1b4d7y94dn3aj0frynjdahilgnzy2kyh5gdc6bq5053
   subdir: cardano-db
 
 source-repository-package
   type: git
   location: https://github.com/input-output-hk/cardano-db-sync
-  tag: 7f9959c9a0746d44d331cffcf7abb0ef4f4fb948
-  --sha256: 0yyqz0k4f3ma4w0wjxsjlnjikx9cha9k3cwz3ry6bar63a2s5n7g
+  tag: 9ac5586149e40eee8ffdd95b9e3aea799055b3a4
+  --sha256: 0a8ikwbwq1b4d7y94dn3aj0frynjdahilgnzy2kyh5gdc6bq5053
   subdir: cardano-db-sync
-
-source-repository-package
-  type: git
-  location: https://github.com/input-output-hk/cardano-shell
-  tag: bc3563c952d9f3635e1c76749b86b0a24f7e4b83
-  --sha256: 0c4f394h0wshcly6vcghvg5m6zd1i7s3a9kb1xlg7na4hn4y4a2v
-  subdir: cardano-shell
 
 source-repository-package
   type: git
@@ -386,16 +376,23 @@ source-repository-package
 source-repository-package
   type: git
   location: https://github.com/input-output-hk/cardano-node
-  tag: 3258fdbb2ce8c56ca175401630aa71d75a4d6ab2
-  --sha256: 1la5nkw6nhfsc7izi28g39phfm4bnfza3srm49c16b9vgwqxl4wm
+  tag: d7a524dbfec3afc81ad478f237eb64bf40c66932
+  --sha256: 1pmdl16wyv3i05qq07sz4h34mdw7nxxi6smxvarghwsmv10afq5n
   subdir: cardano-api
 
 source-repository-package
   type: git
   location: https://github.com/input-output-hk/cardano-node
-  tag: 3258fdbb2ce8c56ca175401630aa71d75a4d6ab2
-  --sha256: 1la5nkw6nhfsc7izi28g39phfm4bnfza3srm49c16b9vgwqxl4wm
+  tag: d7a524dbfec3afc81ad478f237eb64bf40c66932
+  --sha256: 1pmdl16wyv3i05qq07sz4h34mdw7nxxi6smxvarghwsmv10afq5n
   subdir: cardano-config
+
+source-repository-package
+  type: git
+  location: https://github.com/input-output-hk/cardano-node
+  tag: d7a524dbfec3afc81ad478f237eb64bf40c66932
+  --sha256: 1pmdl16wyv3i05qq07sz4h34mdw7nxxi6smxvarghwsmv10afq5n
+  subdir: cardano-node
 
 source-repository-package
   type: git
