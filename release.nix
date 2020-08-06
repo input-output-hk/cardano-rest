@@ -105,6 +105,7 @@ let
 
   jobs = {
     native = mapTestOn (__trace (__toJSON (packagePlatforms project)) (packagePlatforms project));
+    musl64 = mapTestOnCross musl64 (packagePlatformsCross project);
     # Fully-static linux binary (placeholder - does not build)
     cardano-rest-linux64 = let
       name = "cardano-rest";
