@@ -12,15 +12,15 @@
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "iohk-nix": {
-        "branch": "master",
+        "branch": "SRE-133_get_musl_backport",
         "description": "nix scripts shared across projects",
         "homepage": null,
         "owner": "input-output-hk",
         "repo": "iohk-nix",
-        "rev": "f345d26508966e434d8db57d6c3b4ce4202c9fb5",
-        "sha256": "1xcar2r6jm68dp5s8kc2rii0rcg47w41qc1akazbngkj1x6hf1r2",
+        "rev": "55a49bca8dbdaef705b8ee008ec15ba535fdbc5d",
+        "sha256": "0l15jvm7bq17kcxcb2g9g8v27yp55l9hmd8l1ld3qvf72l0xpbif",
         "type": "tarball",
-        "url": "https://github.com/input-output-hk/iohk-nix/archive/f345d26508966e434d8db57d6c3b4ce4202c9fb5.tar.gz",
+        "url": "https://github.com/input-output-hk/iohk-nix/archive/55a49bca8dbdaef705b8ee008ec15ba535fdbc5d.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
