@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "Right": {
+      "type": "array",
+      "properties": {
+        "cteId": {
+          "type": "string"
+        },
+        "cteTimeIssued": {
+          "type": "integer"
+        },
+        "cteAmount": {
+          "type": "object",
+          "properties": {
+            "getCoin": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "getCoin"
+          ]
+        }
+      },
+      "required": [
+        "cteId",
+        "cteTimeIssued",
+        "cteAmount"
+      ]
+    }
+  },
+  "required": [
+    "Right"
+  ]
+}

@@ -1,0 +1,29 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="oracle" parallel="tests">
+    <test name="addresses">
+        <classes>
+            <class name="com.cardano.rest.tests.functional.oracle.AddressesTest" />
+        </classes>
+    </test>
+    <test name="blocks">
+        <classes>
+            <class name="com.cardano.rest.tests.functional.oracle.BlocksTest" />
+        </classes>
+    </test>
+    <test name="epochs">
+        <classes>
+            <class name="com.cardano.rest.tests.functional.oracle.EpochsTest" />
+        </classes>
+    </test>
+    <test name="genesis">
+        <classes>
+            <class name="com.cardano.rest.tests.functional.oracle.GenesisTest" />
+        </classes>
+    </test>
+    <test name="transactions">
+        <classes>
+            <class name="com.cardano.rest.tests.functional.oracle.TransactionsTest" />
+        </classes>
+    </test>
+</suite>

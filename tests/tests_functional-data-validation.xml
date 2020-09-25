@@ -1,0 +1,21 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="data-validation" parallel="tests">
+    <test name="addresses">
+        <parameter name = "address" value="2cWKMJemoBai3tRwvPZ6uzfnEkN2LogNKCBQHG32updkxkbUjvCHSHRzDiMBet65Wor4k"/>
+        <parameter name = "caAddress" value="2cWKMJemoBai3tRwvPZ6uzfnEkN2LogNKCBQHG32updkxkbUjvCHSHRzDiMBet65Wor4k"/>
+        <parameter name = "caType" value="CPubKeyAddress"/>
+        <parameter name = "ctbId" value="58bf5fccccf3ebf129024a61f783ebbdb041a7cdaacdb71f973277fdb7d11e1f"/>
+        <parameter name = "ctbTimeIssued" value="1592815176"/>
+        <parameter name = "ctaAddress" value="2cWKMJemoBaiPfzhF8D7nHnYcShttriz2s6KLEjaLWFNQVU6TGtEDccdU5zdMsjAoC9NX"/>
+        <parameter name = "ctaAmount" value="1000000000"/>
+        <parameter name = "ctaTxHash" value="f521516c180ba64198ebf9a726c2d1f109cb19888a0f00a5767d04750400c711"/>
+        <parameter name = "ctaTxIndex" value="1"/>
+        <parameter name = "ctbInputSum" value="1000000000"/>
+        <parameter name = "ctbOutputSum" value="999831391"/>
+        <parameter name = "ctbFees" value="168609"/>
+        <classes>
+            <class name="com.cardano.rest.tests.functional.data_validation.AddressesTest" />
+        </classes>
+    </test>
+</suite>

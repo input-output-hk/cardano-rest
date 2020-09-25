@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "Right": {
+      "type": "object",
+      "properties": {
+        "cgsNumTotal": {
+          "type": "integer"
+        },
+        "cgsNumRedeemed": {
+          "type": "integer"
+        },
+        "cgsNumNotRedeemed": {
+          "type": "integer"
+        },
+        "cgsRedeemedAmountTotal": {
+          "type": "object",
+          "properties": {
+            "getCoin": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "getCoin"
+          ]
+        },
+        "cgsNonRedeemedAmountTotal": {
+          "type": "object",
+          "properties": {
+            "getCoin": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "getCoin"
+          ]
+        }
+      },
+      "required": [
+        "cgsNumTotal",
+        "cgsNumRedeemed",
+        "cgsNumNotRedeemed",
+        "cgsRedeemedAmountTotal",
+        "cgsNonRedeemedAmountTotal"
+      ]
+    }
+  },
+  "required": [
+    "Right"
+  ]
+}

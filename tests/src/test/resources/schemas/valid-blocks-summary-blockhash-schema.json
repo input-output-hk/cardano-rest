@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "Right": {
+      "type": "object",
+      "properties": {
+        "cbsEntry": {
+          "type": "object",
+          "properties": {
+            "cbeEpoch": {
+              "type": "integer"
+            },
+            "cbeSlot": {
+              "type": "integer"
+            },
+            "cbeBlkHeight": {
+              "type": "integer"
+            },
+            "cbeBlkHash": {
+              "type": "string"
+            },
+            "cbeTimeIssued": {
+              "type": "integer"
+            },
+            "cbeTxNum": {
+              "type": "integer"
+            },
+            "cbeTotalSent": {
+              "type": "object",
+              "properties": {
+                "getCoin": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "getCoin"
+              ]
+            },
+            "cbeSize": {
+              "type": "integer"
+            },
+            "cbeBlockLead": {
+              "type": "string"
+            },
+            "cbeFees": {
+              "type": "object",
+              "properties": {
+                "getCoin": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "getCoin"
+              ]
+            }
+          },
+          "required": [
+            "cbeEpoch",
+            "cbeSlot",
+            "cbeBlkHeight",
+            "cbeBlkHash",
+            "cbeTimeIssued",
+            "cbeTxNum",
+            "cbeTotalSent",
+            "cbeSize",
+            "cbeBlockLead",
+            "cbeFees"
+          ]
+        },
+        "cbsPrevHash": {
+          "type": "string"
+        },
+        "cbsNextHash": {
+          "type": "string"
+        },
+        "cbsMerkleRoot": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "cbsEntry",
+        "cbsPrevHash",
+        "cbsNextHash",
+        "cbsMerkleRoot"
+      ]
+    }
+  },
+  "required": [
+    "Right"
+  ]
+}

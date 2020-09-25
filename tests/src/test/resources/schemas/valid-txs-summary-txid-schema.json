@@ -1,0 +1,158 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "Right": {
+      "type": "object",
+      "properties": {
+        "ctsId": {
+          "type": "string"
+        },
+        "ctsTxTimeIssued": {
+          "type": "integer"
+        },
+        "ctsBlockTimeIssued": {
+          "type": "integer"
+        },
+        "ctsBlockHeight": {
+          "type": "integer"
+        },
+        "ctsBlockEpoch": {
+          "type": "integer"
+        },
+        "ctsBlockSlot": {
+          "type": "integer"
+        },
+        "ctsBlockHash": {
+          "type": "string"
+        },
+        "ctsRelayedBy": {
+          "type": "null"
+        },
+        "ctsTotalInput": {
+          "type": "object",
+          "properties": {
+            "getCoin": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "getCoin"
+          ]
+        },
+        "ctsTotalOutput": {
+          "type": "object",
+          "properties": {
+            "getCoin": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "getCoin"
+          ]
+        },
+        "ctsFees": {
+          "type": "object",
+          "properties": {
+            "getCoin": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "getCoin"
+          ]
+        },
+        "ctsInputs": {
+          "type": "array",
+          "items": [
+            {
+              "type": "object",
+              "properties": {
+                "ctaAddress": {
+                  "type": "string"
+                },
+                "ctaAmount": {
+                  "type": "object",
+                  "properties": {
+                    "getCoin": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "getCoin"
+                  ]
+                },
+                "ctaTxHash": {
+                  "type": "string"
+                },
+                "ctaTxIndex": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "ctaAddress",
+                "ctaAmount",
+                "ctaTxHash",
+                "ctaTxIndex"
+              ]
+            }
+          ]
+        },
+        "ctsOutputs": {
+          "type": "array",
+          "items": [
+            {
+              "type": "object",
+              "properties": {
+                "ctaAddress": {
+                  "type": "string"
+                },
+                "ctaAmount": {
+                  "type": "object",
+                  "properties": {
+                    "getCoin": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "getCoin"
+                  ]
+                },
+                "ctaTxHash": {
+                  "type": "string"
+                },
+                "ctaTxIndex": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "ctaAddress",
+                "ctaAmount",
+                "ctaTxHash",
+                "ctaTxIndex"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "ctsId",
+        "ctsTxTimeIssued",
+        "ctsBlockTimeIssued",
+        "ctsBlockHeight",
+        "ctsBlockEpoch",
+        "ctsBlockSlot",
+        "ctsBlockHash",
+        "ctsRelayedBy",
+        "ctsTotalInput",
+        "ctsTotalOutput",
+        "ctsFees",
+        "ctsInputs",
+        "ctsOutputs"
+      ]
+    }
+  },
+  "required": [
+    "Right"
+  ]
+}
