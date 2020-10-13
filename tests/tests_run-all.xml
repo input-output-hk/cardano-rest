@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="AllTests" verbose="1" >
+    <suite-files>
+        <suite-file path="tests_functional-smoke.xml"/>
+        <suite-file path="tests_functional-data-intensive.xml"/>
+        <suite-file path="tests_functional-data-validation.xml"/>
+    </suite-files>
+</suite>

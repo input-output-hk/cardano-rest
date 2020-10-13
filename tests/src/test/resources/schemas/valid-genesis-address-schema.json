@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "Right": {
+      "type": "array",
+      "properties": {
+        "cgaiCardanoAddress": {
+          "type": "string"
+        },
+        "cgaiGenesisAmount": {
+          "type": "object",
+          "properties": {
+            "getCoin": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "getCoin"
+          ]
+        },
+        "cgaiIsRedeemed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "cgaiCardanoAddress",
+        "cgaiGenesisAmount",
+        "cgaiIsRedeemed"
+      ]
+    }
+  },
+  "required": [
+    "Right"
+  ]
+}

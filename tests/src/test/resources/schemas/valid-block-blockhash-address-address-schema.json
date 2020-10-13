@@ -1,0 +1,227 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "Right": {
+      "type": "object",
+      "properties": {
+        "caAddress": {
+          "type": "string"
+        },
+        "caType": {
+          "type": "string"
+        },
+        "caChainTip": {
+          "type": "object",
+          "properties": {
+            "ctBlockNo": {
+              "type": "integer"
+            },
+            "ctSlotNo": {
+              "type": "integer"
+            },
+            "ctBlockHash": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "ctBlockNo",
+            "ctSlotNo",
+            "ctBlockHash"
+          ]
+        },
+        "caTxNum": {
+          "type": "integer"
+        },
+        "caBalance": {
+          "type": "object",
+          "properties": {
+            "getCoin": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "getCoin"
+          ]
+        },
+        "caTotalInput": {
+          "type": "object",
+          "properties": {
+            "getCoin": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "getCoin"
+          ]
+        },
+        "caTotalOutput": {
+          "type": "object",
+          "properties": {
+            "getCoin": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "getCoin"
+          ]
+        },
+        "caTotalFee": {
+          "type": "object",
+          "properties": {
+            "getCoin": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "getCoin"
+          ]
+        },
+        "caTxList": {
+          "type": "array",
+          "items": [
+            {
+              "type": "object",
+              "properties": {
+                "ctbId": {
+                  "type": "string"
+                },
+                "ctbTimeIssued": {
+                  "type": "integer"
+                },
+                "ctbInputs": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "ctaAddress": {
+                          "type": "string"
+                        },
+                        "ctaAmount": {
+                          "type": "object",
+                          "properties": {
+                            "getCoin": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "getCoin"
+                          ]
+                        },
+                        "ctaTxHash": {
+                          "type": "string"
+                        },
+                        "ctaTxIndex": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "ctaAddress",
+                        "ctaAmount",
+                        "ctaTxHash",
+                        "ctaTxIndex"
+                      ]
+                    }
+                  ]
+                },
+                "ctbOutputs": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "ctaAddress": {
+                          "type": "string"
+                        },
+                        "ctaAmount": {
+                          "type": "object",
+                          "properties": {
+                            "getCoin": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "getCoin"
+                          ]
+                        },
+                        "ctaTxHash": {
+                          "type": "string"
+                        },
+                        "ctaTxIndex": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "ctaAddress",
+                        "ctaAmount",
+                        "ctaTxHash",
+                        "ctaTxIndex"
+                      ]
+                    }
+                  ]
+                },
+                "ctbInputSum": {
+                  "type": "object",
+                  "properties": {
+                    "getCoin": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "getCoin"
+                  ]
+                },
+                "ctbOutputSum": {
+                  "type": "object",
+                  "properties": {
+                    "getCoin": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "getCoin"
+                  ]
+                },
+                "ctbFees": {
+                  "type": "object",
+                  "properties": {
+                    "getCoin": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "getCoin"
+                  ]
+                }
+              },
+              "required": [
+                "ctbId",
+                "ctbTimeIssued",
+                "ctbInputs",
+                "ctbOutputs",
+                "ctbInputSum",
+                "ctbOutputSum",
+                "ctbFees"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "caAddress",
+        "caType",
+        "caChainTip",
+        "caTxNum",
+        "caBalance",
+        "caTotalInput",
+        "caTotalOutput",
+        "caTotalFee",
+        "caTxList"
+      ]
+    }
+  },
+  "required": [
+    "Right"
+  ]
+}

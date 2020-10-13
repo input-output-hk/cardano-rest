@@ -1,0 +1,59 @@
+{
+  "Right": {
+    "caAddress": "Ae2tdPwUPEZK72eZZqulakkhaUfTCcoaGepvQP718aYBczw5uZmp47h1k14",
+    "caType": "CPubKeyAddress",
+    "caChainTip": {
+      "ctBlockNo": 0,
+      "ctSlotNo": 0,
+      "ctBlockHash": "3c89f7d9ff6c06468e32fd916d153b033264f780e11fca7750cb85f56d4f31d0"
+    },
+    "caTxNum": 0,
+    "caBalance": {
+      "getCoin": 0
+    },
+    "caTotalInput": {
+      "getCoin": 0
+    },
+    "caTotalOutput": {
+      "getCoin": 0
+    },
+    "caTotalFee": {
+      "getCoin": 0
+    },
+    "caTxList": [
+      {
+        "ctbId": "3c89f7d9ff6c06468e32fd916d153b033264f780e11fca7750cb85f56d4f31d0",
+        "ctbTimeIssued": 0,
+        "ctbInputs": [
+          {
+            "ctaAddress": "Ae2tdPwUPEZK72eZZqulakkhaUfTCcoaGepvQP718aYBczw5uZmp47h1k14",
+            "ctaAmount": {
+              "getCoin": 0
+            },
+            "ctaTxHash": "3c89f7d9ff6c06468e32fd916d153b033264f780e11fca7750cb85f56d4f31d0",
+            "ctaTxIndex": 0
+          }
+        ],
+        "ctbOutputs": [
+          {
+            "ctaAddress": "Ae2tdPwUPEZK72eZZqulakkhaUfTCcoaGepvQP718aYBczw5uZmp47h1k14",
+            "ctaAmount": {
+              "getCoin": 0
+            },
+            "ctaTxHash": "3c89f7d9ff6c06468e32fd916d153b033264f780e11fca7750cb85f56d4f31d0",
+            "ctaTxIndex": 0
+          }
+        ],
+        "ctbInputSum": {
+          "getCoin": 0
+        },
+        "ctbOutputSum": {
+          "getCoin": 0
+        },
+        "ctbFees": {
+          "getCoin": 0
+        }
+      }
+    ]
+  }
+}
