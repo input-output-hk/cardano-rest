@@ -22,7 +22,7 @@ services:
         max-file: "20"
 
   cardano-node:
-    image: inputoutput/cardano-node:${CARDANO_NODE_VERSION:-1.18.0}
+    image: inputoutput/cardano-node:${CARDANO_NODE_VERSION:-1.21.1}
     environment:
       - NETWORK=${NETWORK:-mainnet}
     volumes:
@@ -35,7 +35,7 @@ services:
         max-file: "10"
 
   cardano-db-sync:
-    image: inputoutput/cardano-db-sync:${CARDANO_DB_SYNC_VERSION:-3.1.0}
+    image: inputoutput/cardano-db-sync:${CARDANO_DB_SYNC_VERSION:-5.0.3}
     environment:
       - NETWORK=${NETWORK:-mainnet}
       - POSTGRES_HOST=postgres
