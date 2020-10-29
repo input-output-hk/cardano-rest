@@ -399,6 +399,13 @@ source-repository-package
 
 source-repository-package
   type: git
+  location: https://github.com/input-output-hk/cardano-node
+  tag: ba0f96b1a9fc9232ed211e57835fd5018093069d
+  --sha256: 1rj7rpr3qqqwdx00zsfg283jflndnr9q5arxf5fiqrrqms40p7sk
+  subdir: cardano-node
+
+source-repository-package
+  type: git
   location: https://github.com/input-output-hk/bech32.git
   tag: e8d546c154b5b0502f80b76a02bc023b09778918
   --sha256: 0vvja8ada9rmqm1g6w1kkz2jl9spllbj6nfs75dpnmkgby7278f2
