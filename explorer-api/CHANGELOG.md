@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.0 -- October 2020
+
+ * Upgrade dependencies to more recent version of the Cardano eco-system (cardano-db-sync-6.0.0) 
+
 ## 2.1.3 -- August 2020
 
  * Fix bug regarding Shelley addresses not being decoded correctly (#75)
