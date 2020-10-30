@@ -6,7 +6,7 @@ module Explorer.Web.Api.Legacy.RedeemSummary
   ) where
 
 import Cardano.Db
-    ( EntityField (..), unValue3 )
+    ( DbLovelace (..), EntityField (..), unValue3 )
 import Control.Monad.IO.Class
     ( MonadIO )
 import Control.Monad.Trans.Reader
@@ -67,7 +67,7 @@ queryRedeemSummary chainTip addrTxt = do
               pure (txOut ^. TxOutValue)
     case rows of
       [] -> pure $ Left (Internal "queryRedeemSummary: Address not found")
-      [value] -> Right <$> queryRedeemed (fromIntegral $ unValue value)
+      [value] -> Right <$> queryRedeemed (fromIntegral $ unDbLovelace $ unValue value)
       _ -> pure $ Left (Internal "queryRedeemSummary: More than one entry")
   where
     queryRedeemed :: MonadIO m => CCoin -> ReaderT SqlBackend m CAddressSummary
@@ -79,7 +79,7 @@ queryRedeemSummary chainTip addrTxt = do
                     on (txIn ^. TxInTxOutId ==. txOut0 ^. TxOutTxId
                         &&. txIn ^. TxInTxOutIndex ==. txOut0 ^. TxOutIndex)
                     on (tx ^. TxId ==. txIn ^. TxInTxInId)
-                    on (blk ^. BlockId ==. tx ^. TxBlock)
+                    on (blk ^. BlockId ==. tx ^. TxBlockId)
                     where_ (txOut0 ^. TxOutAddress ==. val addrTxt)
                     pure (tx ^. TxHash, blk ^. BlockTime, txOut1 ^. TxOutAddress)
       pure $ maybe (convertUnspent value) (convertSpent value) (unValue3 <$> listToMaybe outrows)

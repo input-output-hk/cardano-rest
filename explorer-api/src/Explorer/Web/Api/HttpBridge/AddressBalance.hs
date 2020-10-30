@@ -6,7 +6,7 @@ module Explorer.Web.Api.HttpBridge.AddressBalance
   ) where
 
 import Cardano.Db
-    ( EntityField (..), queryNetworkName, txOutUnspentP )
+    ( DbLovelace (..), EntityField (..), queryNetworkName, txOutUnspentP )
 import Control.Monad.IO.Class
     ( MonadIO )
 import Data.ByteString.Char8
@@ -14,7 +14,7 @@ import Data.ByteString.Char8
 import Data.Text
     ( Text )
 import Data.Word
-    ( Word16, Word64 )
+    ( Word16 )
 import Database.Esqueleto
     ( InnerJoin (..), Value (..), from, on, select, val, where_, (==.), (^.) )
 import Database.Persist.Sql
@@ -64,17 +64,17 @@ addressBalance (CNetwork networkName) (CAddress addrTxt) =
 queryAddressBalance :: MonadIO m => Text -> SqlPersistT m [CAddressBalance]
 queryAddressBalance addrTxt = do
     rows <- select . from $ \ (tx `InnerJoin` txOut) -> do
-              on (tx ^. TxId ==. txOut ^. TxOutTxId)
-              txOutUnspentP txOut
-              where_ (txOut ^. TxOutAddress ==. val addrTxt)
-              pure (txOut ^. TxOutAddress, tx ^. TxHash, txOut ^. TxOutIndex, txOut ^. TxOutValue)
+            on (tx ^. TxId ==. txOut ^. TxOutTxId)
+            txOutUnspentP txOut
+            where_ (txOut ^. TxOutAddress ==. val addrTxt)
+            pure (txOut ^. TxOutAddress, tx ^. TxHash, txOut ^. TxOutIndex, txOut ^. TxOutValue)
     pure $ map convert rows
   where
-    convert :: (Value Text, Value ByteString, Value Word16, Value Word64) -> CAddressBalance
+    convert :: (Value Text, Value ByteString, Value Word16, Value DbLovelace) -> CAddressBalance
     convert (Value addr, Value txhash, Value index, Value coin) =
       CAddressBalance
         { cuaAddress = addr
         , cuaTxHash = bsBase16Encode txhash
         , cuaIndex = index
-        , cuaCoin = coin
+        , cuaCoin = unDbLovelace coin
         }

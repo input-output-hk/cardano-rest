@@ -8,7 +8,7 @@ module Explorer.Web.Api.Legacy.BlocksTxs
   ) where
 
 import Cardano.Db
-    ( EntityField (..), TxId, unValue3 )
+    ( DbLovelace (..), EntityField (..), TxId, unValue3 )
 import Control.Monad.IO.Class
     ( MonadIO )
 import Data.ByteString.Char8
@@ -24,7 +24,7 @@ import Data.Text
 import Data.Time.Clock
     ( UTCTime )
 import Data.Word
-    ( Word16, Word64 )
+    ( Word16 )
 import Database.Esqueleto
     ( InnerJoin (..)
     , Value (..)
@@ -85,7 +85,7 @@ blocksTxs (CHash blkHashTxt) mLimit mOffset =
 queryBlocksTxs :: MonadIO m => ByteString -> Int64 -> Int64 -> SqlPersistT m (Either ExplorerError [CTxBrief])
 queryBlocksTxs blkHash _limitNum _offsetNum  = do
     res <- select . from $ \  (blk `InnerJoin` tx) -> do
-            on (blk ^. BlockId ==. tx ^. TxBlock)
+            on (blk ^. BlockId ==. tx ^. TxBlockId)
             where_ (blk ^. BlockHash ==. val blkHash)
             -- limit limitNum
             -- offset offsetNum
@@ -111,21 +111,21 @@ queryTxInputs txids = do
               pure (tx ^. TxId, txOut ^. TxOutAddress, txOut ^. TxOutValue, txInTx ^. TxHash, txOut ^. TxOutIndex, txInTx ^. TxSize ==. val 0)
     pure $ map collapseTxGroup (groupOn fst $ map convert rows)
   where
-    convert :: (Value TxId, Value Text, Value Word64, Value ByteString, Value Word16, Value Bool) -> (TxId, CTxAddressBrief)
+    convert :: (Value TxId, Value Text, Value DbLovelace, Value ByteString, Value Word16, Value Bool) -> (TxId, CTxAddressBrief)
     convert (Value txid, Value addr, Value coin, Value txh, Value index, Value isGenesisTx) =
       ( txid
       , if isGenesisTx
           then
             CTxAddressBrief
               { ctaAddress = CAddress addr
-              , ctaAmount = fromIntegral coin
+              , ctaAmount = fromIntegral $ unDbLovelace coin
               , ctaTxHash = genesisDistributionTxHash
               , ctaTxIndex = 0
               }
           else
             CTxAddressBrief
               { ctaAddress = CAddress addr
-              , ctaAmount = fromIntegral coin
+              , ctaAmount = fromIntegral $ unDbLovelace coin
               , ctaTxHash = CTxHash $ CHash (bsBase16Encode txh)
               , ctaTxIndex = fromIntegral index
               }
@@ -139,12 +139,12 @@ queryTxOutputs txids = do
               pure (tx ^. TxId, txOut ^. TxOutAddress, txOut ^. TxOutValue, tx ^. TxHash, txOut ^. TxOutIndex)
     pure $ map collapseTxGroup (groupOn fst $ map convert rows)
   where
-    convert :: (Value TxId, Value Text, Value Word64, Value ByteString, Value Word16) -> (TxId, CTxAddressBrief)
+    convert :: (Value TxId, Value Text, Value DbLovelace, Value ByteString, Value Word16) -> (TxId, CTxAddressBrief)
     convert (Value txid, Value addr, Value coin, Value txhash, Value index) =
       ( txid
       , CTxAddressBrief
           { ctaAddress = CAddress addr
-          , ctaAmount = fromIntegral coin
+          , ctaAmount = fromIntegral $ unDbLovelace coin
           , ctaTxHash = CTxHash . CHash $ bsBase16Encode txhash
           , ctaTxIndex = fromIntegral index
           }

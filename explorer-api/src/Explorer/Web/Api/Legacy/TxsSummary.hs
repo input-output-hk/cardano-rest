@@ -7,6 +7,7 @@ module Explorer.Web.Api.Legacy.TxsSummary
 import Cardano.Db
     ( Block (..)
     , BlockId
+    , DbLovelace (..)
     , EntityField (..)
     , LookupFail (..)
     , Tx (..)
@@ -29,7 +30,7 @@ import Data.Maybe
 import Data.Text
     ( Text )
 import Data.Word
-    ( Word16, Word64 )
+    ( Word16 )
 import Database.Esqueleto
     ( InnerJoin (..)
     , Value (..)
@@ -88,7 +89,7 @@ txsSummary (CTxHash (CHash hashTxt)) =
               , ctsRelayedBy       = Nothing
               , ctsTotalInput      = sum $ map ctaAmount inputs
               , ctsTotalOutput     = sum $ map ctaAmount outputs
-              , ctsFees            = fromIntegral $ txFee tx
+              , ctsFees            = fromIntegral $ unDbLovelace $ txFee tx
               , ctsInputs          = inputs
               , ctsOutputs         = outputs
               }
@@ -99,7 +100,7 @@ queryTxSummary txhash = do
   eTx <- queryTx txhash
   case eTx of
     Right (txid, tx) -> do
-      mBlock <- queryBlockById (txBlock tx)
+      mBlock <- queryBlockById (txBlockId tx)
       case mBlock of
         Just block -> do
           inputs <- queryTxInputs txid
@@ -124,11 +125,11 @@ queryTxOutputs txid = do
               pure (txOut ^. TxOutAddress, txOut ^. TxOutValue, tx ^. TxHash, txOut ^. TxOutIndex)
     pure $ map convert rows
   where
-    convert :: (Value Text, Value Word64, Value ByteString, Value Word16) -> CTxAddressBrief
+    convert :: (Value Text, Value DbLovelace, Value ByteString, Value Word16) -> CTxAddressBrief
     convert (Value addr, Value amount, Value txhash, Value index) =
       CTxAddressBrief
         { ctaAddress = CAddress addr
-        , ctaAmount = fromIntegral amount
+        , ctaAmount = fromIntegral $ unDbLovelace amount
         , ctaTxHash = CTxHash $ CHash (bsBase16Encode txhash)
         , ctaTxIndex = fromIntegral index
         }
@@ -149,11 +150,11 @@ queryTxInputs txid = do
               pure (txOut ^. TxOutAddress, txOut ^. TxOutValue, tx ^. TxHash, txOut ^. TxOutIndex)
     pure $ map convert rows
   where
-    convert :: (Value Text, Value Word64, Value ByteString, Value Word16) -> CTxAddressBrief
+    convert :: (Value Text, Value DbLovelace, Value ByteString, Value Word16) -> CTxAddressBrief
     convert (Value addr, Value amount, Value txhash, Value index) =
       CTxAddressBrief
         { ctaAddress = CAddress addr
-        , ctaAmount = fromIntegral amount
+        , ctaAmount = fromIntegral $ unDbLovelace amount
         , ctaTxHash = CTxHash $ CHash (bsBase16Encode txhash)
         , ctaTxIndex = fromIntegral index
         }

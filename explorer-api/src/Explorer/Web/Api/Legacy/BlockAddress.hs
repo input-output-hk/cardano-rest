@@ -6,7 +6,7 @@ module Explorer.Web.Api.Legacy.BlockAddress
   ) where
 
 import Cardano.Db
-    ( EntityField (..), TxId, unValue3 )
+    ( DbLovelace (..), EntityField (..), TxId, unValue3 )
 import Control.Monad.IO.Class
     ( MonadIO )
 import Control.Monad.Trans.Except.Extra
@@ -24,7 +24,7 @@ import Data.Time.Clock
 import Data.Time.Clock.POSIX
     ( utcTimeToPOSIXSeconds )
 import Data.Word
-    ( Word16, Word64 )
+    ( Word16 )
 import Database.Esqueleto
     ( InnerJoin (..)
     , Value (..)
@@ -104,7 +104,7 @@ queryRedeemSummary chainTip blkHash addrTxt = do
               pure (txOut ^. TxOutValue)
     case rows of
       [] -> pure $ Left (Internal "queryRedeemSummary: Address not found")
-      [value] -> Right <$> queryRedeemed (fromIntegral $ unValue value)
+      [value] -> Right <$> queryRedeemed (fromIntegral $ unDbLovelace $ unValue value)
       _ -> pure $ Left (Internal "queryRedeemSummary: More than one entry")
   where
     queryRedeemed :: MonadIO m => CCoin -> SqlPersistT m CAddressSummary
@@ -116,7 +116,7 @@ queryRedeemSummary chainTip blkHash addrTxt = do
                     on (txIn ^. TxInTxOutId ==. txOut0 ^. TxOutTxId
                         &&. txIn ^. TxInTxOutIndex ==. txOut0 ^. TxOutIndex)
                     on (tx ^. TxId ==. txIn ^. TxInTxInId)
-                    on (blk ^. BlockId ==. tx ^. TxBlock)
+                    on (blk ^. BlockId ==. tx ^. TxBlockId)
                     where_ (blk ^. BlockHash <=. val blkHash)
                     where_ (txOut0 ^. TxOutAddress ==. val addrTxt)
                     pure (tx ^. TxHash, blk ^. BlockTime, txOut1 ^. TxOutAddress)
@@ -180,7 +180,7 @@ queryAddressSummary :: MonadIO m => CChainTip -> ByteString -> Text -> SqlPersis
 queryAddressSummary chainTip blkHash addr = do
     inrows <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
                 on (tx ^. TxId ==. txOut ^. TxOutTxId)
-                on (blk ^. BlockId ==. tx ^. TxBlock)
+                on (blk ^. BlockId ==. tx ^. TxBlockId)
                 where_ (blk ^. BlockHash <=. val blkHash)
                 where_ (txOut ^. TxOutAddress ==. val addr)
                 pure (tx ^. TxId, tx ^. TxHash, blk ^. BlockTime)
@@ -189,7 +189,7 @@ queryAddressSummary chainTip blkHash addr = do
                 on (txIn ^. TxInTxOutId ==. txOut ^. TxOutTxId
                     &&. txIn ^. TxInTxOutIndex ==. txOut ^. TxOutIndex)
                 on (tx ^. TxId ==. txIn ^. TxInTxInId)
-                on (blk ^. BlockId ==. tx ^. TxBlock)
+                on (blk ^. BlockId ==. tx ^. TxBlockId)
                 where_ (blk ^. BlockHash <=. val blkHash)
                 where_ (txOut ^. TxOutAddress ==. val addr)
                 pure (tx ^. TxId, tx ^. TxHash, blk ^. BlockTime)
@@ -248,12 +248,12 @@ queryTxOutputs txids = do
 
 -- -------------------------------------------------------------------------------------------------
 
-convert :: (Value TxId, Value Text, Value Word64, Value ByteString, Value Word16) -> (TxId, CTxAddressBrief)
+convert :: (Value TxId, Value Text, Value DbLovelace, Value ByteString, Value Word16) -> (TxId, CTxAddressBrief)
 convert (Value txid, Value addr, Value coin, Value txhash, Value index) =
   ( txid
   , CTxAddressBrief
       { ctaAddress = CAddress addr
-      , ctaAmount = fromIntegral coin
+      , ctaAmount = fromIntegral $ unDbLovelace coin
       , ctaTxHash = CTxHash . CHash $ bsBase16Encode txhash
       , ctaTxIndex = fromIntegral index
       }

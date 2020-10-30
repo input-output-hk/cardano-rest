@@ -50,7 +50,7 @@ queryInitialGenesis :: MonadIO m => SqlPersistT m (Word, Integer)
 queryInitialGenesis = do
     res <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
               on (tx ^. TxId ==. txOut ^. TxOutTxId)
-              on (blk ^. BlockId ==. tx ^. TxBlock)
+              on (blk ^. BlockId ==. tx ^. TxBlockId)
               -- Only the initial genesis block has a size of 0.
               where_ (blk ^. BlockSize ==. val 0)
               pure (countRows, sum_ (txOut ^. TxOutValue))
@@ -60,7 +60,7 @@ queryGenesisRedeemed :: MonadIO m => SqlPersistT m (Word, Integer)
 queryGenesisRedeemed = do
     res <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
               on (tx ^. TxId ==. txOut ^. TxOutTxId)
-              on (blk ^. BlockId ==. tx ^. TxBlock)
+              on (blk ^. BlockId ==. tx ^. TxBlockId)
               txOutSpentP txOut
               -- Only the initial genesis block has a size of 0.
               where_ (blk ^. BlockSize ==. val 0)

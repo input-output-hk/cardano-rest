@@ -5,7 +5,12 @@ module Explorer.Web.Api.Legacy.GenesisAddress
   ) where
 
 import Cardano.Db
-    ( EntityField (..), txOutSpentB, txOutSpentP, txOutUnspentP )
+    ( DbLovelace (..)
+    , EntityField (..)
+    , txOutSpentB
+    , txOutSpentP
+    , txOutUnspentP
+    )
 import Control.Monad
     ( when )
 import Control.Monad.IO.Class
@@ -14,8 +19,6 @@ import Data.Maybe
     ( fromMaybe )
 import Data.Text
     ( Text )
-import Data.Word
-    ( Word64 )
 import Database.Esqueleto
     ( InnerJoin (..)
     , SqlQuery
@@ -77,7 +80,7 @@ queryRedeemedGenesisAddresses
 queryRedeemedGenesisAddresses pageNo pageSize = do
   rows <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
             on (tx ^. TxId ==. txOut ^. TxOutTxId)
-            on (blk ^. BlockId ==. tx ^. TxBlock)
+            on (blk ^. BlockId ==. tx ^. TxBlockId)
             -- Only the initial genesis block has a size of 0.
             where_ (blk ^. BlockSize ==. val 0)
             txOutSpentP txOut
@@ -93,7 +96,7 @@ queryNonRedeemedGenesisAddresses
 queryNonRedeemedGenesisAddresses pageNo pageSize = do
   rows <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
             on (tx ^. TxId ==. txOut ^. TxOutTxId)
-            on (blk ^. BlockId ==. tx ^. TxBlock)
+            on (blk ^. BlockId ==. tx ^. TxBlockId)
             -- Only the initial genesis block has a size of 0.
             where_ (blk ^. BlockSize ==. val 0)
             txOutUnspentP txOut
@@ -109,7 +112,7 @@ queryAllGenesisAddresses
 queryAllGenesisAddresses pageNo pageSize = do
   rows <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
             on (tx ^. TxId ==. txOut ^. TxOutTxId)
-            on (blk ^. BlockId ==. tx ^. TxBlock)
+            on (blk ^. BlockId ==. tx ^. TxBlockId)
             -- Only the initial genesis block has a size of 0.
             where_ (blk ^. BlockSize ==. val 0)
             orderBy [desc (txOut ^. TxOutValue)]
@@ -123,10 +126,10 @@ applyPaging (PageNo page) (PageSize pageSize) = do
     offset (fromIntegral $ page * pageSize)
   limit (fromIntegral pageSize)
 
-mkCGenesisAddressInfo :: (Value Text, Value Word64, Value Bool) -> CGenesisAddressInfo
+mkCGenesisAddressInfo :: (Value Text, Value DbLovelace, Value Bool) -> CGenesisAddressInfo
 mkCGenesisAddressInfo (vaddr, vvalue, vRedeemed) =
   CGenesisAddressInfo
     { cgaiCardanoAddress = CAddress (unValue vaddr)
-    , cgaiGenesisAmount = fromIntegral $ unValue vvalue
+    , cgaiGenesisAmount = fromIntegral $ unDbLovelace $ unValue vvalue
     , cgaiIsRedeemed = unValue vRedeemed
     }

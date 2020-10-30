@@ -13,7 +13,7 @@ import Cardano.Db
     , Block
     , BlockId
     , EntityField (..)
-    , blockPrevious
+    , blockPreviousId
     , blockSlotNo
     , isJust
     , querySelectCount
@@ -85,18 +85,18 @@ queryChainTip = do
 queryNextBlock :: MonadIO m => BlockId -> SqlPersistT m (Maybe ByteString)
 queryNextBlock blkid = do
   rows <- select . from $ \blk2 -> do
-    where_ $ blk2 ^. BlockPrevious ==. val (Just blkid)
+    where_ $ blk2 ^. BlockPreviousId ==. val (Just blkid)
     pure $ blk2 ^. BlockHash
   pure (unValue <$> listToMaybe rows)
 
 queryBlockTxInCount :: MonadIO m => BlockId -> SqlPersistT m Word
 queryBlockTxInCount blkid =
-  querySelectCount $ \tx -> where_ (tx ^. TxBlock ==. val blkid)
+  querySelectCount $ \tx -> where_ (tx ^. TxBlockId ==. val blkid)
 
 queryBlockByHash :: MonadIO m => ByteString -> SqlPersistT m (Maybe (BlockId, Block, ByteString))
 queryBlockByHash blkHash = do
     rows <- select . from $ \ (blk `InnerJoin` sl)-> do
-              on (blk ^. BlockSlotLeader ==. sl ^. SlotLeaderId)
+              on (blk ^. BlockSlotLeaderId ==. sl ^. SlotLeaderId)
               where_ $ blk ^. BlockHash ==. val blkHash
               pure (blk, sl ^. SlotLeaderHash)
     pure $ fmap convert (listToMaybe rows)
@@ -115,7 +115,7 @@ queryBlockSummary blkHash = do
       fees <- queryTotalFeeInBlock blkid
       totalOut <- queryTotalOutputCoinInBlock blkid
       timestamp <- maybe (pure Nothing) querySlotTimeSeconds $ blockSlotNo blk
-      case blockPrevious blk of
+      case blockPreviousId blk of
         Just prevblkid -> do
           mPrevHash <- queryBlockHash prevblkid
           nextHash <- queryNextBlock blkid
@@ -132,7 +132,7 @@ querySlotTimeSeconds slotNo =
 queryTotalFeeInBlock :: MonadIO m => BlockId -> SqlPersistT m Ada
 queryTotalFeeInBlock blockid = do
   res <- select . from $ \ tx -> do
-          where_ (tx ^. TxBlock ==. val blockid)
+          where_ (tx ^. TxBlockId ==. val blockid)
           pure $ sum_ (tx ^. TxFee)
   pure $ unValueSumAda $ listToMaybe res
 
@@ -144,5 +144,5 @@ queryTotalOutputCoinInBlock blockid = do
     pure $ unValueSumAda (listToMaybe res)
   where
     subQuery = subList_select . from $ \ tx -> do
-        where_ (tx ^. TxBlock ==. val blockid)
+        where_ (tx ^. TxBlockId ==. val blockid)
         pure $ tx ^. TxId

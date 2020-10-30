@@ -52,7 +52,7 @@ queryGenesisAddressCount :: MonadIO m => PageSize -> SqlPersistT m Word
 queryGenesisAddressCount (PageSize pageSize) = do
   res <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
             on (tx ^. TxId ==. txOut ^. TxOutTxId)
-            on (blk ^. BlockId ==. tx ^. TxBlock)
+            on (blk ^. BlockId ==. tx ^. TxBlockId)
             -- Only the initial genesis block has a size of 0.
             where_ (blk ^. BlockSize ==. val 0)
             pure countRows
@@ -62,7 +62,7 @@ queryRedeemedGenesisAddressCount :: MonadIO m => PageSize -> SqlPersistT m Word
 queryRedeemedGenesisAddressCount (PageSize pageSize) = do
   res <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
             on (tx ^. TxId ==. txOut ^. TxOutTxId)
-            on (blk ^. BlockId ==. tx ^. TxBlock)
+            on (blk ^. BlockId ==. tx ^. TxBlockId)
             txOutSpentP txOut
             -- Only the initial genesis block has a size of 0.
             where_ (blk ^. BlockSize ==. val 0)
@@ -73,7 +73,7 @@ queryUnRedeemedGenesisAddressCount :: MonadIO m => PageSize -> SqlPersistT m Wor
 queryUnRedeemedGenesisAddressCount (PageSize pageSize) = do
   res <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
             on (tx ^. TxId ==. txOut ^. TxOutTxId)
-            on (blk ^. BlockId ==. tx ^. TxBlock)
+            on (blk ^. BlockId ==. tx ^. TxBlockId)
             txOutUnspentP txOut
             -- Only the initial genesis block has a size of 0.
             where_ (blk ^. BlockSize ==. val 0)
