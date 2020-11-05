@@ -3,6 +3,7 @@ version: "3.5"
 services:
   postgres:
     image: postgres:11.5-alpine
+    command: postgres -c 'max_pred_locks_per_transaction=128' -c 'max_locks_per_transaction=128'
     environment:
       - POSTGRES_LOGGING=true
       - POSTGRES_DB_FILE=/run/secrets/postgres_db
@@ -14,6 +15,8 @@ services:
       - postgres_db
     volumes:
       - postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
     restart: on-failure
     logging:
       driver: "json-file"
