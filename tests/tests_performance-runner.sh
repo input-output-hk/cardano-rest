@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HOST=https://explorer.cardano-testnet.iohkdev.io/api/
+HOST=http://localhost:8100/api/
 REPORT_DIR=./target/gatling
 
 rm -fr ${REPORT_DIR}

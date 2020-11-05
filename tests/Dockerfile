@@ -23,7 +23,7 @@ RUN mvn test -Dsurefire.suiteXmlFiles=tests_functional-data-validation.xml
 RUN mvn test -Dsurefire.suiteXmlFiles=tests_functional-data-intensive.xml
 
 # Run performance tests and edit the folder names
-RUN ./tests_performance-runner.sh
+RUN ./tests_performance-runner.sh # CHANGE ME TO INVALIDATE CACHE: 0
 
 
 ############################

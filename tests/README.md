@@ -35,9 +35,17 @@ allure --version
 ## Docker
 
 You can run the tests by running this command. Edit the `Dockerfile` to pick which tests are ran:
+
 ```
-docker-compose up --build rest-tests
+docker-compose up --build 
 ```
+
+Note that the tests are run **at build time**, the running container is simply exposing the result via an Allure server. So make sure 
+that cardano-explorer-api is available on http://localhost:8100 (e.g. by also running `docker-compose up` in the root directory). 
+
+Also be aware that if you've already ran the tests once, docker will have cached all the build steps and no re-run tests. There's a small 
+comment in the Dockerfile saying `"CHANGE ME TO INVALIDATE CACHE"`. Well, change it to make sure the tests are re-run :)
+
 
 The Allure report (which covers functional tests) can be found here:
 ```
