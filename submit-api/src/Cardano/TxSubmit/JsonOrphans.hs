@@ -11,7 +11,7 @@ import Cardano.Api.Typed
 import Cardano.Crypto.Hash.Class as Cryptos
 import Data.Aeson
 
-import qualified Shelley.Spec.Ledger.TxData as Shelley
+import qualified Shelley.Spec.Ledger.TxBody as Shelley
 
 deriving newtype instance ToJSON TxId
 deriving newtype instance ToJSON (Shelley.TxId c)

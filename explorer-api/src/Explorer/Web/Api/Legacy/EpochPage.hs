@@ -88,8 +88,8 @@ queryEpochBlocks
     -> SqlPersistT m (Either ExplorerError (Int, [CBlockEntry]))
 queryEpochBlocks epoch epochBlocks (PageNo page) = do
     rows <- select . from $ \ ((sl `InnerJoin` blk) `LeftOuterJoin` tx) -> do
-              on (just (blk ^. BlockId) ==. tx ?. TxBlock)
-              on (sl ^. SlotLeaderId ==. blk ^. BlockSlotLeader)
+              on (just (blk ^. BlockId) ==. tx ?. TxBlockId)
+              on (sl ^. SlotLeaderId ==. blk ^. BlockSlotLeaderId)
               where_ (blk ^. BlockEpochNo ==. just (val epoch))
               orderBy [asc (blk ^. BlockSlotNo)]
               groupBy (blk ^. BlockId)

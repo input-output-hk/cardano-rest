@@ -1,4 +1,4 @@
-resolver: ./snapshot.yaml
+resolver: https://raw.githubusercontent.com/input-output-hk/cardano-haskell/3585c6a3fa8e4e0917c0bff6780a3e01cbb1060d/snapshots/cardano-1.21.2.yaml
 compiler: ghc-8.6.5
 
 allow-newer: true
@@ -9,16 +9,52 @@ packages:
   - submit-api
 
 extra-deps:
-  - git: https://github.com/input-output-hk/cardano-db-sync
-    commit: 7f9959c9a0746d44d331cffcf7abb0ef4f4fb948
-    subdirs:
-      - cardano-db
-      - cardano-db-sync
+  - esqueleto-3.2.0
+  - persistent-2.10.5.1
+  - persistent-postgresql-2.10.1.2
+  - persistent-template-2.8.2.3
+  - Diff-0.4.0
 
   - git: https://github.com/input-output-hk/cardano-crypto
     commit: 2547ad1e80aeabca2899951601079408becbc92c
 
+  - git: https://github.com/input-output-hk/cardano-db-sync
+    commit: 3e68f3011bb156b9b799ccf056f9a73281479f9c
+    subdirs:
+    - cardano-db
+    - cardano-db-sync
+
+  - git: https://github.com/input-output-hk/cardano-node
+    commit: a819311473563cb2ab3cd91543cf0f63facdf43e
+    subdirs:
+    - cardano-api
+    - cardano-cli
+    - cardano-config
+    - cardano-node
+    - hedgehog-extras
+
+  - git: https://github.com/input-output-hk/ouroboros-network
+    commit: 9e498e0962044c582df0cbf2f81fa0450a67d5f7
+    subdirs:
+    - cardano-client
+    - io-sim
+    - io-sim-classes
+    - network-mux
+    - ntp-client
+    - ouroboros-consensus
+    - ouroboros-consensus-byron
+    - ouroboros-consensus-cardano
+    - ouroboros-consensus-mock
+    - ouroboros-consensus-shelley
+    - ouroboros-network
+    - ouroboros-network-framework
+    - ouroboros-network-testing
+    - typed-protocols
+    - typed-protocols-examples
+    - Win32-network
+
 ghc-options:
+  $locals: -ddump-to-file -ddump-hi
   cardano-explorer-api: -Wall -Werror -fwarn-redundant-constraints
   cardano-submit-api:   -Wall -Werror -fwarn-redundant-constraints
 
@@ -30,7 +66,3 @@ flags:
   # This still requires the host system to have the 'standard' libsodium installed.
   cardano-crypto-praos:
     external-libsodium-vrf: false
-
-# generate files required by weeder.
-# see https://github.com/ndmitchell/weeder/issues/53
-ghc-options: {"$locals": -ddump-to-file -ddump-hi}

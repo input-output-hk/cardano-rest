@@ -64,7 +64,7 @@ epochSlot (EpochNumber epochNo) slotInEpoch = do
 queryBlockBySlotNo :: MonadIO m => Word64 -> Word64 -> SqlPersistT m [(BlockId, CBlockEntry)]
 queryBlockBySlotNo epochNo slotNo = do
     rows <- select . from $ \ (blk `InnerJoin` sl) -> do
-              on (blk ^. BlockSlotLeader ==. sl ^. SlotLeaderId)
+              on (blk ^. BlockSlotLeaderId ==. sl ^. SlotLeaderId)
               where_ (blk ^. BlockEpochSlotNo ==. just (val slotNo))
               where_ (blk ^. BlockEpochNo ==. just (val epochNo))
               pure (blk, sl ^. SlotLeaderHash)
@@ -88,7 +88,7 @@ queryBlockBySlotNo epochNo slotNo = do
 queryBlockTx :: MonadIO m => (BlockId, CBlockEntry) -> SqlPersistT m CBlockEntry
 queryBlockTx (blkId, entry) = do
     res <- select . from $ \ (blk `InnerJoin` tx) -> do
-              on (tx ^. TxBlock ==. blk ^. BlockId)
+              on (tx ^. TxBlockId ==. blk ^. BlockId)
               where_ (blk ^. BlockId ==. val blkId)
               pure (countRows, sum_ (tx ^. TxFee))
     maybe (pure entry) queryBlockTxOutValue (listToMaybe res)
@@ -97,7 +97,7 @@ queryBlockTx (blkId, entry) = do
     queryBlockTxOutValue (Value txCount, mFee) = do
       res <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
                 on (tx ^. TxId ==. txOut ^. TxOutTxId)
-                on (tx ^. TxBlock ==. blk ^. BlockId)
+                on (tx ^. TxBlockId ==. blk ^. BlockId)
                 where_ (blk ^. BlockId ==. val blkId)
                 pure (sum_ (txOut ^. TxOutValue))
       pure $ maybe entry (convert txCount (unSumValue mFee)) (listToMaybe res)

@@ -58,9 +58,9 @@ extractAddresses = List.map cgaiCardanoAddress
 genRandomPageNo :: MonadIO m => PageSize -> SqlPersistT m (Either LookupFail PageNo)
 genRandomPageNo (PageSize pageSize) = do
   res <- select . from $ \ (txOut `InnerJoin` tx `InnerJoin` blk) -> do
-            on (blk ^. BlockId ==. tx ^. TxBlock)
+            on (blk ^. BlockId ==. tx ^. TxBlockId)
             on (tx ^. TxId ==. txOut ^. TxOutTxId)
-            where_ (isNothing (blk ^. BlockPrevious))
+            where_ (isNothing (blk ^. BlockPreviousId))
             pure countRows
   case listToMaybe res of
     Nothing -> pure $ Left (DbLookupMessage "genRandomPageNo: Empty Block table")

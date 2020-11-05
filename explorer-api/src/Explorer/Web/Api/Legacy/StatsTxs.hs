@@ -106,7 +106,7 @@ queryBlockTxPageNo (PageNo page) = do
 queryBlockTx :: MonadIO m => Value BlockId -> SqlPersistT m [(CTxHash, Word64)]
 queryBlockTx (Value blkid) = do
     rows <- select . from $ \ (blk `InnerJoin` tx) -> do
-            on (blk ^. BlockId ==. tx ^. TxBlock)
+            on (blk ^. BlockId ==. tx ^. TxBlockId)
             where_ (blk ^. BlockId ==. val blkid)
             pure (tx ^. TxHash, tx ^. TxSize)
     pure $ map convert rows

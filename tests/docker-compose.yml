@@ -4,5 +4,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      network: host
     ports:
       - "80:80"

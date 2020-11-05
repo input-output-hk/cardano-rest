@@ -12,25 +12,21 @@ module Cardano.TxSubmit.CLI.Parsers
 
 import Cardano.Prelude
 
-import Options.Applicative
-    ( Parser, ParserInfo, (<**>) )
-import qualified Options.Applicative as Opt
-
 import Cardano.Api.Protocol
     ( Protocol (..) )
 import Cardano.Api.Typed
     ( NetworkId (..), NetworkMagic (..) )
-
 import Cardano.Chain.Slotting
     ( EpochSlots (..) )
-
-import Cardano.TxSubmit.CLI.Types
-    ( ConfigFile (..), SocketPath (..), TxSubmitNodeParams (..) )
-
 import Cardano.Rest.Parsers
     ( pWebserverConfig )
-import Ouroboros.Consensus.Cardano
-    ( SecurityParam (..) )
+import Cardano.TxSubmit.CLI.Types
+    ( ConfigFile (..), SocketPath (..), TxSubmitNodeParams (..) )
+import Options.Applicative
+    ( Parser, ParserInfo, (<**>) )
+
+import qualified Options.Applicative as Opt
+
 opts :: ParserInfo TxSubmitNodeParams
 opts =
   Opt.info (pTxSubmitNodeParams <**> Opt.helper)
@@ -109,19 +105,16 @@ pProtocol =
     )
   <|>
     -- Default to the Cardano protocol.
-    pure
-      (CardanoProtocol
-        (EpochSlots defaultByronEpochSlots)
-        (SecurityParam defaultSecurityParam))
+    pure (CardanoProtocol (EpochSlots defaultByronEpochSlots))
   where
     pByron :: Parser Protocol
-    pByron = ByronProtocol <$> pEpochSlots <*> pSecurityParam
+    pByron = ByronProtocol <$> pEpochSlots
 
     pShelley :: Parser Protocol
     pShelley = pure ShelleyProtocol
 
     pCardano :: Parser Protocol
-    pCardano = CardanoProtocol <$> pEpochSlots <*> pSecurityParam
+    pCardano = CardanoProtocol <$> pEpochSlots
 
     pEpochSlots :: Parser EpochSlots
     pEpochSlots =
@@ -134,22 +127,8 @@ pProtocol =
           <> Opt.showDefault
           )
 
-    pSecurityParam :: Parser SecurityParam
-    pSecurityParam =
-      SecurityParam <$>
-        Opt.option Opt.auto
-          (  Opt.long "security-param"
-          <> Opt.metavar "NATURAL"
-          <> Opt.help "The security parameter."
-          <> Opt.value defaultSecurityParam -- Default to the mainnet value.
-          <> Opt.showDefault
-          )
-
     defaultByronEpochSlots :: Word64
     defaultByronEpochSlots = 21600
-
-    defaultSecurityParam :: Word64
-    defaultSecurityParam = 2160
 
 pSocketPath :: Parser SocketPath
 pSocketPath =

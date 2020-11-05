@@ -50,7 +50,7 @@ getLastTxs = Right <$> queryCTxEntry
 queryCTxEntry :: MonadIO m => SqlPersistT m [CTxEntry]
 queryCTxEntry = do
     txRows <- select . from $ \ (blk `InnerJoin` tx) -> do
-                on (blk ^. BlockId ==. tx ^. TxBlock)
+                on (blk ^. BlockId ==. tx ^. TxBlockId)
                 where_ (isJust $ blk ^. BlockSlotNo)
                 orderBy [desc (blk ^. BlockSlotNo)]
                 limit 20

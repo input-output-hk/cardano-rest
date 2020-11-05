@@ -9,7 +9,7 @@ module Explorer.Web.Api.Legacy.AddressSummary
   ) where
 
 import Cardano.Db
-    ( EntityField (..), TxId, unValue3 )
+    ( DbLovelace (..), EntityField (..), TxId, unValue3 )
 import Control.Monad.IO.Class
     ( MonadIO )
 import Control.Monad.Trans.Except.Extra
@@ -23,7 +23,7 @@ import Data.Text
 import Data.Time.Clock
     ( UTCTime )
 import Data.Word
-    ( Word16, Word64 )
+    ( Word16 )
 import Database.Esqueleto
     ( InnerJoin (..)
     , Value (..)
@@ -110,7 +110,7 @@ queryNonRedeemSummary :: MonadIO m => CChainTip -> Text -> SqlPersistT m CAddres
 queryNonRedeemSummary chainTip addr = do
     inrows <- select . from $ \ (blk `InnerJoin` tx `InnerJoin` txOut) -> do
                 on (tx ^. TxId ==. txOut ^. TxOutTxId)
-                on (blk ^. BlockId ==. tx ^. TxBlock)
+                on (blk ^. BlockId ==. tx ^. TxBlockId)
                 where_ (txOut ^. TxOutAddress ==. val addr)
                 pure (tx ^. TxId, tx ^. TxHash, blk ^. BlockTime)
     -- This needs to be distinct to avoid duplicate rows.
@@ -118,7 +118,7 @@ queryNonRedeemSummary chainTip addr = do
                 on (txIn ^. TxInTxOutId ==. txOut ^. TxOutTxId
                     &&. txIn ^. TxInTxOutIndex ==. txOut ^. TxOutIndex)
                 on (tx ^. TxId ==. txIn ^. TxInTxInId)
-                on (blk ^. BlockId ==. tx ^. TxBlock)
+                on (blk ^. BlockId ==. tx ^. TxBlockId)
                 where_ (txOut ^. TxOutAddress ==. val addr)
                 pure (tx ^. TxId, tx ^. TxHash, blk ^. BlockTime)
 
@@ -159,7 +159,7 @@ queryCTxBriefs xs = do
 queryTxInputs :: MonadIO m => [TxId] -> SqlPersistT m [(TxId, [CTxAddressBrief])]
 queryTxInputs txids = do
     rows <- select . distinct . from $ \(tx `InnerJoin` txIn `InnerJoin` txOut `InnerJoin` txInTx) -> do
-              on (txInTx ^. TxId ==. txIn ^. TxInTxOutId)
+              on (txInTx ^. TxId ==. txOut ^. TxOutTxId)
               on (txIn ^. TxInTxOutId ==. txOut ^. TxOutTxId
                   &&. txIn ^. TxInTxOutIndex ==. txOut ^. TxOutIndex)
               on (tx ^. TxId ==. txIn ^. TxInTxInId)
@@ -167,21 +167,21 @@ queryTxInputs txids = do
               pure (tx ^. TxId, txOut ^. TxOutAddress, txOut ^. TxOutValue, txInTx ^. TxHash, txOut ^. TxOutIndex, txInTx ^. TxSize ==. val 0)
     pure $ map collapseTxGroup (groupOn fst $ map convert rows)
   where
-    convert :: (Value TxId, Value Text, Value Word64, Value ByteString, Value Word16, Value Bool) -> (TxId, CTxAddressBrief)
+    convert :: (Value TxId, Value Text, Value DbLovelace, Value ByteString, Value Word16, Value Bool) -> (TxId, CTxAddressBrief)
     convert (Value txid, Value addr, Value coin, Value txh, Value index, Value isGenesisTx) =
       ( txid
       , if isGenesisTx
           then
             CTxAddressBrief
               { ctaAddress = CAddress addr
-              , ctaAmount = fromIntegral coin
+              , ctaAmount = fromIntegral $ unDbLovelace coin
               , ctaTxHash = genesisDistributionTxHash
               , ctaTxIndex = 0
               }
           else
             CTxAddressBrief
               { ctaAddress = CAddress addr
-              , ctaAmount = fromIntegral coin
+              , ctaAmount = fromIntegral $ unDbLovelace coin
               , ctaTxHash = CTxHash $ CHash (bsBase16Encode txh)
               , ctaTxIndex = fromIntegral index
               }
@@ -195,12 +195,12 @@ queryTxOutputs txids = do
               pure (tx ^. TxId, txOut ^. TxOutAddress, txOut ^. TxOutValue, tx ^. TxHash, txOut ^. TxOutIndex)
     pure $ map collapseTxGroup (groupOn fst $ map convert rows)
   where
-    convert :: (Value TxId, Value Text, Value Word64, Value ByteString, Value Word16) -> (TxId, CTxAddressBrief)
+    convert :: (Value TxId, Value Text, Value DbLovelace, Value ByteString, Value Word16) -> (TxId, CTxAddressBrief)
     convert (Value txid, Value addr, Value coin, Value txhash, Value index) =
       ( txid
       , CTxAddressBrief
           { ctaAddress = CAddress addr
-          , ctaAmount = fromIntegral coin
+          , ctaAmount = fromIntegral $ unDbLovelace coin
           , ctaTxHash = CTxHash . CHash $ bsBase16Encode txhash
           , ctaTxIndex = fromIntegral index
           }

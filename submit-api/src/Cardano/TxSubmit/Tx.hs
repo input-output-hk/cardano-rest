@@ -37,17 +37,18 @@ import Ouroboros.Consensus.Ledger.SupportsMempool
 import Ouroboros.Consensus.Shelley.Ledger
     ( ShelleyBlock )
 import Ouroboros.Consensus.Shelley.Protocol.Crypto
-    ( TPraosStandardCrypto )
+    ( StandardCrypto )
 
 import qualified Cardano.Api.TxSubmit as Api
 import qualified Cardano.Chain.UTxO as Byron
+import qualified Cardano.Ledger.Shelley as Era
 import qualified Shelley.Spec.Ledger.BaseTypes as Shelley
 import qualified Shelley.Spec.Ledger.Tx as Shelley
 
 -- | An error that can occur while submitting a transaction to a local node.
 data TxSubmitError
   = TxSubmitByronError !(ApplyTxErr ByronBlock)
-  | TxSubmitShelleyError !(ApplyTxErr (ShelleyBlock TPraosStandardCrypto))
+  | TxSubmitShelleyError !(ApplyTxErr (ShelleyBlock (Era.Shelley StandardCrypto)))
   | TxSubmitEraMismatchError !EraMismatch
   deriving (Eq, Show)
 

@@ -5,7 +5,13 @@ module Explorer.Web.Api.Legacy.BlocksPages
   ) where
 
 import Cardano.Db
-    ( Block (..), EntityField (..), isJust, queryBlockHeight, unValue2 )
+    ( Block (..)
+    , DbLovelace (..)
+    , EntityField (..)
+    , isJust
+    , queryBlockHeight
+    , unValue2
+    )
 import Control.Monad.IO.Class
     ( MonadIO )
 import Data.ByteString.Char8
@@ -45,6 +51,7 @@ import Explorer.Web.ClientTypes
     ( CBlockEntry (..), CHash (..) )
 import Explorer.Web.Error
     ( ExplorerError (..) )
+
 import qualified Data.List as List
 
 -- Example queries:
@@ -68,7 +75,7 @@ queryLatestBlocksPage
     => SqlPersistT m (Either ExplorerError (PageNumber, [CBlockEntry]))
 queryLatestBlocksPage = do
   res <- select . from $ \ (blk `InnerJoin` sl) -> do
-          on (blk ^. BlockSlotLeader ==. sl ^. SlotLeaderId)
+          on (blk ^. BlockSlotLeaderId ==. sl ^. SlotLeaderId)
           where_ (isJust $ blk ^. BlockSlotNo)
           orderBy [desc (blk ^. BlockSlotNo)]
           limit 10
@@ -83,7 +90,7 @@ queryBlocksPageNo
     -> SqlPersistT m (Either ExplorerError (PageNumber, [CBlockEntry]))
 queryBlocksPageNo (PageNo page) = do
   res <- select . from $ \ (blk `InnerJoin` sl) -> do
-          on (blk ^. BlockSlotLeader ==. sl ^. SlotLeaderId)
+          on (blk ^. BlockSlotLeaderId ==. sl ^. SlotLeaderId)
           where_ (isJust $ blk ^. BlockSlotNo)
           orderBy [asc (blk ^. BlockSlotNo)]
           offset (fromIntegral $ (page - 1) * 10)
@@ -121,12 +128,12 @@ queryCBlockEntry
     -> SqlPersistT m CBlockEntry
 queryCBlockEntry (Entity blkId block, Value slHash) = do
     rows <- select . from $ \ (blk `InnerJoin` tx) -> do
-              on (blk ^. BlockId ==. tx ^. TxBlock)
+              on (blk ^. BlockId ==. tx ^. TxBlockId)
               where_ (blk ^. BlockId ==. val blkId)
               pure (tx ^. TxOutSum, tx ^. TxFee)
     pure $ mkCBlockEntry (map unValue2 rows)
   where
-    mkCBlockEntry :: [(Word64, Word64)] -> CBlockEntry
+    mkCBlockEntry :: [(DbLovelace, DbLovelace)] -> CBlockEntry
     mkCBlockEntry xs =
       CBlockEntry
         { cbeEpoch = fromMaybe 0 (blockEpochNo block)
@@ -135,8 +142,8 @@ queryCBlockEntry (Entity blkId block, Value slHash) = do
         , cbeBlkHash = CHash $ bsBase16Encode (blockHash block)
         , cbeTimeIssued = Just $ utcTimeToPOSIXSeconds (blockTime block)
         , cbeTxNum = fromIntegral $ length xs
-        , cbeTotalSent = fromIntegral (sum $ map fst xs)
+        , cbeTotalSent = fromIntegral (sum $ map (unDbLovelace . fst) xs)
         , cbeSize = blockSize block
         , cbeBlockLead = Just $ bsBase16Encode slHash
-        , cbeFees = fromIntegral (sum $ map snd xs)
+        , cbeFees = fromIntegral (sum $ map (unDbLovelace . snd) xs)
         }

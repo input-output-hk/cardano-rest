@@ -69,7 +69,7 @@ queryRandomRedeemAddress :: MonadIO m => ReaderT SqlBackend m (Either LookupFail
 queryRandomRedeemAddress = do
     res <- select . from $ \ (tx `InnerJoin` txOut) -> do
              -- Block 1 contains all the TxOuts from the Genesis Distribution.
-             where_ (tx ^. TxBlock ==. val (mkBlockId 1))
+             where_ (tx ^. TxBlockId ==. val (mkBlockId 1))
              on (tx ^. TxId ==. txOut ^. TxOutTxId)
              firstRandomRow
              pure (txOut ^. TxOutAddress)
