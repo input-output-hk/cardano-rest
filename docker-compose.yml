@@ -3,7 +3,6 @@ version: "3.5"
 services:
   postgres:
     image: postgres:11.5-alpine
-    command: postgres -c 'max_pred_locks_per_transaction=128' -c 'max_locks_per_transaction=128'
     environment:
       - POSTGRES_LOGGING=true
       - POSTGRES_DB_FILE=/run/secrets/postgres_db
@@ -51,6 +50,7 @@ services:
       - postgres_user
       - postgres_db
     volumes:
+      - db-sync-data:/var/lib/cdbsync
       - node-ipc:/node-ipc
     restart: on-failure
     logging:
@@ -107,6 +107,7 @@ secrets:
     file: ./config/postgres_user
 
 volumes:
+  db-sync-data:
   postgres:
   node-db:
   node-ipc:
