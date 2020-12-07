@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.1 -- December 2020
+
+* Fix an internal error with 'InnerJoin' requests on block's transaction summary.
+
 ## 3.0.0 -- October 2020
 
  * Upgrade dependencies to more recent version of the Cardano eco-system (cardano-db-sync-6.0.0) 
