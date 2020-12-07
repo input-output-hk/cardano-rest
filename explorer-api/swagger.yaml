@@ -4,7 +4,7 @@ host: localhost
 basePath: /
 info:
   title: cardano-explorer-api
-  version: 2.1.0
+  version: 3.1.0
   license:
     name: Apache-2.0
     url: https://github.com/input-output-hk/cardano-rest/blob/master/explorer-api/LICENSE
