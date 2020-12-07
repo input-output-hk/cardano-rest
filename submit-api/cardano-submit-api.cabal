@@ -52,7 +52,8 @@ library
   build-depends:        base                            >= 4.12         && < 4.13
                       , aeson
                       , async
-                      , base16-bytestring
+                      , base16
+                      , base64
                       , bytestring
                       , cardano-api
                       , cardano-binary
