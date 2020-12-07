@@ -42,7 +42,6 @@ library
   -- other-modules:
 
   build-depends:        base                            >= 4.12         && < 4.13
-                      , cardano-db
                       , optparse-applicative
                       , monad-logger
                       , text

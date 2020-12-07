@@ -22,7 +22,6 @@ extra-deps:
     commit: 3e68f3011bb156b9b799ccf056f9a73281479f9c
     subdirs:
     - cardano-db
-    - cardano-db-sync
 
   - git: https://github.com/input-output-hk/cardano-node
     commit: a819311473563cb2ab3cd91543cf0f63facdf43e
