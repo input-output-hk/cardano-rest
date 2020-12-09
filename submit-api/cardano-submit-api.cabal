@@ -61,6 +61,7 @@ library
                       , cardano-prelude
                       , cardano-rest-common
                       , cardano-ledger
+                      , cardano-ledger-shelley-ma
                       , containers
                       , contra-tracer
                       , formatting
