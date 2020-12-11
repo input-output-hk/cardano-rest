@@ -11,7 +11,7 @@
   - `Content-Type: application/cbor;encoding=base64`
   - `Content-Type: application/cbor`
 
-* Upgrade dependencies to more recent version of the Cardano eco-system (cardano-db-sync-7.1.1 & cardano-node 1.24.2)
+* Upgrade dependencies to more recent version of the Cardano eco-system (cardano-db-sync-7.1.0 & cardano-node 1.24.2)
 
 ## 3.0.0 -- October 2020
 
