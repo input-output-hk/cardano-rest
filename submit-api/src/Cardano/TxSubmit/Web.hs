@@ -1,7 +1,6 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeApplications #-}
 
 module Cardano.TxSubmit.Web
   ( runTxSubmitServer
@@ -21,11 +20,11 @@ import Cardano.Api.Protocol
     ( Protocol (..), withlocalNodeConnectInfo )
 import Cardano.Api.Typed
     ( AsType (..)
-    , Byron
+    , ByronEra
     , LocalNodeConnectInfo
     , NetworkId
     , NodeConsensusMode (..)
-    , Shelley
+    , ShelleyEra
     , Tx (..)
     , TxId (..)
     , deserialiseFromCBOR
@@ -161,7 +160,7 @@ txSubmitPost trce metrics connectInfo txBytes = do
     -- will be discarded.
     tryDeserialiseByronOrShelleyTx
       :: ByteString
-      -> Either DecoderError (Either (Tx Byron) (Tx Shelley))
+      -> Either DecoderError (Either (Tx ByronEra) (Tx ShelleyEra))
     tryDeserialiseByronOrShelleyTx bs =
       case deserialiseFromCBOR AsByronTx bs of
         Left _ -> Right <$> deserialiseFromCBOR AsShelleyTx bs

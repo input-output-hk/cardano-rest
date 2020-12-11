@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.1.0 -- December 2020
+
+* Allow clients to define an extra outer-encoding for the submit endpoint using a MIME-type parameter `encoding`. 
+  When set, the parameter must be set to either `base16` or `base64` and the data payload must be encoded accordingly. 
+  When not set, then the present behaviour remains applicable and a raw octet stream is expected. 
+
+  Examples:
+  - `Content-Type: application/cbor;encoding=base16` 
+  - `Content-Type: application/cbor;encoding=base64`
+  - `Content-Type: application/cbor`
+
+* Upgrade dependencies to more recent version of the Cardano eco-system (cardano-db-sync-7.1.1 & cardano-node 1.24.2)
+
 ## 3.0.0 -- October 2020
 
 * Upgrade dependencies to more recent version of the Cardano eco-system (cardano-db-sync-6.0.0) 

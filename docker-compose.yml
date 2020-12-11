@@ -25,7 +25,7 @@ services:
         max-file: "20"
 
   cardano-node:
-    image: inputoutput/cardano-node:${CARDANO_NODE_VERSION:-1.21.1}
+    image: inputoutput/cardano-node:${CARDANO_NODE_VERSION:-1.24.2}
     environment:
       - NETWORK=${NETWORK:-mainnet}
     volumes:
@@ -38,7 +38,7 @@ services:
         max-file: "10"
 
   cardano-db-sync:
-    image: inputoutput/cardano-db-sync:${CARDANO_DB_SYNC_VERSION:-6.0.0}
+    image: inputoutput/cardano-db-sync:${CARDANO_DB_SYNC_VERSION:-7.1.1}
     environment:
       - NETWORK=${NETWORK:-mainnet}
       - POSTGRES_HOST=postgres
@@ -61,7 +61,7 @@ services:
         max-file: "10"
 
   cardano-explorer-api:
-    image: inputoutput/cardano-explorer-api:${CARDANO_EXPLORER_API_VERSION:-3.0.0}
+    image: inputoutput/cardano-explorer-api:${CARDANO_EXPLORER_API_VERSION:-3.1.0}
     depends_on:
       - postgres
       - cardano-db-sync
@@ -83,7 +83,7 @@ services:
         max-file: "10"
 
   cardano-submit-api:
-    image: inputoutput/cardano-submit-api:${CARDANO_SUBMIT_API_VERSION:-3.0.0}
+    image: inputoutput/cardano-submit-api:${CARDANO_SUBMIT_API_VERSION:-3.1.0}
     environment:
       - NETWORK=${NETWORK:-mainnet}
     depends_on:

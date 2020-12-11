@@ -19,9 +19,9 @@ import Control.Monad.Trans.Except
     ( ExceptT (..), runExceptT, throwE )
 import Data.ByteString
     ( ByteString )
+import qualified Data.ByteString.Base16 as Base16
 import Data.Maybe
     ( fromMaybe )
-import qualified Data.ByteString.Base16 as Base16
 import Data.Text
     ( Text )
 import Data.Text.Encoding
@@ -118,8 +118,8 @@ totalAda = Right <$> queryTotalSupply
 hexToBytestring :: Monad m => Text -> ExceptT ExplorerError m ByteString
 hexToBytestring text = do
   case Base16.decode (Text.encodeUtf8 text) of
-    (blob, "") -> pure blob
-    (_partial, remain) -> throwE $ Internal $ "cant parse " <> Text.decodeUtf8 remain <> " as hex"
+    Right blob -> pure blob
+    Left {}    -> throwE $ Internal $ "Unable to Base16.decode " <> text <> "."
 
 blocksSummary
     :: MonadIO m

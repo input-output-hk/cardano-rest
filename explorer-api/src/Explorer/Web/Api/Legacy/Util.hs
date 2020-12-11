@@ -21,7 +21,7 @@ module Explorer.Web.Api.Legacy.Util
 import Cardano.Db
     ( Block (..), TxId )
 import Cardano.Ledger.Shelley
-    ( Shelley )
+    ( ShelleyEra )
 import Control.Applicative
     ( (<|>) )
 import Control.Monad.IO.Class
@@ -80,7 +80,7 @@ collapseTxGroup xs =
     [] -> error "collapseTxGroup: groupOn produced [] on non-empty list (impossible)"
     (x:_) -> (fst x, map snd xs)
 
-decodeTextAddress :: Text -> Either ExplorerError (Addr (Shelley StandardCrypto))
+decodeTextAddress :: Text -> Either ExplorerError (Addr (ShelleyEra StandardCrypto))
 decodeTextAddress txt =
     case tryBase16 <|> tryBech32 <|> tryBase58 of
         Nothing ->
@@ -136,8 +136,8 @@ runQuery backend query =
 textBase16Decode :: Text -> Either ExplorerError ByteString
 textBase16Decode text = do
   case Base16.decode (Text.encodeUtf8 text) of
-    (bs, "") -> Right bs
-    _ -> Left $ Internal (Text.pack $ "Unable to Base16.decode " ++ show text ++ ".")
+    Right bs -> Right bs
+    Left {}  -> Left $ Internal (Text.pack $ "Unable to Base16.decode " ++ show text ++ ".")
 
 textShow :: Show a => a -> Text
 textShow = Text.pack . show

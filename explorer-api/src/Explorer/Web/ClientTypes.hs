@@ -294,8 +294,8 @@ toCHash = CHash . hashToTextAsHex
 
 instance FromHttpApiData CHash where
     parseUrlPiece url = case B16.decode (B8.pack (T.unpack url)) of
-          (_, "") -> Right $ CHash url
-          _       -> Left "invalid hash"
+        Right{} -> Right $ CHash url
+        Left{}  -> Left "invalid hash"
 
 instance FromHttpApiData CAddress where
     parseUrlPiece = pure . CAddress

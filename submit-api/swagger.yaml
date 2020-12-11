@@ -4,7 +4,7 @@ host: localhost
 basePath: /
 info:
   title: cardano-submit-api
-  version: 2.1.0
+  version: 3.1.0
   license:
     name: Apache-2.0
     url: https://github.com/input-output-hk/cardano-rest/blob/master/submit-api/LICENSE
@@ -20,13 +20,13 @@ paths:
     post:
       operationId: postTransaction
       summary: Submit Tx
-      description: Submit an already serialized transaction to the network.
+      description: Submit an already serialized transaction to the network. Use an extra 'encoding' MIME parameter to send bytestring encoded in `base16` or `base64`.
       parameters:
         - in: header
           name: Content-Type
           required: true
           type: string
-          enum: ["application/cbor"]
+          enum: ["application/cbor", "application/cbor; encoding=base16", "application/cbor; encoding=base64"]
 
       x-code-samples:
         - lang: "Shell"

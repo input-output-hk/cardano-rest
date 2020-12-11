@@ -1,6 +1,8 @@
 name: GitHub Release
 
 on:
+  pull_request:
+    branches: [ "master" ]
   push:
     tags: [ '*.*.*' ]
 
@@ -21,10 +23,10 @@ jobs:
         apt-get: libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev libsodium-dev
         brew: libsodium
 
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2.3.4
 
     - name: Setup Stack
-      uses: timbod7/setup-stack@61acd0e4
+      uses: timbod7/setup-stack@1f68f27c
 
     - name: Install Dependencies
       run: |
@@ -47,10 +49,11 @@ jobs:
 
   release:
     needs: [build]
+    if: ${{ startsWith(github.ref, 'refs/tags') }}
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2.3.4
 
     - name: Create Release Tag
       id: create_release_tag

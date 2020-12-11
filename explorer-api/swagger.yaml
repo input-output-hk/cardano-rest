@@ -4,7 +4,7 @@ host: localhost
 basePath: /
 info:
   title: cardano-explorer-api
-  version: 2.1.0
+  version: 3.1.0
   license:
     name: Apache-2.0
     url: https://github.com/input-output-hk/cardano-rest/blob/master/explorer-api/LICENSE
@@ -19,7 +19,6 @@ x-tagGroups: []
 definitions:
   CAddress: &CAddress
     type: string
-    additionalProperties: false
     format: base58
     example: Ae2tdPwUPEZK72eZZqulakkhaUfTCcoaGepvQP718aYBczw5uZmp47h1k14
 
@@ -43,8 +42,7 @@ definitions:
       - getCoin
     properties:
       getCoin:
-        type: integer
-        minimum: 0
+        type: string
 
   CHash: &CHash
     type: string
@@ -52,17 +50,13 @@ definitions:
     minLength: 64
     maxLength: 64
     pattern: "^[0-9a-f]{64}$"
-    example: 3c89f7d9ff6c06468e32fd916d153b033264f780e11fca7750cb85f56d4f31d0
 
   CNetworkAddress: &CNetworkAddress
     type: string
 
   CTxHash: &CTxHash
-    oneOf:
-      - *CHash
-      - type: string
-        enum:
-          - Genesis Distribution
+    type: string
+    pattern: "/(Genesis Distribution)|[0-9a-f]{64}/"
 
   POSIXTime: &POSIXTime
     type: integer
@@ -302,11 +296,10 @@ definitions:
       type: array
       minItems: 2
       maxItems: 2
+      example: ["test", 42]
       items:
-        example: ["test", 42]
-        oneOf:
-          - *CTxHash
-          - *Word64
+        - *CTxHash
+        - *Word64
 
   PageNumber: &PageNumber
     type: integer
@@ -332,9 +325,8 @@ definitions:
           cbeFees:
             getCoin: 0
     items:
-      oneOf:
-        - *CBlockEntries
-        - *PageNumber
+      - *PageNumber
+      - *CBlockEntries
 
   PagedTxsStats: &PagedTxsStats
     type: array
@@ -352,15 +344,15 @@ definitions:
         - - 330fd742c16151f82ebe0d6ded589f7210e81c703c8d20177abe432b34a39287
           - 300
     items:
-      oneOf:
-        - *TxsStats
-        - *PageNumber
+      - *PageNumber
+      - *TxsStats
 
 x-param-address: &param-address
   in: path
   name: address
+  type: string
+  format: base58
   required: true
-  <<: *CAddress
 
 x-param-addressFilter: &param-addressFilter
   in: query
@@ -372,7 +364,11 @@ x-param-blockHash: &param-blockHash
   in: path
   name: blockHash
   required: true
-  <<: *CHash
+  type: string
+  format: base16
+  minLength: 64
+  maxLength: 64
+  pattern: "^[0-9a-f]{64}$"
 
 x-param-epochNumber: &param-epochNumber
   in: path
