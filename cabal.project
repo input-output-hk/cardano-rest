@@ -40,8 +40,8 @@ source-repository-package
 source-repository-package
     type: git
     location: https://github.com/input-output-hk/cardano-db-sync
-    tag: e74bca5c08179a4556feeaeca08e97a20f3e8bb7
-    --sha256: 0fxlr538v3bl63axm85wz9jk009dq9sjclv0hhq1mqqbjsjphvph
+    tag: 3cf868ec8c06265e4b670ac737af640d716e5ef7
+    --sha256: 152yhay3riak41saz5s5zdhlkb5c5iqpy1gw1rvwjp6rwg1mc77n
     subdir: cardano-db
 
 source-repository-package

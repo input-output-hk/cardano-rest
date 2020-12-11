@@ -16,12 +16,11 @@ extra-deps:
   - Diff-0.4.0
 
   - git: https://github.com/input-output-hk/cardano-db-sync
-    commit: e74bca5c08179a4556feeaeca08e97a20f3e8bb7
+    commit: 3cf868ec8c06265e4b670ac737af640d716e5ef7
     # Author: Erik de Castro Lopo <erikd@mega-nerd.com>
-    # Date:   Fri Dec 11 15:44:51 2020 +1100
+    # Date:   Thu Dec 10 09:18:17 2020 +1100
     #
-    #     Version 7.1.1
-    #
+    #     Version 7.1.0
     subdirs:
     - cardano-db
 
