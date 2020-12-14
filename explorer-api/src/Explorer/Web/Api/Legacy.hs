@@ -115,7 +115,7 @@ data ExplorerApiRecord route = ExplorerApiRecord
         :> "txs"
         :> "metadata"
         :> Capture "txid" CTxHash
-        :> ExRes Get [CTxMeta]
+        :> ExRes Get CTxMeta
   
   , _addressSummary :: route
         :- Summary "Get summary information about an address."

@@ -8,14 +8,17 @@ where
 import Cardano.Db (EntityField (..))
 import Control.Monad.IO.Class (MonadIO)
 import qualified Data.Aeson as Aeson
+import Data.HashMap.Strict (fromList)
 import Data.Maybe (mapMaybe)
 import qualified Data.Text as T
 import Data.Text.Encoding (encodeUtf8)
 import Database.Esqueleto
   ( InnerJoin (..),
     Value (..),
+    asc,
     from,
     on,
+    orderBy,
     select,
     val,
     where_,
@@ -32,11 +35,11 @@ import Explorer.Web.ClientTypes
 import Explorer.Web.Error (ExplorerError (..))
 
 -- | Gets the transaction metadata for a given transaction. Records
--- which cannot be parsed to JSON will be ignored.
-txMeta :: MonadIO m => CTxHash -> SqlPersistT m (Either ExplorerError [CTxMeta])
+-- which cannot be decoded as a JSON Value will be ignored.
+txMeta :: MonadIO m => CTxHash -> SqlPersistT m (Either ExplorerError CTxMeta)
 txMeta = queryCTxMeta
 
-queryCTxMeta :: MonadIO m => CTxHash -> SqlPersistT m (Either ExplorerError [CTxMeta])
+queryCTxMeta :: MonadIO m => CTxHash -> SqlPersistT m (Either ExplorerError CTxMeta)
 queryCTxMeta cHash = do
   let (CTxHash (CHash hashTxt)) = cHash
       hashBytes = textBase16Decode hashTxt
@@ -46,17 +49,11 @@ queryCTxMeta cHash = do
       rows <- select . from $ \(meta `InnerJoin` tx) -> do
         on (meta ^. TxMetadataTxId ==. tx ^. TxId)
         where_ (tx ^. TxHash ==. val hash)
+        orderBy [asc (meta ^. TxMetadataId)]
         return $ meta ^. TxMetadataJson
-      pure $ Right $ mapMaybe (convert cHash) rows
+      let indexedValues = zip [0 ..] $ mapMaybe decode rows :: [(Integer, Aeson.Value)]
+          obj = fromList $ map (\(i, v) -> (T.pack $ show i, v)) indexedValues
+      pure $ Right CTxMeta {ctmTxId = cHash, ctmJSON = obj}
   where
-    convert :: CTxHash -> Value T.Text -> Maybe CTxMeta
-    convert chash (Value json) =
-      let decoded = Aeson.decodeStrict $ encodeUtf8 json :: Maybe Aeson.Value
-       in case decoded of
-            Nothing -> Nothing
-            Just v ->
-              Just
-                CTxMeta
-                  { ctmTxId = chash,
-                    ctmJSON = v
-                  }
+    decode :: Value T.Text -> Maybe Aeson.Value
+    decode (Value json) = Aeson.decodeStrict $ encodeUtf8 json

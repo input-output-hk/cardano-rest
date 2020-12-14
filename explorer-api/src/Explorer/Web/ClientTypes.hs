@@ -53,7 +53,7 @@ import Control.Monad.Error.Class
 import Data.Aeson.TH
     ( defaultOptions, deriveJSON, deriveToJSON )
 import Data.Aeson.Types
-    ( ToJSON (toJSON), Value)
+    ( ToJSON (toJSON), Object)
 import Data.ByteString
     ( ByteString )
 import Data.Fixed
@@ -236,7 +236,7 @@ data CTxSummary = CTxSummary
 
 data CTxMeta = CTxMeta 
     { ctmTxId :: !CTxHash
-    , ctmJSON :: !(Value)
+    , ctmJSON :: !Object
     } deriving (Show, Generic)
 
 data CGenesisSummary = CGenesisSummary

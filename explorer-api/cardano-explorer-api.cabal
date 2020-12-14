@@ -70,7 +70,6 @@ library
                       , base58-bytestring
                       , bech32
                       , bytestring
-                      , cardano-api
                       , cardano-crypto-class
                       , cardano-db
                       , cardano-db-sync
@@ -97,6 +96,7 @@ library
                       , time
                       , transformers
                       , transformers-except
+                      , unordered-containers
                       , warp
 
 test-suite unit
@@ -121,8 +121,10 @@ test-suite unit
                       , cardano-db
                       , cardano-explorer-api
                       , cardano-ledger
+                      , conduit
                       , hedgehog
                       , hspec
+                      , persistent
 
   build-tool-depends:   hspec-discover:hspec-discover
 
