@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.1 -- December 2020
+
+* ø (patch in submit-api).
+
 ## 3.1.0 -- December 2020
 
 * Fix an internal error with 'InnerJoin' requests on block's transaction summary.
