@@ -26,7 +26,7 @@ import Data.Word
 import Explorer.Web.Api.Legacy.Types
     ( PageNo (..), PageSize (..) )
 import Explorer.Web.ClientTypes
-    ( CAddress
+    (CTxMeta,  CAddress
     , CAddressSummary
     , CAddressesFilter
     , CBlockEntry
@@ -109,7 +109,14 @@ data ExplorerApiRecord route = ExplorerApiRecord
         :> "summary"
         :> Capture "txid" CTxHash
         :> ExRes Get CTxSummary
-
+  
+  , _txMeta :: route
+        :- Summary "Get metadata for a transaction."
+        :> "txs"
+        :> "metadata"
+        :> Capture "txid" CTxHash
+        :> ExRes Get [CTxMeta]
+  
   , _addressSummary :: route
         :- Summary "Get summary information about an address."
         :> "addresses"

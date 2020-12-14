@@ -57,6 +57,7 @@ library
                       , Explorer.Web.Api.Legacy.RedeemSummary
                       , Explorer.Web.Api.Legacy.StatsTxs
                       , Explorer.Web.Api.Legacy.TxLast
+                      , Explorer.Web.Api.Legacy.TxMeta
                       , Explorer.Web.Api.Legacy.TxsSummary
                       , Explorer.Web.Api.Legacy.Types
                       , Explorer.Web.Api.Legacy.Util
@@ -69,6 +70,7 @@ library
                       , base58-bytestring
                       , bech32
                       , bytestring
+                      , cardano-api
                       , cardano-crypto-class
                       , cardano-db
                       , cardano-db-sync

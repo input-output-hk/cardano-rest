@@ -23,6 +23,7 @@ module Explorer.Web.ClientTypes
        , CAddressType (..)
        , CChainTip (..)
        , CTxAddressBrief (..)
+       , CTxMeta (..)
        , CAddressSummary (..)
        , CAddressBalanceError (..)
        , CTxBrief (..)
@@ -52,7 +53,7 @@ import Control.Monad.Error.Class
 import Data.Aeson.TH
     ( defaultOptions, deriveJSON, deriveToJSON )
 import Data.Aeson.Types
-    ( ToJSON (toJSON) )
+    ( ToJSON (toJSON), Value)
 import Data.ByteString
     ( ByteString )
 import Data.Fixed
@@ -233,6 +234,11 @@ data CTxSummary = CTxSummary
     , ctsOutputs         :: ![CTxAddressBrief]
     } deriving (Show, Generic)
 
+data CTxMeta = CTxMeta 
+    { ctmTxId :: !CTxHash
+    , ctmJSON :: !(Value)
+    } deriving (Show, Generic)
+
 data CGenesisSummary = CGenesisSummary
     { cgsNumTotal               :: !Word
     , cgsNumRedeemed            :: !Word
@@ -336,6 +342,7 @@ deriveToJSON defaultOptions ''CBlockSummary
 deriveToJSON defaultOptions ''CNetworkAddress
 deriveToJSON defaultOptions ''CChainTip
 deriveToJSON defaultOptions ''CTxSummary
+deriveToJSON defaultOptions ''CTxMeta
 deriveToJSON defaultOptions ''CTxAddressBrief
 deriveToJSON defaultOptions ''CGenesisSummary
 deriveToJSON defaultOptions ''CGenesisAddressInfo

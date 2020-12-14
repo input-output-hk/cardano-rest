@@ -1,0 +1,62 @@
+cradle:
+  stack:
+    - path: "./explorer-api/src"
+      component: cardano-explorer-api:lib
+    - path: "./explorer-api/app/cardano-explorer-api.hs"
+      component: cardano-explorer-api:exe:cardano-explorer-api     
+    - path: "./explorer-api/app/cardano-explorer-api-compare.hs"
+      component: cardano-explorer-api:exe:cardano-explorer-api-compare   
+    - path: "./explorer-api/app/cardano-explorer-api-validate.hs"
+      component: cardano-explorer-api:exe:cardano-explorer-api-validate
+    - path: "./explorer-api/test"
+      component: cardano-explorer-api:test:unit
+    # 
+    - path: "./rest-common"
+      component: cardano-rest-common:lib
+    - path: "./submit-api/src"
+      component: cardano-submit-api:lib
+    - path: "./submit-api/app"
+      component: cardano-submit-api:exe:cardano-submit-api
+    - path: "./submit-api/test"
+      component: cardano-submit-api:test:unit
+    # - path: "explorer-api/test"
+    #   component: "cardano-explorer-api:test:unit"
+
+    # - path: "explorer-api/app/cardano-explorer-api.hs"
+    #   component: "cardano-explorer-api:exe:cardano-explorer-api"
+
+    # - path: "explorer-api/app/cardano-explorer-api-compare.hs"
+    #   component: "cardano-explorer-api:exe:cardano-explorer-api-compare"
+
+    # - path: "explorer-api/app/cardano-explorer-api-validate.hs"
+    #   component: "cardano-explorer-api:exe:cardano-explorer-api-validate"
+
+    # - path: "explorer-api/app/Explorer/Web/Validate.hs"
+    #   component: "cardano-explorer-api:exe:cardano-explorer-api-validate"
+
+    # - path: "explorer-api/app/Explorer/Web/Validate/Address.hs"
+    #   component: "cardano-explorer-api:exe:cardano-explorer-api-validate"
+
+    # - path: "explorer-api/app/Explorer/Web/Validate/BlocksTxs.hs"
+    #   component: "cardano-explorer-api:exe:cardano-explorer-api-validate"
+
+    # - path: "explorer-api/app/Explorer/Web/Validate/ErrorHandling.hs"
+    #   component: "cardano-explorer-api:exe:cardano-explorer-api-validate"
+
+    # - path: "explorer-api/app/Explorer/Web/Validate/GenesisAddress.hs"
+    #   component: "cardano-explorer-api:exe:cardano-explorer-api-validate"
+
+    # - path: "explorer-api/app/Explorer/Web/Validate/Random.hs"
+    #   component: "cardano-explorer-api:exe:cardano-explorer-api-validate"
+
+    # - path: "rest-common/src"
+    #   component: "lib:cardano-rest-common"
+
+    # - path: "submit-api/src"
+    #   component: "lib:cardano-submit-api"
+
+    # - path: "submit-api/app/cardano-submit-api.hs"
+    #   component: "cardano-submit-api:exe:cardano-submit-api"
+
+    # - path: "submit-api/test"
+    #   component: "cardano-submit-api:test:unit"

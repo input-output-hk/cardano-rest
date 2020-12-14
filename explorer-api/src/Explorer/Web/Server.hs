@@ -50,6 +50,7 @@ import Explorer.Web.Api.Legacy.GenesisPages
 import Explorer.Web.Api.Legacy.GenesisSummary
 import Explorer.Web.Api.Legacy.StatsTxs
 import Explorer.Web.Api.Legacy.TxLast
+import Explorer.Web.Api.Legacy.TxMeta
 import Explorer.Web.Api.Legacy.TxsSummary
 import Explorer.Web.Api.Legacy.Util
 import Explorer.Web.ClientTypes
@@ -93,6 +94,7 @@ explorerHandlers =
       , _blocksTxs          = blocksTxs
       , _txsLast            = getLastTxs
       , _txsSummary         = txsSummary
+      , _txMeta             = txMeta
       , _addressSummary     = addressSummary
       , _epochPages         = epochPage
       , _epochSlots         = epochSlot
