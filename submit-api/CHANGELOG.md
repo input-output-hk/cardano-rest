@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.1.1 -- December 2020 
+
+* Revert the MIME-type `encoding` addition from 3.1.0. Turns out there's a bug with an underlying dependency 
+  causing the feature to misbehave. Removing for now. Will rework later if time allows.
+
 ## 3.1.0 -- December 2020
 
 * Allow clients to define an extra outer-encoding for the submit endpoint using a MIME-type parameter `encoding`. 

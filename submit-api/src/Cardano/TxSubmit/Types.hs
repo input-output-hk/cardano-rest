@@ -17,20 +17,10 @@ import Cardano.Binary
     ( DecoderError )
 import Cardano.TxSubmit.Tx
     ( TxSubmitError, renderTxSubmitError )
-import Control.Arrow
-    ( left )
 import Data.Aeson
     ( ToJSON (..), Value (..) )
-import Data.Bifunctor
-    ( bimap )
-import Data.ByteString.Base16
-    ( decodeBase16 )
 import Data.ByteString.Char8
     ( ByteString )
-import Data.ByteString.Lazy.Base64
-    ( decodeBase64 )
-import Data.List.NonEmpty
-    ( NonEmpty (..) )
 import Data.Text
     ( Text )
 import Formatting
@@ -38,7 +28,7 @@ import Formatting
 import GHC.Generics
     ( Generic )
 import Network.HTTP.Media
-    ( parameters, (//), (/:) )
+    ( (//) )
 import Servant
     ( (:>)
     , Accept (..)
@@ -52,8 +42,6 @@ import Servant.API.Generic
     ( (:-), ToServantApi )
 
 import qualified Data.ByteString.Lazy.Char8 as LBS
-import qualified Data.Map.Strict as Map
-import qualified Data.Text as T
 
 newtype TxSubmitPort
   = TxSubmitPort Int
@@ -98,10 +86,7 @@ data TxSubmitApiRecord route = TxSubmitApiRecord
 data CBORStream
 
 instance Accept CBORStream where
-  contentTypes _ = "application" // "cbor" /: ("encoding", "base16") :|
-    [ "application" // "cbor" /: ("encoding", "base64")
-    , "application" // "cbor"
-    ]
+  contentType _ = "application" // "cbor"
 
 instance MimeRender CBORStream ByteString where
     mimeRender _ = LBS.fromStrict
@@ -110,16 +95,7 @@ instance MimeRender CBORStream LBS.ByteString where
     mimeRender _ = id
 
 instance MimeUnrender CBORStream ByteString where
-    mimeUnrender proxy = fmap LBS.toStrict . mimeUnrender proxy
+    mimeUnrender _ = Right . LBS.toStrict
 
 instance MimeUnrender CBORStream LBS.ByteString where
-    mimeUnrenderWithType _ mediaType bytes =
-        case Map.lookup "encoding" (parameters mediaType) of
-            Nothing ->
-                Right bytes
-            Just "base16" ->
-                bimap T.unpack LBS.fromStrict . decodeBase16 . LBS.toStrict $ bytes
-            Just "base64" ->
-                left T.unpack . decodeBase64 $ bytes
-            Just _ ->
-                Left "unrecognized encoding: must be 'base16' or 'base64' if specified."
+    mimeUnrender _ = Right . id

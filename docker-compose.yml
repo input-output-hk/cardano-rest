@@ -61,7 +61,7 @@ services:
         max-file: "10"
 
   cardano-explorer-api:
-    image: inputoutput/cardano-explorer-api:${CARDANO_EXPLORER_API_VERSION:-3.1.0}
+    image: inputoutput/cardano-explorer-api:${CARDANO_EXPLORER_API_VERSION:-3.1.1}
     depends_on:
       - postgres
       - cardano-db-sync
@@ -83,7 +83,7 @@ services:
         max-file: "10"
 
   cardano-submit-api:
-    image: inputoutput/cardano-submit-api:${CARDANO_SUBMIT_API_VERSION:-3.1.0}
+    image: inputoutput/cardano-submit-api:${CARDANO_SUBMIT_API_VERSION:-3.1.1}
     environment:
       - NETWORK=${NETWORK:-mainnet}
     depends_on:

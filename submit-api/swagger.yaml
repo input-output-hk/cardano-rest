@@ -20,13 +20,13 @@ paths:
     post:
       operationId: postTransaction
       summary: Submit Tx
-      description: Submit an already serialized transaction to the network. Use an extra 'encoding' MIME parameter to send bytestring encoded in `base16` or `base64`.
+      description: Submit an already serialized transaction to the network.
       parameters:
         - in: header
           name: Content-Type
           required: true
           type: string
-          enum: ["application/cbor", "application/cbor; encoding=base16", "application/cbor; encoding=base64"]
+          enum: ["application/cbor"]
 
       x-code-samples:
         - lang: "Shell"
