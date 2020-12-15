@@ -5,13 +5,19 @@ module Explorer.Web.Api.Legacy.TxMeta
   )
 where
 
-import Cardano.Db (EntityField (..))
+import Cardano.Api.Typed
+  ( TxMetadata (..),
+    TxMetadataValue (..),
+  )
+import Cardano.Db (DbWord64 (..), EntityField (..))
+import Control.Monad ((>=>))
 import Control.Monad.IO.Class (MonadIO)
 import qualified Data.Aeson as Aeson
-import Data.HashMap.Strict (fromList)
+import qualified Data.Map.Strict as Map
 import Data.Maybe (mapMaybe)
 import qualified Data.Text as T
 import Data.Text.Encoding (encodeUtf8)
+import Data.Word (Word64)
 import Database.Esqueleto
   ( InnerJoin (..),
     Value (..),
@@ -26,16 +32,17 @@ import Database.Esqueleto
     (^.),
   )
 import Database.Persist.Sql (SqlPersistT)
-import Explorer.Web.Api.Legacy.Util (textBase16Decode)
+import Explorer.Web.Api.Legacy.Util (jsonToMetadataValue, textBase16Decode)
 import Explorer.Web.ClientTypes
   ( CHash (..),
     CTxHash (..),
     CTxMeta (..),
+    CTxMetaValues (..),
   )
 import Explorer.Web.Error (ExplorerError (..))
 
 -- | Gets the transaction metadata for a given transaction. Records
--- which cannot be decoded as a JSON Value will be ignored.
+-- which cannot be decoded will be ignored.
 txMeta :: MonadIO m => CTxHash -> SqlPersistT m (Either ExplorerError CTxMeta)
 txMeta = queryCTxMeta
 
@@ -49,11 +56,21 @@ queryCTxMeta cHash = do
       rows <- select . from $ \(meta `InnerJoin` tx) -> do
         on (meta ^. TxMetadataTxId ==. tx ^. TxId)
         where_ (tx ^. TxHash ==. val hash)
-        orderBy [asc (meta ^. TxMetadataId)]
-        return $ meta ^. TxMetadataJson
-      let indexedValues = zip [0 ..] $ mapMaybe decode rows :: [(Integer, Aeson.Value)]
-          obj = fromList $ map (\(i, v) -> (T.pack $ show i, v)) indexedValues
-      pure $ Right CTxMeta {ctmTxId = cHash, ctmJSON = obj}
+        orderBy [asc (meta ^. TxMetadataKey)]
+        return (meta ^. TxMetadataKey, meta ^. TxMetadataJson)
+      pure $
+        Right
+          CTxMeta
+            { ctmTxId = cHash,
+              ctmData = CTxMetaValues $ TxMetadata $ Map.fromList $ mapMaybe (decode >=> convert) rows
+            }
   where
-    decode :: Value T.Text -> Maybe Aeson.Value
-    decode (Value json) = Aeson.decodeStrict $ encodeUtf8 json
+    decode :: (Value DbWord64, Value T.Text) -> Maybe (Word64, Aeson.Value)
+    decode (Value (DbWord64 key), Value json) = case Aeson.decodeStrict $ encodeUtf8 json of
+      Nothing -> Nothing
+      Just value -> Just (key, value)
+
+    convert :: (Word64, Aeson.Value) -> Maybe (Word64, TxMetadataValue)
+    convert (key, value) = case jsonToMetadataValue value of
+      Nothing -> Nothing
+      Just metaVal -> Just (key, metaVal)

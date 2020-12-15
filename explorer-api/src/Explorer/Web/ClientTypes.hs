@@ -24,6 +24,7 @@ module Explorer.Web.ClientTypes
        , CChainTip (..)
        , CTxAddressBrief (..)
        , CTxMeta (..)
+       , CTxMetaValues (..)
        , CAddressSummary (..)
        , CAddressBalanceError (..)
        , CTxBrief (..)
@@ -53,7 +54,7 @@ import Control.Monad.Error.Class
 import Data.Aeson.TH
     ( defaultOptions, deriveJSON, deriveToJSON )
 import Data.Aeson.Types
-    ( ToJSON (toJSON), Object)
+    ( ToJSON (toJSON))
 import Data.ByteString
     ( ByteString )
 import Data.Fixed
@@ -77,6 +78,8 @@ import qualified Data.Aeson as Aeson
 import qualified Data.ByteString.Base16 as B16
 import qualified Data.ByteString.Char8 as B8
 import qualified Data.Text as T
+import Cardano.Api.MetaData 
+    (TxMetadataJsonSchema (TxMetadataJsonDetailedSchema), metadataToJson, TxMetadata)
 
 -------------------------------------------------------------------------------------
 -- Hash types
@@ -118,6 +121,14 @@ newtype CTxHash = CTxHash CHash
 -- | The network, eg "mainnet", "testnet" etc
 newtype CNetwork = CNetwork Text
     deriving (Show, Eq, Generic, Buildable, Hashable, NFData)
+
+-- | Transaction metadata
+newtype CTxMetaValues = CTxMetaValues TxMetadata
+    deriving (Show, Generic)
+
+instance ToJSON (CTxMetaValues) where
+    toJSON (CTxMetaValues v) = metadataToJson TxMetadataJsonDetailedSchema v
+
 
 -------------------------------------------------------------------------------------
 -- Composite types
@@ -236,7 +247,7 @@ data CTxSummary = CTxSummary
 
 data CTxMeta = CTxMeta 
     { ctmTxId :: !CTxHash
-    , ctmJSON :: !Object
+    , ctmData :: !CTxMetaValues
     } deriving (Show, Generic)
 
 data CGenesisSummary = CGenesisSummary

@@ -16,12 +16,16 @@ module Explorer.Web.Api.Legacy.Util
   , toPageSize
   , zipTxBrief
   , isRedeemAddress
+  , jsonToMetadataValue
   ) where
 
 import Cardano.Db
     ( Block (..), TxId )
+import Data.Int (Int64)
+import Data.Scientific (toBoundedInteger)
 import Cardano.Ledger.Shelley
     ( Shelley )
+import Cardano.Api.MetaData (TxMetadataValue (..))
 import Control.Applicative
     ( (<|>) )
 import Control.Monad.IO.Class
@@ -30,6 +34,8 @@ import Data.ByteArray.Encoding
     ( Base (..), convertFromBase )
 import Data.ByteString
     ( ByteString )
+import qualified Data.Vector as Vector
+import qualified Data.ByteString.Char8 as Char8
 import Data.ByteString.Base58
     ( bitcoinAlphabet, decodeBase58 )
 import Data.Map.Strict
@@ -63,6 +69,9 @@ import qualified Data.ByteString.Base16 as Base16
 import qualified Data.Map.Strict as Map
 import qualified Data.Text as Text
 import qualified Data.Text.Encoding as Text
+import qualified Data.HashMap.Strict as HM
+
+import qualified Data.Aeson as Aeson 
 
 blockPosixTime :: Block -> POSIXTime
 blockPosixTime = utcTimeToPOSIXSeconds . blockTime
@@ -174,3 +183,46 @@ zipTxBrief xs ins outs =
               , ctbOutputSum = outSum
               , ctbFees = inSum - outSum
               }
+
+-- TODO: This function and the corresponding one in `cardano-db-sync` repo under 
+--   cardano-db-sync/src/Cardano/DbSync/Era/Shelley/Metadata.hs should probably get
+--   grouped together in a shared dependency (e.g. in cardano-db).
+
+-- | Converts an Aeson Value to a TxMetadataValue, returning
+-- Nothing if conversion logic fails. This does not perfectly
+-- recreate the input of `Cardano.DbSync.Era.Shelley.Generic.Metadata.metadataValueToJsonNoSchema`
+-- since that function applies a irreversible transformation to map keys. 
+-- Instead, all TxMetaMap keys are treated as Text.
+jsonToMetadataValue :: Aeson.Value -> Maybe TxMetadataValue
+jsonToMetadataValue = conv 
+  where 
+      conv :: Aeson.Value -> Maybe TxMetadataValue
+      conv (Aeson.Number n) = case (toBoundedInteger n :: Maybe Int64) of 
+          Nothing -> Nothing 
+          Just int -> Just $ TxMetaNumber $ fromIntegral int
+      conv (Aeson.String s) = case Text.stripPrefix bytesPrefix s of
+          Nothing -> Just $ TxMetaText s 
+          Just encodedText -> case Base16.decode $ Char8.pack $ Text.unpack encodedText of
+              (valid, "") -> Just $ TxMetaBytes valid
+              -- Invalid base16 bytestrings are just returned as text
+              _ -> Just $ TxMetaText s
+      conv (Aeson.Array a) = Just $ TxMetaList $ mapMaybe conv (Vector.toList a)
+      -- Note: No way of knowing the key type since all are serialized straight to text
+      --   with no extra type identifiers. Have to just return them as text.
+      conv (Aeson.Object obj) = Just $ TxMetaMap $ mapMaybe convMapEntry (HM.toList obj)
+      conv _ = Nothing
+
+      convMapEntry :: (Text, Aeson.Value) -> Maybe (TxMetadataValue, TxMetadataValue)
+      convMapEntry (oldKey, oldValue) = let
+        newKey = conv (Aeson.String oldKey)
+        newValue = conv oldValue 
+        in case newKey of 
+            Nothing -> Nothing 
+            Just key -> case newValue of 
+                Nothing -> Nothing 
+                Just value -> Just (key, value)
+
+-- | JSON strings that are base16 encoded and prefixed with 'bytesPrefix' will
+-- be encoded as CBOR bytestrings.
+bytesPrefix :: Text
+bytesPrefix = "0x"

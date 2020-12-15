@@ -71,6 +71,7 @@ library
                       , bech32
                       , bytestring
                       , cardano-crypto-class
+                      , cardano-api
                       , cardano-db
                       , cardano-db-sync
                       , cardano-ledger
@@ -89,6 +90,7 @@ library
                       , persistent
                       , persistent-postgresql
                       , QuickCheck
+                      , scientific
                       , servant
                       , servant-server
                       , shelley-spec-ledger
@@ -97,6 +99,7 @@ library
                       , transformers
                       , transformers-except
                       , unordered-containers
+                      , vector
                       , warp
 
 test-suite unit
@@ -118,13 +121,15 @@ test-suite unit
 
   build-depends:        base                            >= 4.12         && < 4.13
                       , aeson
+                      , cardano-api
                       , cardano-db
                       , cardano-explorer-api
                       , cardano-ledger
-                      , conduit
                       , hedgehog
                       , hspec
                       , persistent
+                      , unordered-containers
+                      , vector
 
   build-tool-depends:   hspec-discover:hspec-discover
 

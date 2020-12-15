@@ -5,13 +5,17 @@ module Test.Explorer.Web.Api.Legacy.UtilSpec
     ) where
 
 import Prelude
+import Cardano.Api.MetaData (TxMetadataValue (..))
 
+import qualified Data.HashMap.Strict as HM
+import qualified Data.Vector as V
 import Data.Either
     ( isLeft, isRight )
+import qualified Data.Aeson as Aeson
 import Explorer.Web.Api.Legacy.Util
-    ( decodeTextAddress )
+    ( decodeTextAddress, jsonToMetadataValue)
 import Test.Hspec
-    ( Spec, describe, it, shouldSatisfy )
+    ( Spec, describe, it, shouldSatisfy, shouldBe)
 
 spec :: Spec
 spec = do
@@ -74,3 +78,43 @@ spec = do
             decodeTextAddress
                 "6079467c69a9ac66280174d09d62575ba955748b21dec3b483a9469a65"
                 `shouldSatisfy` isRight
+
+        it "✓ can parse tx text JSON metadata" $ do
+            jsonToMetadataValue
+                (Aeson.String "foo")
+                `shouldBe` Just (TxMetaText "foo")
+        
+        it "✓ can parse tx encoded binary JSON metadata" $ do
+            jsonToMetadataValue
+                (Aeson.String "0x666f6f")
+                `shouldBe` Just (TxMetaBytes "foo")
+
+        it "✓ can parse tx integer JSON metadata" $ do
+            jsonToMetadataValue
+                (Aeson.Number 12345678910)
+                `shouldBe` Just (TxMetaNumber 12345678910)
+
+        it "✓ can parse tx list JSON metadata" $ do
+            jsonToMetadataValue (
+                Aeson.Array (V.fromList [
+                    Aeson.Number 1,
+                    Aeson.String "foo",
+                    Aeson.Bool True
+                ]))
+                `shouldBe` (Just (TxMetaList [
+                    TxMetaNumber 1,
+                    TxMetaText "foo"
+                ]))
+                        
+        it "✓ can parse tx map JSON metadata" $ do
+            jsonToMetadataValue ( Aeson.Object $
+                HM.fromList [
+                    ("somekey", Aeson.Number 1),
+                    ("1", Aeson.Number 2),
+                    ("0x666f6f", Aeson.String "bar")
+                ])
+                `shouldBe` (Just (TxMetaMap [
+                    (TxMetaText "somekey", TxMetaNumber 1),
+                    (TxMetaText "1", TxMetaNumber 2),
+                    (TxMetaBytes "foo", TxMetaText "bar")
+                ]))
