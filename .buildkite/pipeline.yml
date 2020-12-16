@@ -9,6 +9,13 @@ steps:
     agents:
       system: x86_64-linux
 
+  - label: 'Validate OpenAPI Specification'
+    command:
+      - 'nix-shell --run "openapi-spec-validator --schema 2.0 explorer-api/swagger.yaml"'
+      - 'nix-shell --run "openapi-spec-validator --schema 2.0 submit-api/swagger.yaml"'
+    agents:
+      system: x86_64-linux
+
   - label: 'Docker Images'
     command:
       - "nix-build .buildkite/docker-build-push.nix -o docker-build-push"

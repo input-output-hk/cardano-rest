@@ -29,6 +29,7 @@ let
       niv
       pkgconfig
       sqlite-interactive
+      python3Packages.openapi-spec-validator
       tmux
       git
     ];
