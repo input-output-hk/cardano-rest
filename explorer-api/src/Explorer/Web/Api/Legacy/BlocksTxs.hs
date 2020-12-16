@@ -91,7 +91,7 @@ queryBlocksTxs blkHash _limitNum _offsetNum  = do
             -- offset offsetNum
             pure (tx ^. TxId, tx ^. TxHash, blk ^. BlockTime)
     case map unValue3 res of
-      [] -> pure $ Left (Internal "No block found")
+      [] -> pure $ Left (Internal "No transactions found in block")
       xs -> Right <$> queryCTxBriefs xs
 
 queryCTxBriefs :: MonadIO m => [(TxId, ByteString, UTCTime)] -> SqlPersistT m [CTxBrief]
