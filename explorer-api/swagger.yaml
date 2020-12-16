@@ -188,6 +188,19 @@ definitions:
       cteId: *CTxHash
       cteTimeIssued: *POSIXTime
       cteAmount: *CCoin
+  
+  CTxMetadata: &CTxMetadata
+    description: Transaction metadata
+    type: object
+    # additionalProperties:
+    #   $ref: "#/components/schemas/TransactionMetadataValue"
+    example:
+      0: { "string": "cardano" }
+      1: { "int": 14 }
+      2: { "bytes": "2512a00e9653fe49a44a5886202e24d77eeb998f" }
+      3: { "list": [ { "int": 14 }, { "int": 42 }, { "string": "1337" } ] }
+      4: { "map": [{ "k": { "string": "key" }, "v": { "string": "value" }}, { "k": { "bytes": "2512a00e9653fe49a44a5886202e24d77eeb998f" }, "v": { "int": 42 } }] }
+
 
   CUtxo: &CUtxo
     type: object
@@ -526,6 +539,32 @@ paths:
           schema:
             <<: *response200
             <<: { "properties": { "Right": *CTxEntry } }
+
+  /api/txs/metadata/{txId}:
+    get:
+      operationId: _txMeta
+      tags: ["Transactions"]
+      summary: get transaction metadata
+      description: | 
+        Get all available metadata for a single transaction
+
+        Note: Cardano allows transactions to be created with 
+        additional metadata in a compact binary format which is converted to
+        JSON by cardano-db-sync. This endpoint returns this metadata, but due to 
+        the its storage format, "map" object keys of original type "int" will be
+        returned as strings. 
+
+        See here for more details on the metadata format:
+        https://input-output-hk.github.io/cardano-wallet/api/edge/#operation/postTransaction
+
+      parameters:
+          - *param-txId
+      responses:
+        200:
+          description: Ok
+          schema:
+            <<: *response200
+            <<: { "properties": { "Right": *CTxMetadata } }
 
   /api/txs/summary/{txId}:
     get:
