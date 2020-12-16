@@ -87,7 +87,6 @@ library
                       , ouroboros-consensus-shelley
                       , persistent
                       , persistent-postgresql
-                      , QuickCheck
                       , scientific
                       , servant
                       , servant-server
@@ -98,7 +97,7 @@ library
                       , transformers-except
                       , unordered-containers
                       , vector
-                      , warp
+                     
 
 test-suite unit
   default-language:     Haskell2010
@@ -125,7 +124,6 @@ test-suite unit
                       , cardano-ledger
                       , hedgehog
                       , hspec
-                      , persistent
                       , unordered-containers
                       , vector
 

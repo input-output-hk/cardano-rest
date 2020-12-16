@@ -192,8 +192,8 @@ zipTxBrief xs ins outs =
 -- | Converts an Aeson Value to a TxMetadataValue, returning
 -- Nothing if conversion logic fails. This does not perfectly
 -- recreate the input of `Cardano.DbSync.Era.Shelley.Generic.Metadata.metadataValueToJsonNoSchema`
--- since that function applies a irreversible transformation to map keys. 
--- Instead, all TxMetaMap keys are treated as Text.
+-- since that function applies a irreversible transformation to integer map keys. 
+-- Any TxMetaMap keys which were originally integers will be returned as Text.
 jsonToMetadataValue :: Aeson.Value -> Maybe TxMetadataValue
 jsonToMetadataValue = conv 
   where 
