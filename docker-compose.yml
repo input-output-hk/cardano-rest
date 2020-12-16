@@ -51,6 +51,7 @@ services:
       - postgres_user
       - postgres_db
     volumes:
+      - db-sync-data:/var/lib/cdbsync
       - node-ipc:/node-ipc
     restart: on-failure
     logging:
@@ -107,6 +108,7 @@ secrets:
     file: ./config/postgres_user
 
 volumes:
+  db-sync-data:
   postgres:
   node-db:
   node-ipc:
