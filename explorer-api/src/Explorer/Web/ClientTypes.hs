@@ -78,7 +78,7 @@ import qualified Data.Aeson as Aeson
 import qualified Data.ByteString.Base16 as B16
 import qualified Data.ByteString.Char8 as B8
 import qualified Data.Text as T
-import Cardano.Api.MetaData 
+import Cardano.API
     (TxMetadataJsonSchema (TxMetadataJsonDetailedSchema), metadataToJson, TxMetadata)
 
 -------------------------------------------------------------------------------------

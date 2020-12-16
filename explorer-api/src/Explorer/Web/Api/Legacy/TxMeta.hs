@@ -65,10 +65,12 @@ queryCTxMeta cHash = do
               ctmData = CTxMetaValues $ TxMetadata $ Map.fromList $ mapMaybe (decode >=> convert) rows
             }
   where
-    decode :: (Value DbWord64, Value T.Text) -> Maybe (Word64, Aeson.Value)
-    decode (Value (DbWord64 key), Value json) = case Aeson.decodeStrict $ encodeUtf8 json of
-      Nothing -> Nothing
-      Just value -> Just (key, value)
+    decode :: (Value DbWord64, Value (Maybe T.Text)) -> Maybe (Word64, Aeson.Value)
+    decode (Value (DbWord64 key), Value metaJson) = case metaJson of 
+        Nothing -> Nothing
+        Just json -> case Aeson.decodeStrict $ encodeUtf8 json of
+          Nothing -> Nothing
+          Just value -> Just (key, value)
 
     convert :: (Word64, Aeson.Value) -> Maybe (Word64, TxMetadataValue)
     convert (key, value) = case jsonToMetadataValue value of

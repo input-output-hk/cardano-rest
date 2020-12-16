@@ -24,8 +24,8 @@ import Cardano.Db
 import Data.Int (Int64)
 import Data.Scientific (toBoundedInteger)
 import Cardano.Ledger.Shelley
-    ( Shelley, ShelleyEra )
-import Cardano.Api.MetaData (TxMetadataValue (..))
+    ( ShelleyEra )
+import Cardano.API (TxMetadataValue (..))
 
 import Control.Applicative
     ( (<|>) )
@@ -204,9 +204,9 @@ jsonToMetadataValue = conv
       conv (Aeson.String s) = case Text.stripPrefix bytesPrefix s of
           Nothing -> Just $ TxMetaText s 
           Just encodedText -> case Base16.decode $ Char8.pack $ Text.unpack encodedText of
-              (valid, "") -> Just $ TxMetaBytes valid
+              Right bytes -> Just $ TxMetaBytes bytes
               -- Invalid base16 bytestrings are just returned as text
-              _ -> Just $ TxMetaText s
+              Left _ -> Just $ TxMetaText s
       conv (Aeson.Array a) = Just $ TxMetaList $ mapMaybe conv (Vector.toList a)
       -- Note: No way of knowing the key type since all are serialized straight to text
       --   with no extra type identifiers. Have to just return them as text.
