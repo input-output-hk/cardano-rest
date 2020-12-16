@@ -192,8 +192,6 @@ definitions:
   CTxMetadata: &CTxMetadata
     description: Transaction metadata
     type: object
-    # additionalProperties:
-    #   $ref: "#/components/schemas/TransactionMetadataValue"
     example:
       0: { "string": "cardano" }
       1: { "int": 14 }
