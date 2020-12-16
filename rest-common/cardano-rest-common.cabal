@@ -3,7 +3,7 @@ cabal-version:          >= 1.10
 -- http://haskell.org/cabal/users-guide/
 
 name:                   cardano-rest-common
-version:                3.0.0
+version:                3.1.1
 synopsis:               A Block Explorer for the Cardano network
 description:
 homepage:               https://github.com/input-output-hk/cardano-explorer
@@ -42,7 +42,6 @@ library
   -- other-modules:
 
   build-depends:        base                            >= 4.12         && < 4.13
-                      , cardano-db
                       , optparse-applicative
                       , monad-logger
                       , text

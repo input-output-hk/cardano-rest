@@ -14,13 +14,15 @@ import Cardano.Prelude
 import Cardano.Api.TxSubmit hiding
     ( submitTx )
 import Cardano.Api.Typed
-    ( Byron
+    ( ByronEra
+    , CardanoEra (..)
+    , InAnyCardanoEra (..)
     , LocalNodeConnectInfo
     , NodeConsensusMode (..)
-    , Shelley
+    , ShelleyEra
     , Tx (..)
-    , TxBody (..)
     , TxId
+    , getTxBody
     , getTxId
     , localNodeConsensusMode
     )
@@ -29,9 +31,7 @@ import Cardano.TxSubmit.ErrorRender
 import Ouroboros.Consensus.Byron.Ledger
     ( ByronBlock )
 import Ouroboros.Consensus.Cardano.Block
-    ( EraMismatch (..)
-    , HardForkApplyTxErr (ApplyTxErrByron, ApplyTxErrShelley, ApplyTxErrWrongEra)
-    )
+    ( EraMismatch (..), HardForkApplyTxErr (..) )
 import Ouroboros.Consensus.Ledger.SupportsMempool
     ( ApplyTxErr )
 import Ouroboros.Consensus.Shelley.Ledger
@@ -40,15 +40,16 @@ import Ouroboros.Consensus.Shelley.Protocol.Crypto
     ( StandardCrypto )
 
 import qualified Cardano.Api.TxSubmit as Api
-import qualified Cardano.Chain.UTxO as Byron
-import qualified Cardano.Ledger.Shelley as Era
-import qualified Shelley.Spec.Ledger.BaseTypes as Shelley
-import qualified Shelley.Spec.Ledger.Tx as Shelley
+import qualified Cardano.Ledger.Allegra as LedgerA
+import qualified Cardano.Ledger.Mary as LedgerM
+import qualified Cardano.Ledger.Shelley as LedgerS
 
 -- | An error that can occur while submitting a transaction to a local node.
 data TxSubmitError
   = TxSubmitByronError !(ApplyTxErr ByronBlock)
-  | TxSubmitShelleyError !(ApplyTxErr (ShelleyBlock (Era.Shelley StandardCrypto)))
+  | TxSubmitShelleyError !(ApplyTxErr (ShelleyBlock (LedgerS.ShelleyEra StandardCrypto)))
+  | TxSubmitAllegraError !(ApplyTxErr (ShelleyBlock (LedgerA.AllegraEra StandardCrypto)))
+  | TxSubmitMaryError !(ApplyTxErr (ShelleyBlock (LedgerM.MaryEra StandardCrypto)))
   | TxSubmitEraMismatchError !EraMismatch
   deriving (Eq, Show)
 
@@ -57,13 +58,15 @@ renderTxSubmitError tse =
   case tse of
     TxSubmitByronError err -> renderApplyMempoolPayloadErr err
     TxSubmitShelleyError err -> show err -- TODO: Better rendering for Shelley errors
+    TxSubmitAllegraError err -> show err -- TODO: Better rendering for Allegra errors
+    TxSubmitMaryError err -> show err -- TODO: Better rendering for Mary errors
     TxSubmitEraMismatchError err -> renderEraMismatch err
 
 -- | Submit a transaction to a local node.
 submitTx
   :: forall mode block.
      LocalNodeConnectInfo mode block
-  -> (Either (Tx Byron) (Tx Shelley))
+  -> (Either (Tx ByronEra) (Tx ShelleyEra))
   -> IO (Either TxSubmitError TxId)
 submitTx connectInfo byronOrShelleyTx =
   case (localNodeConsensusMode connectInfo, byronOrShelleyTx) of
@@ -93,20 +96,22 @@ submitTx connectInfo byronOrShelleyTx =
               }
 
     (CardanoMode{}, tx) -> do
-      result <- Api.submitTx connectInfo (TxForCardanoMode tx)
+      let txInEra = either (InAnyCardanoEra ByronEra) (InAnyCardanoEra ShelleyEra) tx
+      result <- Api.submitTx connectInfo (TxForCardanoMode txInEra)
       pure $ case result of
         TxSubmitSuccess -> Right (either getTxIdForTx getTxIdForTx tx)
         TxSubmitFailureCardanoMode (ApplyTxErrByron err) ->
           Left (TxSubmitByronError err)
         TxSubmitFailureCardanoMode (ApplyTxErrShelley err) ->
           Left (TxSubmitShelleyError err)
+        TxSubmitFailureCardanoMode (ApplyTxErrAllegra err) ->
+          Left (TxSubmitAllegraError err)
+        TxSubmitFailureCardanoMode (ApplyTxErrMary err) ->
+          Left (TxSubmitMaryError err)
         TxSubmitFailureCardanoMode (ApplyTxErrWrongEra mismatch) ->
           Left (TxSubmitEraMismatchError mismatch)
 
 -- TODO: This function should really be implemented in `Cardano.Api.Typed`.
 -- The function, 'Cardano.Api.Typed.getTxId', accepts a 'TxBody' parameter.
 getTxIdForTx :: Tx era -> TxId
-getTxIdForTx (ByronTx tx) = getTxId . ByronTxBody . Byron.aTaTx $ tx
-getTxIdForTx (ShelleyTx tx) =
-  getTxId . (uncurry ShelleyTxBody) $
-    (Shelley._body tx, Shelley.strictMaybeToMaybe (Shelley._metadata tx))
+getTxIdForTx = getTxId . getTxBody

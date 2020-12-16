@@ -22,8 +22,8 @@ package cardano-submit-api
 source-repository-package
     type: git
     location: https://github.com/input-output-hk/cardano-base
-    tag: 13f44ad35d2762dbf98b3d3be56b7ba2adf515f4
-    --sha256: 0sl7adyrjf3w6025gvljxyr222s53avin0sv0gzhdypmj9wg5ml6
+    tag: 2574600da11065937c1f07e4b234ecb451016a2e
+    --sha256: 0nq8bpzsr3fd2i59a6s6qb6slpymjh47zv57wlifjfvhh0xlgmpx
     subdir: binary
             binary/test
             cardano-crypto-class
@@ -40,16 +40,15 @@ source-repository-package
 source-repository-package
     type: git
     location: https://github.com/input-output-hk/cardano-db-sync
-    tag: 3e68f3011bb156b9b799ccf056f9a73281479f9c
-    --sha256: 1nmz8xpbwz1h3bsq8bbx53jy1np7g8gj1bl0q0yl7m3fvvhyp3zf
+    tag: 3cf868ec8c06265e4b670ac737af640d716e5ef7
+    --sha256: 152yhay3riak41saz5s5zdhlkb5c5iqpy1gw1rvwjp6rwg1mc77n
     subdir: cardano-db
-            cardano-db-sync
 
 source-repository-package
     type: git
     location: https://github.com/input-output-hk/cardano-ledger-specs
-    tag: a6ce8feddc09bf78c4378c9b4592c6509bfddc81
-    --sha256: 1f8149wynplf83haqnx124jw89kg45i3wbsm8chl7g68qkw7xhzq
+    tag: 581767d1329f3f702e332af08355e81a0f85333e
+    --sha256: 198p4v2bi36y6x512w35qycvjm7nds7jf8qh7r84pj1qsy43vf7w
     subdir: byron/chain/executable-spec
             byron/crypto
             byron/crypto/test
@@ -58,6 +57,7 @@ source-repository-package
             byron/ledger/impl/test
             semantics/executable-spec
             semantics/small-steps-test
+            shelley-ma/impl
             shelley/chain-and-ledger/dependencies/non-integer
             shelley/chain-and-ledger/executable-spec
             shelley/chain-and-ledger/shelley-spec-ledger-test
@@ -65,21 +65,23 @@ source-repository-package
 source-repository-package
     type: git
     location: https://github.com/input-output-hk/cardano-node
-    tag: a819311473563cb2ab3cd91543cf0f63facdf43e
-    --sha256: 1zj780z3j11rwbvazg79ja5110cgvskzdls81ms0dv3qy7lw4iyr
+    tag: 400d18092ce604352cf36fe5f105b0d7c78be074
+    --sha256: 19r4mamm9bxc1hz32qgsrfnrfxwp4pgnb4d28fzai3izznil03vi
     subdir: cardano-api
+            cardano-api/test
             cardano-cli
             cardano-config
             cardano-node
+            cardano-node-chairman
             hedgehog-extras
 
 source-repository-package
     type: git
     location: https://github.com/input-output-hk/cardano-prelude
-    tag: 0c5b0a6619fadf22f4d62a12154e181a6d035c1c
-    --sha256: 0qjn7xsw5py05zmq9935z91719v5i4apsizwhkwppi8dahbanrs4
-    subdir: .
-            test
+    tag: 742e8525b96bf4b66fb61a00c8298d75d7931d5e
+    --sha256: 1132r58bjgdcf7yz3n77nlrkanqcmpn5b5km4nw151yar2dgifsv
+    subdir: cardano-prelude
+            cardano-prelude-test
 
 source-repository-package
     type: git
@@ -96,8 +98,8 @@ source-repository-package
 source-repository-package
     type: git
     location: https://github.com/input-output-hk/iohk-monitoring-framework
-    tag: d4bb653fcef181befe3883490c66faed46b6197d
-    --sha256: 0j859gyrcsdnnw3yflp8l70fvddlpca4x8y2l6kqzn0a9s1qvcb3
+    tag: 563e79f28c6da5c547463391d4c58a81442e48db
+    --sha256: 1is18h9kk8j16my89q76nihvapiiff3jl8777vk7c4wl2h4zry2w
     subdir: contra-tracer
             iohk-monitoring
             plugins/backend-aggregation
@@ -109,9 +111,15 @@ source-repository-package
 
 source-repository-package
     type: git
+    location: https://github.com/input-output-hk/nothunks.git
+    tag: a4d072f973a6054518a1fc176608b7c5c8dc8917
+    --sha256: 13d44qpj2ar6mwjr8c0sxmkcqjgsrf5yybczlca2fsip5cjc16v2
+
+source-repository-package
+    type: git
     location: https://github.com/input-output-hk/ouroboros-network
-    tag: 9e498e0962044c582df0cbf2f81fa0450a67d5f7
-    --sha256: 000ypfbdc6i6plc91vrcywj4yrw5vvafn7c6993xn1pvd18xjm5g
+    tag: c2bd6814e231bfd48059f306ef486b830e524aa8
+    --sha256: 0sjp5i4szp5nf1dkwang5w8pydjx5p22by8wisihs1410rxgwd7n
     subdir: Win32-network
             cardano-client
             io-sim
@@ -125,7 +133,6 @@ source-repository-package
             ouroboros-consensus-shelley
             ouroboros-network
             ouroboros-network-framework
-            ouroboros-network-testing
             typed-protocols
             typed-protocols-examples
 
@@ -135,8 +142,6 @@ source-repository-package
     tag: 1a75bdfca014723dd5d40760fad854b3f0f37156
     --sha256: 0537bjhk9bzhvl76haswsv7xkkyzrmv5xfph3fydcd953q08hqdb
     subdir: http-client
-
--------------------------------------------------------------------------------
 
 package cardano-crypto
   tests: False

@@ -3,7 +3,7 @@ cabal-version:          >= 1.10
 -- http://haskell.org/cabal/users-guide/
 
 name:                   cardano-submit-api
-version:                3.0.0
+version:                3.1.1
 synopsis:               A web server that allows transactions to be POSTed to the cardano chain
 description:
 homepage:               https://github.com/input-output-hk/cardano-explorer
@@ -57,23 +57,15 @@ library
                       , cardano-api
                       , cardano-binary
                       , cardano-crypto-class
-                      , cardano-crypto-wrapper
                       , cardano-prelude
                       , cardano-rest-common
                       , cardano-ledger
+                      , cardano-ledger-shelley-ma
                       , containers
                       , contra-tracer
-                      , cryptonite
-                      , deepseq
-                      , extra
                       , formatting
-                      , generics-sop
-                      , hashable
                       , http-media
                       , iohk-monitoring
-                      , io-sim-classes
-                      , memory
-                      , monad-logger
                       , mtl
                       , network
                       , optparse-applicative
@@ -84,17 +76,11 @@ library
                       , ouroboros-network
                       , ouroboros-network-framework
                       , prometheus
-                      , serialise
                       , servant
                       , servant-server
                       , shelley-spec-ledger
                       , text
-                      , time
                       , transformers
-                      , transformers-except
-                      , typed-protocols
-                      , typed-protocols-examples
-                      , warp
                       , yaml
 
 executable cardano-submit-api

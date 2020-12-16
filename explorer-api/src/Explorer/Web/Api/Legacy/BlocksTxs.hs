@@ -103,10 +103,9 @@ queryCTxBriefs xs = do
 queryTxInputs :: MonadIO m => [TxId] -> SqlPersistT m [(TxId, [CTxAddressBrief])]
 queryTxInputs txids = do
     rows <- select . distinct . from $ \(tx `InnerJoin` txIn `InnerJoin` txOut `InnerJoin` txInTx) -> do
-              on (txInTx ^. TxId ==. txIn ^. TxInTxOutId)
-              on (txIn ^. TxInTxOutId ==. txOut ^. TxOutTxId
-                  &&. txIn ^. TxInTxOutIndex ==. txOut ^. TxOutIndex)
               on (tx ^. TxId ==. txIn ^. TxInTxInId)
+              on (txIn ^. TxInTxOutId ==. txOut ^. TxOutTxId &&. txIn ^. TxInTxOutIndex ==. txOut ^. TxOutIndex)
+              on (txOut ^. TxOutTxId ==. txInTx ^. TxId)
               where_ (txIn ^. TxInTxInId `in_` valList txids)
               pure (tx ^. TxId, txOut ^. TxOutAddress, txOut ^. TxOutValue, txInTx ^. TxHash, txOut ^. TxOutIndex, txInTx ^. TxSize ==. val 0)
     pure $ map collapseTxGroup (groupOn fst $ map convert rows)
