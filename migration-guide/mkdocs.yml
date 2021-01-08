@@ -1,0 +1,39 @@
+site_name: cardano-rest Migration Guide
+site_url: https://input-output-hk.github.io/cardano-rest/migration-guide/
+repo_url: https://github.com/input-output-hk/cardano-rest
+edit_uri: tree/master/migration-guide/src
+site_description: A migration guide to help moving away from cardano-rest to other more sensible solutions after deprecation.
+copyright: |
+  Copyright &copy; 2020 - present | Input Output
+docs_dir: src
+theme:
+  name: material
+  language: en
+  palette:
+    primary: deep-purple
+    accent: deep-purple
+  include_search_page: false
+  search_index_only: true
+  nav:
+    - Getting Started: index.md
+    - explorer-api: cardano-api.md
+    - submmit-api: submit-api.md
+
+markdown_extensions:
+  - markdown.extensions.admonition
+  - markdown.extensions.codehilite:
+      guess_lang: false
+  - markdown.extensions.toc:
+      permalink: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.tasklist:
+      custom_checkbox: true

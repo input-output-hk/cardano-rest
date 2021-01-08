@@ -1,0 +1,3 @@
+default: all
+
+.PHONY: all
