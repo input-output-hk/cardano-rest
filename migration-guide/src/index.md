@@ -2,10 +2,10 @@
 
 ## End of life
 
-After several years of service, cardano-rest is now considered deprecated. There will be no further development nor support done on this component stack after the [END OF LIFE DATE]. 
+After several years of service, cardano-rest is now considered deprecated. There will be no further development nor support done on this component stack after the [END OF LIFE DATE].
 Note that it **will** however survive the Mary hardfork going happening soon. Clients currently integrated with this component are therefore encouraged to upgrade their integration to
-use either [cardano-graphql](https://github.com/input-output-hk/cardano-graphql) or [cardano-rosetta](https://github.com/input-output-hk/cardano-rosetta) which are more capable, 
-production-ready and better documented components still under active development. 
+use either [cardano-graphql](https://github.com/input-output-hk/cardano-graphql) or [cardano-rosetta](https://github.com/input-output-hk/cardano-rosetta) which are more capable,
+production-ready and better documented components still under active development.
 
 !!! info
     This guide is meant to help existing customers migrating from cardano-rest to new components by showing how information from cardano-rest can be retrieved from each components. Note that
