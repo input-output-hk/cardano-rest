@@ -420,8 +420,14 @@ Get block's summary information.
 
 === "cardano-rosetta"
 
-    !!! warning
-        Not available in Rosetta!
+                    curl -X POST http://localhost:8080/block \
+                    -H "Content-Type: application/json" \
+                    -d '{ "network_identifier": {
+                    "blockchain": "cardano", 
+                    "network": "mainnet" },
+                    "metadata": {},
+                    "block_identifier": {
+                    "index": "$INDEX" }}' | jq
 
 
 #### [/api/blocks/txs/{blockHash}](https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_blocksTxs)
@@ -603,8 +609,15 @@ Get brief information about transactions.
 
 === "cardano-rosetta"
 
-    !!! warning
-        Not available in Rosetta!
+                      curl -X POST http://localhost:8080/block \
+                      -H "Content-Type: application/json" \
+                      -d '{ "network_identifier": {
+                      "blockchain": "cardano", 
+                      "network": "mainnet" },
+                      "metadata": {},
+                      "block_identifier": {
+                      "index": "$INDEX" }}' | jq
+
 
 ## Transactions
 
@@ -1032,7 +1045,21 @@ Get information about the N latest transactions.
 
 === "cardano-rosetta"
 
-    TODO
+                    curl -X POST http://localhost:8080/network/status \
+                    -H "Content-Type: application/json" \
+                    -d '{ "network_identifier": {
+                    "blockchain": "cardano", 
+                    "network": "mainnet" }, 
+                    "metadata": {} }' | jq
+
+                    curl -X POST http://localhost:8080/block \
+                    -H "Content-Type: application/json" \
+                    -d '{ "network_identifier": {
+                    "blockchain": "cardano", 
+                    "network": "mainnet" },
+                    "metadata": {},
+                    "block_identifier": {
+                    "index": "$block_index" }}' | jq
 
 #### [/api/txs/summary/{txId}](https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_txsSummary)
 
@@ -1218,7 +1245,22 @@ Get summary information about a transaction.
 
 === "cardano-rosetta"
 
-    TODO
+                    curl -X POST http://localhost:8080/block \ 
+                    -H "Content-Type: application/json" \ 
+                    -d '{ "network_identifier": { 
+                    "blockchain": "cardano", 
+                    "network": "mainnet" }, 
+                    "metadata": {}, 
+                    "block_identifier": { "index": "$block_index" }}' | jq. 
+
+                    curl -X POST http://localhost:8080/transaction \ 
+                    -H "Content-Type: application/json" \ 
+                    -d '{ "network_identifier": { 
+                    "blockchain": "cardano", 
+                    "network": "mainnet" }, 
+                    "metadata": {}, 
+                    "block_identifier": { "index": "$block_index", "hash": "$block_hash" }, 
+                    "transaction_identifier": { "hash": "$tx_hash"}}' | jq
 
 #### [/api/stats/txs](https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_statsTxs)
 
@@ -1290,7 +1332,17 @@ Get statistics about transactions.
 
 === "cardano-rosetta"
 
-    TODO
+                  curl -X POST http://localhost:8080/transaction \
+                  -H "Content-Type: application/json" \
+                  -d '{ "network_identifier": {
+                  "blockchain": "cardano", 
+                  "network": "mainnet" },
+                  "metadata": {},
+                  "block_identifier": {
+                  "index": "2422536",
+                  "hash": "$block_hash" },
+                  "transaction_identifier": {
+                  "hash": "$tx_hash"}}' | jq
 
 ## Addresses
 
@@ -1542,7 +1594,15 @@ Get summary information about an address.
 
 === "cardano-rosetta"
 
-    TODO
+                  curl -X POST http://localhost:8080/account/balance \
+                  -H "Content-Type: application/json" \
+                  -d '{ "network_identifier": {
+                  "blockchain": "cardano", 
+                  "network": "mainnet" },
+                  "metadata": {},
+                  "account_identifier": {
+                  "address": "$address" },
+                  "metadata": {}}' | jq
 
 #### [/api/block/{blockHash}/address/{address}](https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_blockAddress)
 
@@ -1752,7 +1812,21 @@ Get address information specific to a block.
 
 === "cardano-rosetta"
 
-    TODO
+                  curl -X POST http://localhost:8080/account/balance \
+                  -H "Content-Type: application/json" \
+                  -d '{ "network_identifier": {
+                  "blockchain": "cardano", 
+                  "network": "mainnet" },
+                  "metadata": {},
+                  "account_identifier": {
+                  "address": "$address" },
+                  "metadata": {}, 
+                  "block_identifier": {
+                  "index": "$block_index",
+                  "hash": "$block_hash" },
+                  "currencies": {
+                  "symbol": "ada", 
+                  "decimals": 8 }}' | jq
 
 ## Epochs
 
