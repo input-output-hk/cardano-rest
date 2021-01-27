@@ -149,7 +149,7 @@ blocksSummary (CHash blkHashTxt) = runExceptT $ do
                }
             , cbsPrevHash = CHash $ bsBase16Encode prevHash
             , cbsNextHash = fmap (CHash . bsBase16Encode) nextHash
-            , cbsMerkleRoot = CHash $ maybe "" bsBase16Encode (blockMerkelRoot blk)
+            , cbsMerkleRoot = CHash $ maybe "" bsBase16Encode (blockMerkleRoot blk)
             }
         Nothing -> throwE $ Internal "slot missing"
     _ -> throwE $ Internal "No block found"
