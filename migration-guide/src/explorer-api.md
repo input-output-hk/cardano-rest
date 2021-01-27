@@ -285,7 +285,8 @@ Get the list of blocks, contained in pages.
 
 === "cardano-rosetta"
 
-    TODO
+!!! info
+    Neither GraphQL, nor Rosetta are paged, but instead allow to set a limit and an offset to queries.
 
 #### [/api/blocks/pages/total](https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_blocksPagesTotal)
 
@@ -420,15 +421,74 @@ Get block's summary information.
 
 === "cardano-rosetta"
 
-                    curl -X POST http://localhost:8080/block \
-                    -H "Content-Type: application/json" \
-                    -d '{ "network_identifier": {
-                    "blockchain": "cardano", 
-                    "network": "mainnet" },
-                    "metadata": {},
-                    "block_identifier": {
-                    "index": "$INDEX" }}' | jq
+ ```console
+    $ curl -X POST 'http://localhost:8080/block' -H "Content-Type: application/json" -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
+    ```
 
+    <details>
+      <summary>see JSON response</summary>
+    ```json
+{
+  "block": {
+    "block_identifier": {
+      "index": 5264122,
+      "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a"
+    },
+    "parent_block_identifier": {
+      "index": 5264121,
+      "hash": "ff677921d61672d2fb14025f6d8d8b1f93d89266986f045d48ddc674459134ea"
+    },
+    "timestamp": 1611751783000,
+    "transactions": [
+      {
+        "transaction_identifier": {
+          "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"
+        },
+        "operations": [
+          {
+            "operation_identifier": {
+              "index": 0
+            },
+            "type": "input",
+            "status": "success",
+            "account": {
+              "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E"
+            },
+            "amount": {
+              "value": "-4998821898",
+              "currency": {
+                "symbol": "ADA",
+                "decimals": 6
+              }
+            },
+            "coin_change": {
+              "coin_identifier": {
+                "identifier": "002da5ef961fd9d826332db916fe7de5e198b8a5f00f9c535f9c329bb14f01e8:0"
+              },
+              "coin_action": "coin_spent"
+            }
+          },
+ 
+            "coin_change": {
+              "coin_identifier": {
+                "identifier": "03bd6f6b65f4020b0d35a24b79809e1d5e9db11d67260aa465f2bb281912d5ea:0"
+              },
+              "coin_action": "coin_spent"
+            }
+          },
+  
+    ],
+    "metadata": {
+      "transactionsCount": 6,
+      "createdBy": "ShelleyGenesis-1d4f2e1fda43070d",
+      "size": 9559,
+      "epochNo": 244,
+      "slotNo": 20185492
+    }
+  }
+}
+    ```
+    </details>
 
 #### [/api/blocks/txs/{blockHash}](https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_blocksTxs)
 
@@ -609,14 +669,75 @@ Get brief information about transactions.
 
 === "cardano-rosetta"
 
-                      curl -X POST http://localhost:8080/block \
-                      -H "Content-Type: application/json" \
-                      -d '{ "network_identifier": {
-                      "blockchain": "cardano", 
-                      "network": "mainnet" },
-                      "metadata": {},
-                      "block_identifier": {
-                      "index": "$INDEX" }}' | jq
+```console
+    $ curl -X POST 'http://localhost:8080/block' -H "Content-Type: application/json" -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
+    ```
+
+    <details>
+      <summary>see JSON response</summary>
+    ```json
+{
+  "block": {
+    "block_identifier": {
+      "index": 5264122,
+      "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a"
+    },
+    "parent_block_identifier": {
+      "index": 5264121,
+      "hash": "ff677921d61672d2fb14025f6d8d8b1f93d89266986f045d48ddc674459134ea"
+    },
+    "timestamp": 1611751783000,
+    "transactions": [
+      {
+        "transaction_identifier": {
+          "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"
+        },
+        "operations": [
+          {
+            "operation_identifier": {
+              "index": 0
+            },
+            "type": "input",
+            "status": "success",
+            "account": {
+              "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E"
+            },
+            "amount": {
+              "value": "-4998821898",
+              "currency": {
+                "symbol": "ADA",
+                "decimals": 6
+              }
+            },
+            "coin_change": {
+              "coin_identifier": {
+                "identifier": "002da5ef961fd9d826332db916fe7de5e198b8a5f00f9c535f9c329bb14f01e8:0"
+              },
+              "coin_action": "coin_spent"
+            }
+          },
+ 
+            "coin_change": {
+              "coin_identifier": {
+                "identifier": "03bd6f6b65f4020b0d35a24b79809e1d5e9db11d67260aa465f2bb281912d5ea:0"
+              },
+              "coin_action": "coin_spent"
+            }
+          },
+  
+    ],
+    "metadata": {
+      "transactionsCount": 6,
+      "createdBy": "ShelleyGenesis-1d4f2e1fda43070d",
+      "size": 9559,
+      "epochNo": 244,
+      "slotNo": 20185492
+    }
+  }
+}
+    ```
+    </details>
+
 
 
 ## Transactions
@@ -1045,21 +1166,101 @@ Get information about the N latest transactions.
 
 === "cardano-rosetta"
 
-                    curl -X POST http://localhost:8080/network/status \
-                    -H "Content-Type: application/json" \
-                    -d '{ "network_identifier": {
-                    "blockchain": "cardano", 
-                    "network": "mainnet" }, 
-                    "metadata": {} }' | jq
+ ```console
+    $ curl -X POST 'http://localhost:8080/network/status' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {} }' | jq
+    ```
 
-                    curl -X POST http://localhost:8080/block \
-                    -H "Content-Type: application/json" \
-                    -d '{ "network_identifier": {
-                    "blockchain": "cardano", 
-                    "network": "mainnet" },
-                    "metadata": {},
-                    "block_identifier": {
-                    "index": "$block_index" }}' | jq
+    <details>
+      <summary>see JSON response</summary>
+    ```json
+{
+  "current_block_identifier": {
+    "index": 5264121,
+    "hash": "8590ee232c112db080b89944d5a6143a319392fe8dfc8ec231fd1b79218c8f40"
+  },
+  "current_block_timestamp": 1611753255000,
+  "genesis_block_identifier": {
+    "index": 0,
+    "hash": "5f20df933584822601f9e3f8c024eb5eb252fe8cefb24d1317dc3d432e940ebb"
+  },
+  "peers": [
+    {
+      "peer_id": "relays-new.cardano-mainnet.iohk.io"
+    }
+  ]
+}
+    ```
+    </details>
+    
+ ```console
+    $ curl -X POST 'http://localhost:8080/block' -H "Content-Type: application/json" -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
+    ```
+
+    <details>
+      <summary>see JSON response</summary>
+    ```json
+{
+  "block": {
+    "block_identifier": {
+      "index": 5264122,
+      "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a"
+    },
+    "parent_block_identifier": {
+      "index": 5264121,
+      "hash": "ff677921d61672d2fb14025f6d8d8b1f93d89266986f045d48ddc674459134ea"
+    },
+    "timestamp": 1611751783000,
+    "transactions": [
+      {
+        "transaction_identifier": {
+          "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"
+        },
+        "operations": [
+          {
+            "operation_identifier": {
+              "index": 0
+            },
+            "type": "input",
+            "status": "success",
+            "account": {
+              "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E"
+            },
+            "amount": {
+              "value": "-4998821898",
+              "currency": {
+                "symbol": "ADA",
+                "decimals": 6
+              }
+            },
+            "coin_change": {
+              "coin_identifier": {
+                "identifier": "002da5ef961fd9d826332db916fe7de5e198b8a5f00f9c535f9c329bb14f01e8:0"
+              },
+              "coin_action": "coin_spent"
+            }
+          },
+ 
+            "coin_change": {
+              "coin_identifier": {
+                "identifier": "03bd6f6b65f4020b0d35a24b79809e1d5e9db11d67260aa465f2bb281912d5ea:0"
+              },
+              "coin_action": "coin_spent"
+            }
+          },
+  
+    ],
+    "metadata": {
+      "transactionsCount": 6,
+      "createdBy": "ShelleyGenesis-1d4f2e1fda43070d",
+      "size": 9559,
+      "epochNo": 244,
+      "slotNo": 20185492
+    }
+  }
+}
+    ```
+    </details>
+
 
 #### [/api/txs/summary/{txId}](https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_txsSummary)
 
@@ -1245,22 +1446,137 @@ Get summary information about a transaction.
 
 === "cardano-rosetta"
 
-                    curl -X POST http://localhost:8080/block \ 
-                    -H "Content-Type: application/json" \ 
-                    -d '{ "network_identifier": { 
-                    "blockchain": "cardano", 
-                    "network": "mainnet" }, 
-                    "metadata": {}, 
-                    "block_identifier": { "index": "$block_index" }}' | jq. 
+ ```console
+    $ curl -X POST 'http://localhost:8080/block' -H "Content-Type: application/json" -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
+    ```
 
-                    curl -X POST http://localhost:8080/transaction \ 
-                    -H "Content-Type: application/json" \ 
-                    -d '{ "network_identifier": { 
-                    "blockchain": "cardano", 
-                    "network": "mainnet" }, 
-                    "metadata": {}, 
-                    "block_identifier": { "index": "$block_index", "hash": "$block_hash" }, 
-                    "transaction_identifier": { "hash": "$tx_hash"}}' | jq
+    <details>
+      <summary>see JSON response</summary>
+    ```json
+{
+  "block": {
+    "block_identifier": {
+      "index": 5264122,
+      "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a"
+    },
+    "parent_block_identifier": {
+      "index": 5264121,
+      "hash": "ff677921d61672d2fb14025f6d8d8b1f93d89266986f045d48ddc674459134ea"
+    },
+    "timestamp": 1611751783000,
+    "transactions": [
+      {
+        "transaction_identifier": {
+          "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"
+        },
+        "operations": [
+          {
+            "operation_identifier": {
+              "index": 0
+            },
+            "type": "input",
+            "status": "success",
+            "account": {
+              "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E"
+            },
+            "amount": {
+              "value": "-4998821898",
+              "currency": {
+                "symbol": "ADA",
+                "decimals": 6
+              }
+            },
+            "coin_change": {
+              "coin_identifier": {
+                "identifier": "002da5ef961fd9d826332db916fe7de5e198b8a5f00f9c535f9c329bb14f01e8:0"
+              },
+              "coin_action": "coin_spent"
+            }
+          },
+ 
+            "coin_change": {
+              "coin_identifier": {
+                "identifier": "03bd6f6b65f4020b0d35a24b79809e1d5e9db11d67260aa465f2bb281912d5ea:0"
+              },
+              "coin_action": "coin_spent"
+            }
+          },
+  
+    ],
+    "metadata": {
+      "transactionsCount": 6,
+      "createdBy": "ShelleyGenesis-1d4f2e1fda43070d",
+      "size": 9559,
+      "epochNo": 244,
+      "slotNo": 20185492
+    }
+  }
+}
+    ```
+    </details>
+
+ ```console
+    $ curl -X POST 'http://localhost:8080/block/transaction' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": { "index": "5264122", "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a" }, "transaction_identifier": { "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"}}' | jq
+    ```
+
+    <details>
+      <summary>see JSON response</summary>
+    ```json
+{
+  "transaction": {
+    "transaction_identifier": {
+      "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"
+    },
+    "operations": [
+      {
+        "operation_identifier": {
+          "index": 0
+        },
+        "type": "input",
+        "status": "success",
+        "account": {
+          "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E"
+        },
+        "amount": {
+          "value": "-4998821898",
+          "currency": {
+            "symbol": "ADA",
+            "decimals": 6
+          }
+        },
+        "coin_change": {
+          "coin_identifier": {
+            "identifier": "002da5ef961fd9d826332db916fe7de5e198b8a5f00f9c535f9c329bb14f01e8:0"
+          },
+          "coin_action": "coin_spent"
+        }
+      },
+      {
+        "operation_identifier": {
+          "index": 1
+        },
+        "type": "input",
+        "status": "success",
+        "account": {
+          "address": "DdzFFzCqrhspNxbM9rETXrrW3XL4WcuGgajfxzH3j3R7UQr4AgicTVCMbybX6naYn8ngYAgpGvRyyGecsx26fHgS43a71yUJRmjcdvJE"
+        },
+        "amount": {
+          "value": "-4000000000",
+          "currency": {
+            "symbol": "ADA",
+            "decimals": 6
+          }
+        },
+        "coin_change": {
+          "coin_identifier": {
+            "identifier": "0151758ddf6525b9c4fb5dc00a10abb519bff36894716bc1377ba400ae995f28:0"
+          },
+          "coin_action": "coin_spent"
+        }
+      },
+      
+    ```
+    </details>
 
 #### [/api/stats/txs](https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_statsTxs)
 
@@ -1332,18 +1648,69 @@ Get statistics about transactions.
 
 === "cardano-rosetta"
 
-                  curl -X POST http://localhost:8080/transaction \
-                  -H "Content-Type: application/json" \
-                  -d '{ "network_identifier": {
-                  "blockchain": "cardano", 
-                  "network": "mainnet" },
-                  "metadata": {},
-                  "block_identifier": {
-                  "index": "2422536",
-                  "hash": "$block_hash" },
-                  "transaction_identifier": {
-                  "hash": "$tx_hash"}}' | jq
+ ```console
+    $ curl -X POST 'http://localhost:8080/block/transaction' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": { "index": "5264122", "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a" }, "transaction_identifier": { "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"}}' | jq
+    ```
 
+    <details>
+      <summary>see JSON response</summary>
+    ```json
+{
+  "transaction": {
+    "transaction_identifier": {
+      "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"
+    },
+    "operations": [
+      {
+        "operation_identifier": {
+          "index": 0
+        },
+        "type": "input",
+        "status": "success",
+        "account": {
+          "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E"
+        },
+        "amount": {
+          "value": "-4998821898",
+          "currency": {
+            "symbol": "ADA",
+            "decimals": 6
+          }
+        },
+        "coin_change": {
+          "coin_identifier": {
+            "identifier": "002da5ef961fd9d826332db916fe7de5e198b8a5f00f9c535f9c329bb14f01e8:0"
+          },
+          "coin_action": "coin_spent"
+        }
+      },
+      {
+        "operation_identifier": {
+          "index": 1
+        },
+        "type": "input",
+        "status": "success",
+        "account": {
+          "address": "DdzFFzCqrhspNxbM9rETXrrW3XL4WcuGgajfxzH3j3R7UQr4AgicTVCMbybX6naYn8ngYAgpGvRyyGecsx26fHgS43a71yUJRmjcdvJE"
+        },
+        "amount": {
+          "value": "-4000000000",
+          "currency": {
+            "symbol": "ADA",
+            "decimals": 6
+          }
+        },
+        "coin_change": {
+          "coin_identifier": {
+            "identifier": "0151758ddf6525b9c4fb5dc00a10abb519bff36894716bc1377ba400ae995f28:0"
+          },
+          "coin_action": "coin_spent"
+        }
+      },
+      
+    ```
+    </details>
+    
 ## Addresses
 
 #### [/api/addresses/summary/{address}](https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_addressSummary)
@@ -1603,6 +1970,32 @@ Get summary information about an address.
                   "account_identifier": {
                   "address": "$address" },
                   "metadata": {}}' | jq
+                  
+  ```console
+    $ curl -X POST 'http://localhost:8080/account/balance' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "account_identifier": { "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E" }, "metadata": {}}' | jq
+    ```
+
+    <details>
+      <summary>see JSON response</summary>
+    ```json
+{
+  "block_identifier": {
+    "index": 5264292,
+    "hash": "3dc53a1991c70a160666f597c71cb751c2910ef3e14581e699e8011de9fc6839"
+  },
+  "balances": [
+    {
+      "value": "0",
+      "currency": {
+        "symbol": "ADA",
+        "decimals": 6
+      }
+    }
+  ],
+  "coins": []
+}  
+    ```
+    </details>
 
 #### [/api/block/{blockHash}/address/{address}](https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_blockAddress)
 
@@ -1812,21 +2205,33 @@ Get address information specific to a block.
 
 === "cardano-rosetta"
 
-                  curl -X POST http://localhost:8080/account/balance \
-                  -H "Content-Type: application/json" \
-                  -d '{ "network_identifier": {
-                  "blockchain": "cardano", 
-                  "network": "mainnet" },
-                  "metadata": {},
-                  "account_identifier": {
-                  "address": "$address" },
-                  "metadata": {}, 
-                  "block_identifier": {
-                  "index": "$block_index",
-                  "hash": "$block_hash" },
-                  "currencies": {
-                  "symbol": "ada", 
-                  "decimals": 8 }}' | jq
+ ```console
+    $ curl -X POST 'http://localhost:8080/account/balance' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "account_identifier": { "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E" }, "metadata": {}, "block_identifier": {"index": "5264122","hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a" },"currencies": {"symbol": "ada", "decimals": 8 }}' | jq
+    ```
+
+    <details>
+      <summary>see JSON response</summary>
+    ```json
+{
+  "block_identifier": {
+    "index": 5264292,
+    "hash": "3dc53a1991c70a160666f597c71cb751c2910ef3e14581e699e8011de9fc6839"
+  },
+  "balances": [
+    {
+      "value": "0",
+      "currency": {
+        "symbol": "ADA",
+        "decimals": 6
+      }
+    }
+  ],
+  "coins": []
+}  
+    ```
+    </details>
+
+
 
 ## Epochs
 
