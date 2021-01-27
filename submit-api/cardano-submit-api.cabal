@@ -3,7 +3,7 @@ cabal-version:          >= 1.10
 -- http://haskell.org/cabal/users-guide/
 
 name:                   cardano-submit-api
-version:                3.1.1
+version:                3.1.2
 synopsis:               A web server that allows transactions to be POSTed to the cardano chain
 description:
 homepage:               https://github.com/input-output-hk/cardano-explorer
@@ -12,7 +12,7 @@ license:                Apache-2.0
 license-file:           LICENSE
 author:                 IOHK Engineering Team
 maintainer:             operations@iohk.io
-copyright:              (c) 2019 IOHK
+copyright:              (c) 2019-2021 IOHK
 category:               Language
 build-type:             Simple
 extra-source-files:     CHANGELOG.md
