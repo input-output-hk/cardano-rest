@@ -315,7 +315,7 @@ Get block's summary information.
 === "cardano-rest"
 
     ```console
-    $ $BASEURL/api/blocks/summary/1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6
+    $ curl $BASEURL/api/blocks/summary/1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6
     ```
 
     <details>
@@ -389,9 +389,11 @@ Get block's summary information.
     ```
 
     ```console
-    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getBlock($hash: Hash32Hex!) {\n  blocks(limit: 1, where: { hash: { _eq: $hash } }) {\n    slotInEpoch # cbeEpoch\n    slotNo # cbeSlot\n    number # cbeBlkHeight\n    hash # cbeBlkHash\n    forgedAt # cbeTimeIssued\n    transactionsCount # cbeTxNum\n    transactions_aggregate {\n      aggregate {\n        sum {\n          totalOutput # cbeTotalSent\n        }\n      }\n    }\n    size # cbeSize\n    slotLeader {\n      hash # cbeBlockLead\n    }\n    fees # cbeFees\n    previousBlock {\n      hash # cbsPrevHash\n    }\n    nextBlock {\n      hash # cbsNextHash\n    }\n    merkelRoot # cbsMerkleRoot\n  }\n}","variables":{"hash":"1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6"}}' --compressed
+    $ curl "$BASEURL" \
+      -H 'Content-Type: application/json' \
+      -H 'Accept: application/json' \
+      --data-binary '{"variables":{"hash":"1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6"},"query":"query getBlock($hash: Hash32Hex!) { blocks(limit: 1, where: { hash: { _eq: $hash } }) { slotInEpoch slotNo number hash forgedAt transactionsCount transactions_aggregate { aggregate { sum { totalOutput } } } size slotLeader { hash } fees previousBlock { hash } nextBlock { hash } merkelRoot }}"}' 
     ```
-
 
     <details>
       <summary>see JSON response</summary>
@@ -434,72 +436,67 @@ Get block's summary information.
 
 === "cardano-rosetta"
 
- ```console
-    $ curl -X POST '$BASEURL/block' -H "Content-Type: application/json" -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
+    ```console
+    $ curl -X POST '$BASEURL/block' \
+      -H "Content-Type: application/json" \
+      -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
     ```
 
     <details>
       <summary>see JSON response</summary>
     ```json
-{
-  "block": {
-    "block_identifier": {
-      "index": 5264122,
-      "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a"
-    },
-    "parent_block_identifier": {
-      "index": 5264121,
-      "hash": "ff677921d61672d2fb14025f6d8d8b1f93d89266986f045d48ddc674459134ea"
-    },
-    "timestamp": 1611751783000,
-    "transactions": [
-      {
-        "transaction_identifier": {
-          "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"
+    {
+      "block": {
+        "block_identifier": {
+          "index": 5264122,
+          "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a"
         },
-        "operations": [
+        "parent_block_identifier": {
+          "index": 5264121,
+          "hash": "ff677921d61672d2fb14025f6d8d8b1f93d89266986f045d48ddc674459134ea"
+        },
+        "timestamp": 1611751783000,
+        "transactions": [
           {
-            "operation_identifier": {
-              "index": 0
+            "transaction_identifier": {
+              "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"
             },
-            "type": "input",
-            "status": "success",
-            "account": {
-              "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E"
-            },
-            "amount": {
-              "value": "-4998821898",
-              "currency": {
-                "symbol": "ADA",
-                "decimals": 6
+            "operations": [
+              {
+                "operation_identifier": {
+                  "index": 0
+                },
+                "type": "input",
+                "status": "success",
+                "account": {
+                  "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E"
+                },
+                "amount": {
+                  "value": "-4998821898",
+                  "currency": {
+                    "symbol": "ADA",
+                    "decimals": 6
+                  }
+                },
+                "coin_change": {
+                  "coin_identifier": {
+                    "identifier": "002da5ef961fd9d826332db916fe7de5e198b8a5f00f9c535f9c329bb14f01e8:0"
+                  },
+                  "coin_action": "coin_spent"
+                }
               }
-            },
-            "coin_change": {
-              "coin_identifier": {
-                "identifier": "002da5ef961fd9d826332db916fe7de5e198b8a5f00f9c535f9c329bb14f01e8:0"
-              },
-              "coin_action": "coin_spent"
+            ],
+            "metadata": {
+              "transactionsCount": 6,
+              "createdBy": "ShelleyGenesis-1d4f2e1fda43070d",
+              "size": 9559,
+              "epochNo": 244,
+              "slotNo": 20185492
             }
-          },
- 
-            "coin_change": {
-              "coin_identifier": {
-                "identifier": "03bd6f6b65f4020b0d35a24b79809e1d5e9db11d67260aa465f2bb281912d5ea:0"
-              },
-              "coin_action": "coin_spent"
-            }
-          },
-  
-    ],
-    "metadata": {
-      "transactionsCount": 6,
-      "createdBy": "ShelleyGenesis-1d4f2e1fda43070d",
-      "size": 9559,
-      "epochNo": 244,
-      "slotNo": 20185492
+          }
+        ]
+      }
     }
-  }
-}
     ```
     </details>
 
@@ -510,7 +507,7 @@ Get brief information about transactions.
 === "cardano-rest"
 
     ```console
-    $ $BASEURL/api/blocks/txs/1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6
+    $ curl $BASEURL/api/blocks/txs/1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6
     ```
 
     <details>
@@ -615,9 +612,11 @@ Get brief information about transactions.
     ```
 
     ```console
-    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getBlockTxs($hash: Hash32Hex!) {\n  blocks(limit: 1, where: { hash: { _eq: $hash } }) {\n    transactions {\n      hash # ctbId\n      includedAt # ctbTimeIssued\n      fee # ctbFees\n      inputs {\n        # ctbInputs\n        address # ctaAddress\n        value # ctaAmount\n        sourceTxHash # ctaTxHash\n        sourceTxIndex # ctaTxIndex\n      }\n      inputs_aggregate {\n        aggregate {\n          sum {\n            value # ctbInputSum\n          }\n        }\n      }\n      outputs { # ctbOutputs\n        address # ctaAddress\n        index # ctaTxIndex\n        value # ctaAmount\n        transaction {\n          hash # ctaTxHash\n        }\n      }\n      outputs_aggregate {\n        aggregate {\n          sum {\n            value # ctbOutputSum\n          }\n        }\n      }\n    }\n  }\n}","variables":{"hash":"1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6"}}' --compressed
+    $ curl "$BASEURL" \
+      -H 'Content-Type: application/json' \
+      -H 'Accept: application/json' \
+     --data-binary '{"variables":{"hash":"1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6"}, "query":"query getBlockTxs($hash: Hash32Hex!) { blocks(limit: 1, where: { hash: { _eq: $hash } }) { transactions { hash includedAt fee inputs { address value sourceTxHash sourceTxIndex } inputs_aggregate { aggregate { sum { value } } } outputs { address index value transaction { hash } } outputs_aggregate { aggregate { sum { value } } } } }}"}' 
     ```
-
 
     <details>
       <summary>see JSON response</summary>
@@ -682,76 +681,69 @@ Get brief information about transactions.
 
 === "cardano-rosetta"
 
-```console
-    $ curl -X POST '$BASEURL/block' -H "Content-Type: application/json" -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
+    ```console
+    $ curl -X POST '$BASEURL/block' \
+      -H "Content-Type: application/json" \
+      -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
     ```
 
     <details>
       <summary>see JSON response</summary>
     ```json
-{
-  "block": {
-    "block_identifier": {
-      "index": 5264122,
-      "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a"
-    },
-    "parent_block_identifier": {
-      "index": 5264121,
-      "hash": "ff677921d61672d2fb14025f6d8d8b1f93d89266986f045d48ddc674459134ea"
-    },
-    "timestamp": 1611751783000,
-    "transactions": [
-      {
-        "transaction_identifier": {
-          "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"
+    {
+      "block": {
+        "block_identifier": {
+          "index": 5264122,
+          "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a"
         },
-        "operations": [
+        "parent_block_identifier": {
+          "index": 5264121,
+          "hash": "ff677921d61672d2fb14025f6d8d8b1f93d89266986f045d48ddc674459134ea"
+        },
+        "timestamp": 1611751783000,
+        "transactions": [
           {
-            "operation_identifier": {
-              "index": 0
+            "transaction_identifier": {
+              "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"
             },
-            "type": "input",
-            "status": "success",
-            "account": {
-              "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E"
-            },
-            "amount": {
-              "value": "-4998821898",
-              "currency": {
-                "symbol": "ADA",
-                "decimals": 6
+            "operations": [
+              {
+                "operation_identifier": {
+                  "index": 0
+                },
+                "type": "input",
+                "status": "success",
+                "account": {
+                  "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E"
+                },
+                "amount": {
+                  "value": "-4998821898",
+                  "currency": {
+                    "symbol": "ADA",
+                    "decimals": 6
+                  }
+                },
+                "coin_change": {
+                  "coin_identifier": {
+                    "identifier": "002da5ef961fd9d826332db916fe7de5e198b8a5f00f9c535f9c329bb14f01e8:0"
+                  },
+                  "coin_action": "coin_spent"
+                }
               }
-            },
-            "coin_change": {
-              "coin_identifier": {
-                "identifier": "002da5ef961fd9d826332db916fe7de5e198b8a5f00f9c535f9c329bb14f01e8:0"
-              },
-              "coin_action": "coin_spent"
+            ],
+            "metadata": {
+              "transactionsCount": 6,
+              "createdBy": "ShelleyGenesis-1d4f2e1fda43070d",
+              "size": 9559,
+              "epochNo": 244,
+              "slotNo": 20185492
             }
-          },
- 
-            "coin_change": {
-              "coin_identifier": {
-                "identifier": "03bd6f6b65f4020b0d35a24b79809e1d5e9db11d67260aa465f2bb281912d5ea:0"
-              },
-              "coin_action": "coin_spent"
-            }
-          },
-  
-    ],
-    "metadata": {
-      "transactionsCount": 6,
-      "createdBy": "ShelleyGenesis-1d4f2e1fda43070d",
-      "size": 9559,
-      "epochNo": 244,
-      "slotNo": 20185492
+          }
+        ]
+      }
     }
-  }
-}
     ```
     </details>
-
-
 
 ## Transactions
 
@@ -762,7 +754,7 @@ Get information about the N latest transactions.
 === "cardano-rest"
 
     ```console
-    $ $BASEURL/api/txs/last
+    $ curl $BASEURL/api/txs/last
     ```
 
     <details>
@@ -942,7 +934,10 @@ Get information about the N latest transactions.
     ```
 
     ```console
-    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getTxs($limit: Int!) {\n  transactions(limit: $limit, order_by: { includedAt: desc }) {\n    hash # cteId\n    includedAt # cteTimeIssued\n    outputs_aggregate {\n      aggregate {\n        sum {\n          value # cteAmount\n        }\n      }\n    }\n  }\n}\n","variables":{"limit":20}}' --compressed
+    $ curl "$BASEURL" \
+      -H 'Content-Type: application/json' 
+      -H 'Accept: application/json' 
+      --data-binary '{"variables":{"limit":20},"query":"query getTxs($limit: Int!) { transactions(limit: $limit, order_by: { includedAt: desc }) { hash includedAt outputs_aggregate { aggregate { sum { value } } } }}"}' 
     ```
 
     <details>
@@ -1179,102 +1174,77 @@ Get information about the N latest transactions.
 
 === "cardano-rosetta"
 
- ```console
-    $ curl -X POST '$BASEURL/network/status' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {} }' | jq
+    ```console
+    # Get the current block identifier
+    $ curl -X POST '$BASEURL/network/status' \
+      -H "Content-Type: application/json" \
+      -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {} }' | jq .current_block_identifier.index 
+    5264122
+
+    # Fetch information from it
+    $ curl -X POST '$BASEURL/block' \
+      -H "Content-Type: application/json" \
+      -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
     ```
 
     <details>
       <summary>see JSON response</summary>
     ```json
-{
-  "current_block_identifier": {
-    "index": 5264121,
-    "hash": "8590ee232c112db080b89944d5a6143a319392fe8dfc8ec231fd1b79218c8f40"
-  },
-  "current_block_timestamp": 1611753255000,
-  "genesis_block_identifier": {
-    "index": 0,
-    "hash": "5f20df933584822601f9e3f8c024eb5eb252fe8cefb24d1317dc3d432e940ebb"
-  },
-  "peers": [
     {
-      "peer_id": "relays-new.cardano-mainnet.iohk.io"
+      "block": {
+        "block_identifier": {
+          "index": 5264122,
+          "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a"
+        },
+        "parent_block_identifier": {
+          "index": 5264121,
+          "hash": "ff677921d61672d2fb14025f6d8d8b1f93d89266986f045d48ddc674459134ea"
+        },
+        "timestamp": 1611751783000,
+        "transactions": [
+          {
+            "transaction_identifier": {
+              "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"
+            },
+            "operations": [
+              {
+                "operation_identifier": {
+                  "index": 0
+                },
+                "type": "input",
+                "status": "success",
+                "account": {
+                  "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E"
+                },
+                "amount": {
+                  "value": "-4998821898",
+                  "currency": {
+                    "symbol": "ADA",
+                    "decimals": 6
+                  }
+                },
+                "coin_change": {
+                  "coin_identifier": {
+                    "identifier": "002da5ef961fd9d826332db916fe7de5e198b8a5f00f9c535f9c329bb14f01e8:0"
+                  },
+                  "coin_action": "coin_spent"
+                }
+              }
+            ],
+            "metadata": {
+              "transactionsCount": 6,
+              "createdBy": "ShelleyGenesis-1d4f2e1fda43070d",
+              "size": 9559,
+              "epochNo": 244,
+              "slotNo": 20185492
+            }
+          }
+        ]
+      }
     }
-  ]
-}
     ```
     </details>
     
- ```console
-    $ curl -X POST '$BASEURL/block' -H "Content-Type: application/json" -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
-    ```
-
-    <details>
-      <summary>see JSON response</summary>
-    ```json
-{
-  "block": {
-    "block_identifier": {
-      "index": 5264122,
-      "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a"
-    },
-    "parent_block_identifier": {
-      "index": 5264121,
-      "hash": "ff677921d61672d2fb14025f6d8d8b1f93d89266986f045d48ddc674459134ea"
-    },
-    "timestamp": 1611751783000,
-    "transactions": [
-      {
-        "transaction_identifier": {
-          "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"
-        },
-        "operations": [
-          {
-            "operation_identifier": {
-              "index": 0
-            },
-            "type": "input",
-            "status": "success",
-            "account": {
-              "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E"
-            },
-            "amount": {
-              "value": "-4998821898",
-              "currency": {
-                "symbol": "ADA",
-                "decimals": 6
-              }
-            },
-            "coin_change": {
-              "coin_identifier": {
-                "identifier": "002da5ef961fd9d826332db916fe7de5e198b8a5f00f9c535f9c329bb14f01e8:0"
-              },
-              "coin_action": "coin_spent"
-            }
-          },
- 
-            "coin_change": {
-              "coin_identifier": {
-                "identifier": "03bd6f6b65f4020b0d35a24b79809e1d5e9db11d67260aa465f2bb281912d5ea:0"
-              },
-              "coin_action": "coin_spent"
-            }
-          },
-  
-    ],
-    "metadata": {
-      "transactionsCount": 6,
-      "createdBy": "ShelleyGenesis-1d4f2e1fda43070d",
-      "size": 9559,
-      "epochNo": 244,
-      "slotNo": 20185492
-    }
-  }
-}
-    ```
-    </details>
-
-
 #### [/api/txs/summary/{txId}](https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_txsSummary)
 
 Get summary information about a transaction.
@@ -1282,7 +1252,7 @@ Get summary information about a transaction.
 === "cardano-rest"
 
     ```console
-    $ $BASEURL/api/txs/summary/382a5274ebf102910c6c923a8b11f108e79ecedb5d7433cd0dd15a8a443f0fa5
+    $ curl $BASEURL/api/txs/summary/382a5274ebf102910c6c923a8b11f108e79ecedb5d7433cd0dd15a8a443f0fa5
     ```
 
     <details>
@@ -1394,7 +1364,10 @@ Get summary information about a transaction.
     ```
 
     ```console
-    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getTxSummary($hash: Hash32Hex!) {\n  transactions(where: { hash: { _eq: $hash } }) {\n    hash # ctsId\n    includedAt # ctsTxTimeIssued\n    fee # ctsFees\n    block {\n      epochNo # ctsBlockEpoch\n      slotNo # ctsBlockSlot\n      slotInEpoch\n      number # ctsBlockHeight\n      hash # ctsBlockHash\n    }\n    inputs { # ctsInputs\n      address # ctaAddress\n      value # ctaAmount\n      sourceTxHash # ctaTxHash\n      sourceTxIndex # ctaTxIndex\n    }\n    inputs_aggregate {\n      aggregate {\n        sum {\n          value # ctsTotalInput\n        }\n      }\n    }\n    outputs { # ctsOutputs\n      address # ctaAddress\n      value # ctaAmount\n      index # ctaTxIndex\n      txHash # ctaTxHash\n    }\n    outputs_aggregate {\n      aggregate {\n        sum {\n          value # ctsTotalOutput\n        }\n      }\n    }\n  }\n}\n","variables":{"hash":"382a5274ebf102910c6c923a8b11f108e79ecedb5d7433cd0dd15a8a443f0fa5"}}' --compressed
+    $ curl "$BASEURL" \
+      -H 'Content-Type: application/json'  \
+      -H 'Accept: application/json' \
+      --data-binary '{"variables":{"hash":"382a5274ebf102910c6c923a8b11f108e79ecedb5d7433cd0dd15a8a443f0fa5"}, "query":"query getTxSummary($hash: Hash32Hex!) { transactions(where: { hash: { _eq: $hash } }) { hash includedAt fee block { epochNo slotNo slotInEpoch number hash } inputs { address value sourceTxHash sourceTxIndex } inputs_aggregate { aggregate { sum { value } } } outputs { address value index txHash } outputs_aggregate { aggregate { sum { value } } } }}"}' 
     ```
 
     <details>
@@ -1459,26 +1432,17 @@ Get summary information about a transaction.
 
 === "cardano-rosetta"
 
- ```console
-    $ curl -X POST '$BASEURL/block' -H "Content-Type: application/json" -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
+    ```console
+    $ curl -X POST '$BASEURL/block/transaction' \
+      -H "Content-Type: application/json" \
+      -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": { "index": "5264122", "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a" }, "transaction_identifier": { "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"}}' 
     ```
 
     <details>
       <summary>see JSON response</summary>
     ```json
-{
-  "block": {
-    "block_identifier": {
-      "index": 5264122,
-      "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a"
-    },
-    "parent_block_identifier": {
-      "index": 5264121,
-      "hash": "ff677921d61672d2fb14025f6d8d8b1f93d89266986f045d48ddc674459134ea"
-    },
-    "timestamp": 1611751783000,
-    "transactions": [
-      {
+    {
+      "transaction": {
         "transaction_identifier": {
           "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"
         },
@@ -1506,88 +1470,32 @@ Get summary information about a transaction.
               "coin_action": "coin_spent"
             }
           },
- 
+          {
+            "operation_identifier": {
+              "index": 1
+            },
+            "type": "input",
+            "status": "success",
+            "account": {
+              "address": "DdzFFzCqrhspNxbM9rETXrrW3XL4WcuGgajfxzH3j3R7UQr4AgicTVCMbybX6naYn8ngYAgpGvRyyGecsx26fHgS43a71yUJRmjcdvJE"
+            },
+            "amount": {
+              "value": "-4000000000",
+              "currency": {
+                "symbol": "ADA",
+                "decimals": 6
+              }
+            },
             "coin_change": {
               "coin_identifier": {
-                "identifier": "03bd6f6b65f4020b0d35a24b79809e1d5e9db11d67260aa465f2bb281912d5ea:0"
+                "identifier": "0151758ddf6525b9c4fb5dc00a10abb519bff36894716bc1377ba400ae995f28:0"
               },
               "coin_action": "coin_spent"
             }
-          },
-  
-    ],
-    "metadata": {
-      "transactionsCount": 6,
-      "createdBy": "ShelleyGenesis-1d4f2e1fda43070d",
-      "size": 9559,
-      "epochNo": 244,
-      "slotNo": 20185492
+          }
+        ]
+      }
     }
-  }
-}
-    ```
-    </details>
-
- ```console
-    $ curl -X POST '$BASEURL/block/transaction' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": { "index": "5264122", "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a" }, "transaction_identifier": { "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"}}' | jq
-    ```
-
-    <details>
-      <summary>see JSON response</summary>
-    ```json
-{
-  "transaction": {
-    "transaction_identifier": {
-      "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"
-    },
-    "operations": [
-      {
-        "operation_identifier": {
-          "index": 0
-        },
-        "type": "input",
-        "status": "success",
-        "account": {
-          "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E"
-        },
-        "amount": {
-          "value": "-4998821898",
-          "currency": {
-            "symbol": "ADA",
-            "decimals": 6
-          }
-        },
-        "coin_change": {
-          "coin_identifier": {
-            "identifier": "002da5ef961fd9d826332db916fe7de5e198b8a5f00f9c535f9c329bb14f01e8:0"
-          },
-          "coin_action": "coin_spent"
-        }
-      },
-      {
-        "operation_identifier": {
-          "index": 1
-        },
-        "type": "input",
-        "status": "success",
-        "account": {
-          "address": "DdzFFzCqrhspNxbM9rETXrrW3XL4WcuGgajfxzH3j3R7UQr4AgicTVCMbybX6naYn8ngYAgpGvRyyGecsx26fHgS43a71yUJRmjcdvJE"
-        },
-        "amount": {
-          "value": "-4000000000",
-          "currency": {
-            "symbol": "ADA",
-            "decimals": 6
-          }
-        },
-        "coin_change": {
-          "coin_identifier": {
-            "identifier": "0151758ddf6525b9c4fb5dc00a10abb519bff36894716bc1377ba400ae995f28:0"
-          },
-          "coin_action": "coin_spent"
-        }
-      },
-      
     ```
     </details>
 
@@ -1598,7 +1506,7 @@ Get statistics about transactions.
 === "cardano-rest"
 
     ```console
-    $ $BASEURL/api/stats/txs?page=221444
+    $ curl $BASEURL/api/stats/txs?page=221444
     ```
 
     <details>
@@ -1650,79 +1558,36 @@ Get statistics about transactions.
     ```
 
     ```console
-    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getTxsStats($start: Int!, $end: Int!) {\n  blocks(\n    order_by: { forgedAt: desc }\n    where: {\n      number: { _gte: $start, _lte: $end }\n      transactionsCount: { _gt: \"0\" }\n    }\n  ) {\n    transactions {\n      hash\n      size\n    }\n  }\n}\n","variables":{"start":2214430,"end":2214440}}' --compressed
+    $ curl "$BASEURL" \
+      -H 'Content-Type: application/json' \
+      -H 'Accept: application/json' \
+      --data-binary '{"query":"query getTxsStats($start: Int!, $end: Int!) { blocks( order_by: { forgedAt: desc } where: { number: { _gte: $start, _lte: $end } transactionsCount: { _gt: \"0\" } } ) { transactions { hash size } }}","variables":{"start":2214430,"end":2214440}}' 
     ```
 
     <details>
       <summary>see JSON response</summary>
     ```json
+    {
+      "data": {
+        "blocks": [
+          {
+            "transactions": [
+              {
+                "hash": "c62c7f356bae7c1397ce5af171c7f884bd5b11eebc62e35f78ff60862004b6a5",
+                "size": 233
+              }
+            ]
+          }
+        ]
+      }
+    }
     ```
     </details>
 
 === "cardano-rosetta"
 
- ```console
-    $ curl -X POST '$BASEURL/block/transaction' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": { "index": "5264122", "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a" }, "transaction_identifier": { "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"}}' | jq
-    ```
-
-    <details>
-      <summary>see JSON response</summary>
-    ```json
-{
-  "transaction": {
-    "transaction_identifier": {
-      "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"
-    },
-    "operations": [
-      {
-        "operation_identifier": {
-          "index": 0
-        },
-        "type": "input",
-        "status": "success",
-        "account": {
-          "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E"
-        },
-        "amount": {
-          "value": "-4998821898",
-          "currency": {
-            "symbol": "ADA",
-            "decimals": 6
-          }
-        },
-        "coin_change": {
-          "coin_identifier": {
-            "identifier": "002da5ef961fd9d826332db916fe7de5e198b8a5f00f9c535f9c329bb14f01e8:0"
-          },
-          "coin_action": "coin_spent"
-        }
-      },
-      {
-        "operation_identifier": {
-          "index": 1
-        },
-        "type": "input",
-        "status": "success",
-        "account": {
-          "address": "DdzFFzCqrhspNxbM9rETXrrW3XL4WcuGgajfxzH3j3R7UQr4AgicTVCMbybX6naYn8ngYAgpGvRyyGecsx26fHgS43a71yUJRmjcdvJE"
-        },
-        "amount": {
-          "value": "-4000000000",
-          "currency": {
-            "symbol": "ADA",
-            "decimals": 6
-          }
-        },
-        "coin_change": {
-          "coin_identifier": {
-            "identifier": "0151758ddf6525b9c4fb5dc00a10abb519bff36894716bc1377ba400ae995f28:0"
-          },
-          "coin_action": "coin_spent"
-        }
-      },
-      
-    ```
-    </details>
+    !!! warning
+        No equivalent in Rosetta!
     
 ## Addresses
 
@@ -1733,7 +1598,7 @@ Get summary information about an address.
 === "cardano-rest"
 
     ```console
-    $ $BASEURL/api/addresses/summary/addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5
+    $ curl $BASEURL/api/addresses/summary/addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5
     ```
 
     <details>
@@ -1811,8 +1676,8 @@ Get summary information about an address.
 
 === "cardano-graphql"
 
-    !!! info
-        The following fields from the REST endpoint are not supported: `caType`, `caChainTip`.
+    !!! warning
+        The following fields from the REST endpoint have no equivalent: `caType`, `caChainTip`.
 
     **query.graphql**
     ```graphql
@@ -1876,7 +1741,6 @@ Get summary information about an address.
           address # ctaAddress
           value # ctaAmount
           txHash # ctaTxHash
-          # TODO: ctaTxIndex ??
         }
         inputs_aggregate(where: { address: { _eq: $address } }) {
           aggregate {
@@ -1904,7 +1768,10 @@ Get summary information about an address.
     ```
 
     ```console
-    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getAddressSummary($address: String!) {\n  caTxNum: transactions_aggregate(\n    where: {\n      _or: [\n        { inputs: { address: { _eq: $address } } }\n        { outputs: { address: { _eq: $address } } }\n      ]\n    }\n  ) {\n    aggregate {\n      count # caTxNum\n    }\n  }\n  # TODO: caTotalFee ??\n  # TODO: caType ??\n  # TODO: caChainTip ??\n  caTotalInput: transactions_aggregate(\n    where: { inputs: { address: { _eq: $address } } }\n  ) {\n    aggregate {\n      sum {\n        totalOutput # caTotalInput ??\n      }\n    }\n  }\n  caTotalOutput: transactions_aggregate(\n    where: { outputs: { address: { _eq: $address } } }\n  ) {\n    aggregate {\n      sum {\n        totalOutput # caTotalOutput ??\n      }\n    }\n  }\n  caBalance: utxos_aggregate(where: { address: { _eq: $address } }) {\n    aggregate {\n      sum {\n        value # caBalance\n      }\n    }\n  }\n  caTxList: transactions(\n    where: {\n      _or: [\n        { inputs: { address: { _eq: $address } } }\n        { outputs: { address: { _eq: $address } } }\n      ]\n    }\n  ) {\n    hash # ctbId\n    includedAt # ctbTimeIssued\n    fee # ctbFees\n    inputs(where: { address: { _eq: $address } }) {\n      # ctbInputs\n      address # ctaAddress\n      value # ctaAmount\n      txHash # ctaTxHash\n      sourceTxIndex # ctaTxIndex\n    }\n    outputs(where: { address: { _eq: $address } }) {\n      address # ctaAddress\n      value # ctaAmount\n      txHash # ctaTxHash\n      # TODO: ctaTxIndex ??\n    }\n    inputs_aggregate(where: { address: { _eq: $address } }) {\n      aggregate {\n        sum {\n          value # ctbInputSum\n        }\n      }\n    }\n    outputs_aggregate(where: { address: { _eq: $address } }) {\n      aggregate {\n        sum {\n          value # ctbOutputSum\n        }\n      }\n    }\n  }\n}\n","variables":{"address":"addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5"}}' --compressed
+    $ curl "$BASEURL" \
+      -H 'Content-Type: application/json' \
+      -H 'Accept: application/json' \
+      --data-binary '{"variables":{"address":"addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5"},"query":"query getAddressSummary($address: String!) { caTxNum: transactions_aggregate( where: { _or: [ { inputs: { address: { _eq: $address } } } { outputs: { address: { _eq: $address } } } ] } ) { aggregate { count } } transactions_aggregate( where: { inputs: { address: { _eq: $address } } } ) { aggregate { sum { totalOutput } } } caTotalOutput: transactions_aggregate( where: { outputs: { address: { _eq: $address } } } ) { aggregate { sum { totalOutput } } } caBalance: utxos_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } caTxList: transactions( where: { _or: [ { inputs: { address: { _eq: $address } } } { outputs: { address: { _eq: $address } } } ] } ) { hash includedAt fee inputs(where: { address: { _eq: $address } }) { address value txHash sourceTxIndex } outputs(where: { address: { _eq: $address } }) { address value txHash } inputs_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } outputs_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } }}"}' 
     ```
 
     <details>
@@ -1974,39 +1841,31 @@ Get summary information about an address.
 
 === "cardano-rosetta"
 
-                  curl -X POST $BASEURL/account/balance \
-                  -H "Content-Type: application/json" \
-                  -d '{ "network_identifier": {
-                  "blockchain": "cardano", 
-                  "network": "mainnet" },
-                  "metadata": {},
-                  "account_identifier": {
-                  "address": "$address" },
-                  "metadata": {}}' | jq
-                  
-  ```console
-    $ curl -X POST '$BASEURL/account/balance' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "account_identifier": { "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E" }, "metadata": {}}' | jq
+    ```console
+    $ curl -X POST '$BASEURL/account/balance' \
+      -H "Content-Type: application/json" \
+      -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "account_identifier": { "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E" }, "metadata": {}}' 
     ```
 
     <details>
       <summary>see JSON response</summary>
     ```json
-{
-  "block_identifier": {
-    "index": 5264292,
-    "hash": "3dc53a1991c70a160666f597c71cb751c2910ef3e14581e699e8011de9fc6839"
-  },
-  "balances": [
     {
-      "value": "0",
-      "currency": {
-        "symbol": "ADA",
-        "decimals": 6
-      }
+      "block_identifier": {
+        "index": 5264292,
+        "hash": "3dc53a1991c70a160666f597c71cb751c2910ef3e14581e699e8011de9fc6839"
+      },
+      "balances": [
+        {
+          "value": "0",
+          "currency": {
+            "symbol": "ADA",
+            "decimals": 6
+          }
+        }
+      ],
+      "coins": []
     }
-  ],
-  "coins": []
-}  
     ```
     </details>
 
@@ -2017,7 +1876,7 @@ Get address information specific to a block.
 === "cardano-rest"
 
     ```console
-    $ $BASEURL/api/block/02788224fb087d9a5ed48a12a3db741ad7bd4429a63e7e5b6bc69d2f2956d205/address/addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5
+    $ curl $BASEURL/api/block/02788224fb087d9a5ed48a12a3db741ad7bd4429a63e7e5b6bc69d2f2956d205/address/addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5
     ```
 
     <details>
@@ -2095,8 +1954,8 @@ Get address information specific to a block.
 
 === "cardano-graphql"
 
-    !!! info
-        This query is WIP. A few fields are still missing.
+    !!! warning
+        This example query only covers a subset of the results returned by cardano-rest
 
     **query.graphql**
     ```graphql
@@ -2165,7 +2024,10 @@ Get address information specific to a block.
     ```
 
     ```console
-    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getAddressBlockSummary($address: String!, $block: Hash32Hex!) {\n  blocks(where: { hash: { _eq: $block } }) {\n    transactions_aggregate(\n      where: {\n        _or: [\n          { inputs: { address: { _eq: $address } } }\n          { outputs: { address: { _eq: $address } } }\n        ]\n      }\n    ) {\n      aggregate {\n        count # caTxNum\n      }\n    }\n    transactions(\n      where: {\n        _or: [\n          { inputs: { address: { _eq: $address } } }\n          { outputs: { address: { _eq: $address } } }\n        ]\n      }\n    ) {\n      # caTxList\n      hash # ctbId\n      includedAt # ctbTimeIssued\n      fee # ctbFees\n      inputs(where: { address: { _eq: $address } }) {\n        address # ctaAddress\n        value # ctaAmount\n        txHash # ctaTxHash\n        sourceTxIndex # ctaTxIndex\n      }\n      outputs(where: { address: { _eq: $address } }) {\n        address # ctaAddress\n        value # ctaAmount\n        txHash # ctaTxHash\n      }\n      inputs_aggregate(where: { address: { _eq: $address } }) {\n        aggregate {\n          sum {\n            value # ctbInputSum\n          }\n        }\n      }\n      outputs_aggregate(where: { address: { _eq: $address } }) {\n        aggregate {\n          sum {\n            value # ctbOutputSum\n          }\n        }\n      }\n    }\n  }\n}\n","variables":{"address":"addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5","block":"02788224fb087d9a5ed48a12a3db741ad7bd4429a63e7e5b6bc69d2f2956d205"}}' --compressed
+    $ curl "$BASEURL" \
+      -H 'Content-Type: application/json' \
+      -H 'Accept: application/json' \
+      --data-binary '{"variables":{"address":"addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5","block":"02788224fb087d9a5ed48a12a3db741ad7bd4429a63e7e5b6bc69d2f2956d205"},"query":"query getAddressBlockSummary($address: String!, $block: Hash32Hex!) { blocks(where: { hash: { _eq: $block } }) { transactions_aggregate( where: { _or: [ { inputs: { address: { _eq: $address } } } { outputs: { address: { _eq: $address } } } ] } ) { aggregate { count } } transactions( where: { _or: [ { inputs: { address: { _eq: $address } } } { outputs: { address: { _eq: $address } } } ] } ) { hash includedAt fee inputs(where: { address: { _eq: $address } }) { address value txHash sourceTxIndex } outputs(where: { address: { _eq: $address } }) { address value txHash } inputs_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } outputs_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } } }}"}' 
     ```
 
     <details>
@@ -2218,29 +2080,31 @@ Get address information specific to a block.
 
 === "cardano-rosetta"
 
- ```console
-    $ curl -X POST '$BASEURL/account/balance' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "account_identifier": { "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E" }, "metadata": {}, "block_identifier": {"index": "5264122","hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a" },"currencies": {"symbol": "ada", "decimals": 8 }}' | jq
+    ```console
+    $ curl -X POST '$BASEURL/account/balance' \
+      -H "Content-Type: application/json" \
+      -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "account_identifier": { "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E" }, "metadata": {}, "block_identifier": {"index": "5264122","hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a" },"currencies": {"symbol": "ada", "decimals": 8 }}' 
     ```
 
     <details>
       <summary>see JSON response</summary>
     ```json
-{
-  "block_identifier": {
-    "index": 5264292,
-    "hash": "3dc53a1991c70a160666f597c71cb751c2910ef3e14581e699e8011de9fc6839"
-  },
-  "balances": [
     {
-      "value": "0",
-      "currency": {
-        "symbol": "ADA",
-        "decimals": 6
-      }
+      "block_identifier": {
+        "index": 5264292,
+        "hash": "3dc53a1991c70a160666f597c71cb751c2910ef3e14581e699e8011de9fc6839"
+      },
+      "balances": [
+        {
+          "value": "0",
+          "currency": {
+            "symbol": "ADA",
+            "decimals": 6
+          }
+        }
+      ],
+      "coins": []
     }
-  ],
-  "coins": []
-}  
     ```
     </details>
 
@@ -2255,7 +2119,7 @@ Get epoch pages, all the paged slots in the epoch.
 === "cardano-rest"
 
     ```console
-    $ $BASEURL/api/epochs/1?page=1
+    $ curl $BASEURL/api/epochs/1?page=1
     ```
 
     <details>
@@ -2471,7 +2335,10 @@ Get epoch pages, all the paged slots in the epoch.
     ```
 
     ```console
-    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getEpoch($epoch: Int!, $block_limit: Int!) {\n  epochs(where: { number: { _eq: $epoch } }) {\n    number # cbeEpoch\n    blocks(limit: $block_limit, order_by: { slotNo: asc }) {\n      slotInEpoch # cbeSlot\n      number # cbeBlkHeight\n      hash # cbeBlkHash\n      slotLeader {\n        hash # cbeBlockLead\n      }\n      forgedAt # cbeTimeIssued\n    }\n    startedAt\n    transactionsCount # cbeTxNum\n    blocks_aggregate {\n      aggregate {\n        sum {\n          size # cbeSize\n          fees # cbeFees\n        }\n      }\n    }\n    output # cbeTotalSent\n  }\n}","variables":{"epoch":1,"block_limit":10}}' --compressed
+    $ curl "$BASEURL" \
+      -H 'Content-Type: application/json' \
+      -H 'Accept: application/json' \
+      --data-binary '{"variables":{"epoch":1,"block_limit":10},"query":"query getEpoch($epoch: Int!, $block_limit: Int!) { epochs(where: { number: { _eq: $epoch } }) { number blocks(limit: $block_limit, order_by: { slotNo: asc }) { slotInEpoch number hash slotLeader { hash } forgedAt } startedAt transactionsCount blocks_aggregate { aggregate { sum { size fees } } } output }}"}' 
     ```
 
     <details>
@@ -2595,7 +2462,7 @@ Get epoch pages, all the paged slots in the epoch.
 === "cardano-rosetta"
 
     !!! warning
-        Not available in Rosetta!
+        No equivalent in Rosetta!
 
 #### [/api/epochs/{epoch}/{slot}](https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_epochSlots)
 
@@ -2604,7 +2471,7 @@ Get the slot information in an epoch.
 === "cardano-rest"
 
     ```console
-    $ $BASEURL/api/epochs/1/8
+    $ curl $BASEURL/api/epochs/1/8
     ```
 
     <details>
@@ -2673,7 +2540,10 @@ Get the slot information in an epoch.
     ```
 
     ```console
-    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getSlotInEpoch($epoch: Int!, $slot: Int!) {\n  epochs(where: { number: { _eq: $epoch } }) {\n    number # cbeEpoch\n    blocks(where: { slotInEpoch: { _eq: $slot } }) {\n      slotInEpoch # cbeSlot\n      number # cbeBlkHeight\n      hash # cbeBlkHash\n      slotLeader {\n        hash # cbeBlockLead\n      }\n      forgedAt # cbeTimeIssued\n    }\n    startedAt\n    transactionsCount # cbeTxNum\n    blocks_aggregate(where: { slotInEpoch: { _eq: $slot } }) {\n      aggregate {\n        sum {\n          size # cbeSize\n          fees # cbeFees\n        }\n      }\n    }\n    output # cbeTotalSent\n  }\n}","variables":{"epoch":1,"slot":8}}' --compressed
+    $ curl "$BASEURL" \ 
+      -H 'Content-Type: application/json' \
+      -H 'Accept: application/json' \
+      --data-binary '{"variables":{"epoch":1,"slot":8},"query":"query getSlotInEpoch($epoch: Int!, $slot: Int!) { epochs(where: { number: { _eq: $epoch } }) { number blocks(where: { slotInEpoch: { _eq: $slot } }) { slotInEpoch number hash slotLeader { hash } forgedAt } startedAt transactionsCount blocks_aggregate(where: { slotInEpoch: { _eq: $slot } }) { aggregate { sum { size fees } } } output }}"}' 
     ```
 
     <details>
@@ -2716,7 +2586,7 @@ Get the slot information in an epoch.
 === "cardano-rosetta"
 
     !!! warning
-        Not available in Rosetta!
+        No equivalent in Rosetta!
 
 ## Genesis
 
@@ -2727,7 +2597,7 @@ Get information about the genesis block.
 === "cardano-rest"
 
     ```console
-    $ $BASEURL/api/genesis/summary
+    $ curl $BASEURL/api/genesis/summary
     ```
 
     <details>
@@ -2767,7 +2637,10 @@ Get information about the genesis block.
     ```
 
     ```console
-    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"    query getGenesisSummary {\n      genesis {\n        byron {\n          avvmDistr\n          nonAvvmBalances\n        }\n      }\n    }\n"}' --compressed
+    $ curl "$BASEURL" \
+      -H 'Content-Type: application/json' \
+      -H 'Accept: application/json' \
+      --data-binary '{"query":" query getGenesisSummary { genesis { byron { avvmDistr nonAvvmBalances } } }"}' 
     ```
 
     <details>
@@ -2783,210 +2656,15 @@ Get information about the genesis block.
               "PO1Kz9bpAowfWD8u9Ial2OkmxDiw6bK_ICDPvuHshJM=": "20000000000000",
               "mqJXwreGLRzV9a--egcVvKN4hzIcNUULsXqcPWe3YXI=": "20000000000000",
               "ENoYC3dNAtKL-lvjCTZDVhQYmfyWVtI0GNbz4QKqVdY=": "20000000000000",
-              "o0O4s8YkitBZPeZLVyjn8pjtpBoncr-H9mbtAJS_KfE=": "20000000000000",
-              "1XEVfDyaheIAeQICkHlwmvEuY9A7E50hA1v_E_QB3Fg=": "20000000000000",
-              "OKVfmKrrzY0-10uxl9IxlYA6CFWwOU1dN-NyUI0bobU=": "20000000000000",
-              "LYOSBM00cdDToqHepveoat2SN6vdPntA0nSFXRch83Q=": "20000000000000",
-              "3Z-Z3rLCxLt0C3KgagBq3wOXrfm68_zh2st5Bi6Covs=": "20000000000000",
-              "VTx9H6wpJNMC-H-pThklJ9uCllwqXaU0WXHcVTEFAIU=": "20000000000000",
-              "beyF5mz8icvrBvM-mvQzLfbnHCmxOOg8Z7kJs7nySZs=": "20000000000000",
-              "rs_VPO7SNO2YlSY2N881xHFeBnW_Sn2o4uSfuGpq9cc=": "20000000000000",
-              "5RZPTI9FoSvLmiXjKYtUdkrqoMg99tIw8k4enSB1qlQ=": "20000000000000",
-              "QRBLXNJdJCVDjbwPvQmg_liOcYIWfvoKf7Ns5w_RDvU=": "20000000000000",
-              "YG9mVGb_MAvTSdFgOUV8JbRBxnj3sPELZxQNVup_X18=": "20000000000000",
-              "7dEmv0hdv1a7imviD3q3p9pFBFMC77Byx9oinyGwdIQ=": "20000000000000",
-              "H_Qs3m89FGw8QxVTUGuPjdbOPQyP8vzcD8I37BkRAXY=": "20000000000000",
-              "pa6NZ1j_bs8kezg23cUQiba3UyLxLiGDQfDXMQmuPSE=": "20000000000000",
-              "Qi5VCXOUdP-U-Pd--boAii_-gwMpB0IRfibzxWEN53s=": "20000000000000",
-              "cLJrI380JOISi9A14PYTRmClcxPNQS3_GIZdqcXC1JQ=": "20000000000000",
-              "BVY8wsqEPXPQ7DPTvnvat7GRiwxFPHC4jY1x3ZvY1PE=": "20000000000000",
-              "FBlBD9ykcwuFmoogsVjRCUag9xpkwCAgbYDNazT1oY4=": "20000000000000",
-              "KHwUZRYdwRs5UYIhOO9ycjucY8WvTzpkZgZ4PSbDDPI=": "20000000000000",
-              "ED2RmO7Wfad2p4gxyzhr4gqlhavksgHEg1acZiKMQF4=": "20000000000000",
-              "BOjqPWCmGewTKqKekH0HSgpnOEYT8g0qV4t4t6Nj7-c=": "20000000000000",
-              "b-8mgbBV-r9bqufItyyPp2WLitNhBjaMAajl3GfteeE=": "20000000000000",
-              "JW_kuEdd0TkJEUA35YUbf_K9C4OlpZd83iTUqrD0q0g=": "20000000000000",
-              "IF7PMOFaXdwztrj1j_yx_YBafdZpb3pc5EF6y822KgI=": "20000000000000",
-              "r9HNGwms9l0cMBuT8CznPoadXKbzLPceo4-vDydXUwE=": "20000000000000",
-              "rM0RFpsVm738CCDdzBhrEz8Q0CLIqiBKMl5rtdFlWmA=": "20000000000000",
-              "jFyHtgHVcd70V1SZ7O55mo8yvYw5KsijV6fMQEWkJaE=": "20000000000000",
-              "qWmtDqvA3KZyySJLRPFPO2TiOZh3Dpv1FCJTdEilJvc=": "20000000000000",
-              "5YYkqAleNp8VXGYiD7WsXvWZQwybkqAUR9xMf5lLvzs=": "20000000000000",
-              "bi2YeYdi2W2r7IDYToq_N0RR1k3z4GYsRo2xddi2Y7I=": "20000000000000",
-              "vENWfzLRm1wwHYWTUIOznVCXC3ISPt8J6n3gYFrwfpg=": "20000000000000",
-              "G71fGc7_2IoExvY8VctjxMCd7lJsTWgvWzg__lF4qcY=": "20000000000000",
-              "pFzX1lvX3LPolGCv8TQXfWAZupMZEjVlMWmT7nUV70I=": "20000000000000",
-              "pE7umM4kIaTYqKOviWvgTb34xky-kpbN7VvSzhOT8wo=": "20000000000000",
-              "P6J7kBAlCPD4wxAnzuzlqTBWMyqI1zVkqVWM5kKoCwg=": "20000000000000",
-              "CmwjLeSIEKfLzd5ks16QoGCtYNc--wiGsgWWM4OKsco=": "20000000000000",
-              "-RTrh8sxu9mOYYpcfmyod8-v1Z0nqxMunwK-_NFDzYQ=": "20000000000000",
-              "EnoSKFBfSJ_l7RXMglXTSolDt6VeNRMay4soxkUmk0E=": "20000000000000",
-              "VzxlTAQWmOH7ALIXviuXH2pjjYmtW77r9ypeEZlg4mc=": "20000000000000",
-              "93QRpWUE-Yqthy85Y8poB_WeWdG8A_9nnq4HJiMfJQc=": "20000000000000",
-              "H7YIN-FF0kUawzVnhQpCoMLuOJkLzYAtZ2xof7vhtPs=": "20000000000000",
-              "a9_Q5Pzte2G7wXujwVBaAzLcMki6_UjKrxvWzayJ3gY=": "20000000000000",
-              "O4h-7y-2Izq3ojxailZAbMd0VCq78-kIMv8gIcaA6cA=": "20000000000000",
-              "mlzqpS0hE6s7apMGRQP4Cx5Fc380yt9gQX7XVcVrmQQ=": "20000000000000",
-              "aK-WCeAwKHQE9H02zvRLRdoMPIsZWiOfKkbA6yTyMxs=": "20000000000000",
-              "b3fq65eebunM4fM3AQubawjF6Mt9v9jyEXF5f3hewbo=": "20000000000000",
-              "ZbZ7v6OcrjZ3vqPFVzaHOK2A5UzRYy-wm0C-ngebU_s=": "20000000000000",
-              "zXza46kY7Gs5cJEoN2TUwAaXth5W7uUKQfNiaPyWDSc=": "20000000000000",
-              "5q5RzTcpFFUne5AKkua3DJO1IFQEOGyb2jQvV4DmDT8=": "20000000000000",
-              "5CzeQFC__uUi8TRPuWVgsUeJauYR3i1f3rvD0CrC34o=": "20000000000000",
-              "KOp96-E17RXmCf0_vEOcecpTmY8W0wpbpBwFuPwFbKM=": "20000000000000",
-              "EFK3F4mO823aCcko3QmFJ3Klm7glGs8a0f_f6WVIwdg=": "20000000000000",
-              "e4TOcy9Qp5BQ8tXkEXaWpuHRmAVcJRfPEV3sVCOKZsQ=": "20000000000000",
-              "w-2bM_wksghmtHp4ZB2ZOQ-V9Dw1ZivS7RwxgY-DsB4=": "20000000000000",
-              "9pKGBzQJLoqY6vcOM_OqHRgq9KIdO3ovCBp1mBEFKek=": "20000000000000",
-              "TMFEEMjP7q64-Liae7CEG0ELKtEC2e2vDuCpMItyfzU=": "20000000000000",
-              "nrRREQUC1zKTpQRRNDzO-NiQh6DJahitvTk0SWLkc8g=": "20000000000000",
-              "9xnVxPVNI9fdN5zGa5Fa3HcIwof5T-2lMbdLh3_Nbpk=": "20000000000000",
-              "NqOaYkD2B5yTFQ1dHMY7X2LmV0Q9tZI6KYR1-dFW_z8=": "20000000000000",
-              "zhXX6D5r4CDjlLLQiC87LZZL2zWUIYaXhxbcgq_Ww3w=": "20000000000000",
-              "CXMg_ROxPjiJAyxUpBlUepLDhcdhMffR89izVr9vcRU=": "20000000000000",
-              "vfTTtqpmg_3jQ7zWV3XhNfmtbtn32Z0fcfNc6_Cx-4E=": "20000000000000",
-              "3UAwyThFcR1vKSBpktCSkJg3NpMQhL1z4l46NHpfJkY=": "20000000000000",
-              "K4m8Vu1qtFRavgx0jrctVErZf6VbKDfBnigjQef6k-o=": "20000000000000",
-              "rmyqI_SuwRsbR4rG1Uk6bUlSJRvo004w5SeejGQERT4=": "20000000000000",
-              "oo8sxwl7TO2JP-QfW3_aQbE9zZCLBogFPnwEMPUBuYs=": "20000000000000",
-              "lif3znin9EWfZBoYZ9Ta1c69eINSJNmaqkKJVpFuF2U=": "20000000000000",
-              "kMAvVvgk0sEf3kHXyfb8gQ6H4gWaFBDSUwms4IFs2jo=": "20000000000000",
-              "8CMex0Km9bk2J1r4FaSD_FSwlGRgh1e8C1-7fCGUAJE=": "20000000000000",
-              "pUliJY_tq41pTdo5VJISdWbGGBnL_82pupm4AjZF-y0=": "20000000000000",
-              "E7dg9_nI8tY9CXli9OyIHtx0FUsq0QZKLBVx9Cr8Daw=": "20000000000000",
-              "cpO_GBP5qVwOCGxws6oGvgZszu7jy_LwbKZj_f2pg8o=": "20000000000000",
-              "n8MZ16U_jB4Vg4BPZHGorDzVO7dC9qOfAdYhAluKD4Y=": "20000000000000",
-              "hqzkwiRusxDSgY-MyqmCyTC0VxELSFdJKJVpzBGOdQM=": "20000000000000",
-              "QCiQStlI-PWCbwclsM8ZvfrmP49kql7lAwJjgzZ_OvI=": "20000000000000",
-              "7prDyNFRXierLX1UE26h-TSO0fmfC2lFHQoelogU3hg=": "20000000000000",
-              "32mL1n7cF_xLIjWAGTC6vISGcafcJe0EgXaxaQNtrzQ=": "20000000000000",
-              "H94Fk3T5fiEXPd1eGYfpwPP4_y9FVQWsi2bhIAf9hFE=": "20000000000000",
-              "YLQqBDTjfVrQJcqCzgn0js4ScjJpbh3_dGRmg_wQ9WM=": "20000000000000",
-              "Ctfg-00LO1JetbfqwOOIwrm56xdZSzzZRccGW52eCps=": "20000000000000",
-              "GCkRs5Iqi5jyzRhF-Z5B4-EzgCRAb55pJK8a3kmrbwU=": "20000000000000",
-              "975KNlfAi1B-u2Q0X0qBZpuZNLCUNnKnX-jvBzah3pE=": "20000000000000",
-              "SrxXeNRxF0accD3dsKoj8ymSQeJoUVs78Llsy-4ZIO0=": "20000000000000",
-              "m5zF99P2vG3cqGrG17VvRti7d2XRi3fuUHfec-jM6tQ=": "20000000000000",
-              "A-w4r_kJIZpI8TqDAY-F44cR0lhZtnB25UhT0NXM6Zc=": "20000000000000",
-              "7mglsAKSgUEkAyA6C5Ni-v_1xoGNPCN_cj7ctQZGZqg=": "20000000000000",
-              "x3DrzZ_Yp8df2EGsGlwNAnclV2Tv3lcdqnI3Lk_0bF4=": "20000000000000",
-              "GWoauU1tVb37fjs6mPrxXiBoy9HarPqyGI8zj1mc7cw=": "20000000000000",
-              "op9p-7Xy9fBmzrjLbMD1jEuW1QVXTOsXSIwgaFN3sDk=": "20000000000000",
-              "KC7yE_m_JSiWGVP9cpcfYTLF77taAPTgveRKEiIPg1A=": "20000000000000",
-              "6V6sxoH3dMLw8vWcH0NQF2SZNPDzmtULTX4vxkeCQd4=": "20000000000000",
-              "y0DLZDhvfU-M5MvdhoyxEFp811PWFfrAdIfDVhYCMzE=": "20000000000000",
-              "wCHhA7PS7wdfEuMpzrOJfdGyF2uIChR2LnnAcQE3hHI=": "20000000000000",
-              "s4iYnscFXdEK56b7o4ZvKpgN0YoKchpR-U9MZEqbGb8=": "20000000000000",
-              "WkMPzKKtocKcbc7_fsFND1oln6gAfWJspg9REi75pMw=": "20000000000000"
+              ...
             },
             "nonAvvmBalances": {
-              "2cWKMJemoBajGgvgVVziaKmUFa4LwJnAHffmuaSJBMDqethwJVQsyBsTSfFhp5jFpkVQM": "5428571428571429",
               "37btjrVyb4KEg6anTcJ9E4EAvYtNV9xXL6LNpA15YLhgvm9zJ1D2jwme574HikZ36rKdTwaUmpEicCoL1bDw4CtH5PNcFnTRGQNaFd5ai6Wvo6CZsi": "19999999999999",
               "37btjrVyb4KCRtni6YrG77RLPosnDqtEYoAD5xLdKYkWgnLqGa8yuXDUQd3psHrfxqaRcvNTsAW4ngUe6bzstbzSUJtwoaKbYaL8zjFAJJsZkQ42ti": "19999999999999",
               "37btjrVyb4KGDMix4Uj5opvbMDgjZYUjeARAqTEFEbgLUH3qyju9gkBpcm2fVWgkcNgK3xFsQgWm1w8zxqvm9P6xJj9mHqLeMJPwDMUKUGPcDyUaDS": "19999999999999",
               "37btjrVyb4KEkSeCVx985rXc38DCud2AW4LdasNmyoPLbtDGcDCyYVdf8BzxvDnzPehv4kyVBkzThjVEkSpGTv8PGQs4yRUgiCaKa7PTtBY4ohNGqR": "19999999999999",
               "37btjrVyb4KFGS7upvgJHtmp7y7EFB67utzaHf7PM8y8U4tNkpmARNwiD7seN4NSAceHmj64KLGgh9qn1BpYF49NyWxocBHn1N533qBUYfhQar9ceu": "19999999999999",
-              "37btjrVyb4KCfir7GrvC6Y5kBNjeakZNd5po62AzQQ85SGkBB4QfXibC4fSNK5YvNeVgmPc8WbEeSUHRjoiqhJ4HDtinK2deBHSdCH6Cw8k2u92rdh": "19999999999999",
-              "37btjrVyb4KGAExHTQjLUHJBksSXGTomjgNsw8a4KepCgQYk4gxacKb84vGpPSv9Pjt3gdgMjA1nB67Pq3XyJpTDk8kLcXpJawCe6SCJf5jUowvAz8": "19999999999999",
-              "37btjrVyb4KCE1qeEoUh9b8CpcZcJ794Di14AxAELGoppJNVdB79nnuKcgRut566MdDkxTqravFaDSD9iwAvDByUHi59xocCY3ButEjmCQeLTLZXQ7": "19999999999999",
-              "37btjrVyb4KGGSGD8KgQD6qUBaSjxy5JRtsmMSHEGGAZqA29ULGwci8TcM16vBhywuBw54izQtpAqXeyUnbjh56hCgoqGZp9tHTMLLkEgLzwxVCZ4N": "19999999999999",
-              "37btjrVyb4KG5ZZfwwiQuhAGWiNJ2FhXP3oAuiq75qknCz4CZWNMVY4B9BmiHRHnWfhUbkLHUqfabCYASUk2V1qGuDw97x1gdf871aFY7Lpz3N1NvT": "19999999999999",
-              "37btjrVyb4KFtDHT2vDtMvQbLBgfH5hnpyVTTqqpPsieykukuxrDShHNccAEEj7M87UuV2GJ5pPA7YJ4JPjSokA99XaDgLmeaAumhZPHMwzg2Laspr": "19999999999999",
-              "37btjrVyb4KDHFyvvKb29RD53ebt6N8kpbL41J4VxWpiFC4FnxxybP33M9tBbdqfMXvSvyTQpv4dULXf5B838kEWXSJ24bpHtFgcbRkiHQwqWFQ5du": "19999999999999",
-              "37btjrVyb4KFh7jhHCtWxW942ceq7Xhxay8FZ7GkEBezGyFm3wJcVBGy1YYJDZ4Z7GbrFZmHLSe47zFs8Rjxk8rveoRpo1s43HXrMrhd4ijim4jJVP": "19999999999999",
-              "37btjrVyb4KFhYgC9Lr4Se7C1gL39d5WBVADyUyQZz2BfG4BZxczyW827JRQR5enyWaoj6NnA5NyKsheV6Eb7WvQtbN8D6116HTknHhEb5jh1yUU6Z": "19999999999999",
-              "37btjrVyb4KDLtM8HUJsBwergjZUj4DcMfkFmbV4bXUFGJk815o9nowX9ndPPVAeSNjAFYqJeFwTiMa9Ka8LqBnqFZgPpacyx9LrQLoXVMjvvLB7DK": "19999999999999",
-              "37btjrVyb4KDec7E64byKc4XjmmCRDaTGQYgHJTPDijZVr7NwZSP8g7ienzTLx5Z1quaQRhJqqAyV8Z2QdkzXvjTTRiVDCqps78uGp3uuth4wEJKP9": "19999999999999",
-              "37btjrVyb4KF5R1LEsaQgjWFWXwbgJ51naDEaCRG23KiAN3UtGzaT5PvUANtFBgjmcCtPLMBYMTGL4S8px4HyQMLAyF4fakYoFAJC3PkxCWMUatGWD": "19999999999999",
-              "37btjrVyb4KFB5Tmw1wsLmuv17Q6y8i6HGpVxbW8k4bevmob3DcdbH6jzrAtUrBpKgfTGgPMpLAbJcpaByGGJErkXQWFwrNMW35S79hxFvAN2GTXVQ": "19999999999999",
-              "37btjrVyb4KDEX2XToMQoi1No3YdREgZWzrf1xQPbfhbZTZnprFwDsRMiBxqUrA7p4BwjxXHDyqAccPwyX8iWWquz2CrLazJMR4s8AMz2US1D1ffJL": "19999999999999",
-              "37btjrVyb4KFTKCoqtZBdbh7LtJ9mRR1nbkX7ggP6a7AwvkSDxUN6U5GJWfuRXnL3a5x5e16uQwyjC6PoPVQ7VLdJXr8Kd3eFknLu6NDf2ey4AaJo2": "19999999999999",
-              "37btjrVyb4KCHCpiGd1J2GtVjP4KxEWP7RE6K6yxHzE97cbDgFD63fUFygbni8jKw1N37nGsT43KBvBn5w9ee8sVegr6Tg8fAr52mUkhdvTZYJV52T": "19999999999999",
-              "37btjrVyb4KGLRpX3uQfSeLovpMTcWfVZSM5RCufYvy2tyCMwrLXyHKCM9VqQh8dCQA6WcTrViaxqpvBSeKreHFL4CftfJU1z7CjHAze236NLesbL8": "19999999999999",
-              "37btjrVyb4KEdwV1MS3Pjek1HjLN2CSq3SJZGFBbZctkGLz569i9RWN15bAvCcZ8R5dgEi8iYjpmMVKioufoGv3issZQvVtzPz38pWHBViyRK2how5": "19999999999999",
-              "37btjrVyb4KD1x4cqHfGxrvBubZ8pSM8Jmw15UiHpy77eMsqpMewGND2GdvAwTBZhf4KA4uypBJnuUPbPYFovpRVJ92BUaMBHfQnAD3i15DAzD8EvL": "19999999999999",
-              "2cWKMJemoBait15xg1M73WAvWafoieg2GrcykbRk6J1QC2jMUXn7LpXf4mk5RUeu8qYeG": "5428571428571429",
-              "37btjrVyb4KC3HyNR82Bj2Sr9o6CF9o3J5hBNycGb9JwrHggTYUHfivi87akkYDv8ayepMkM4mNvxTKvoVdMHFkMnZZgrk5qobwPKM8idSnYYmvTRU": "19999999999999",
-              "37btjrVyb4KCmCLYttFEWLNQc1MRbV1NyhhssRioZ5CgkqHgYUTT1pPSr2hrfevSe8bSwLiPsLnaCbsxJQc5SWgWYEJDPWuUA1s4AotQxERNbT9ReA": "19999999999999",
-              "2cWKMJemoBahLnFCQ8wrTuZ3sMyiCeEkUZDYLNucPiVTJr8UU3BgADsKtqosDYNFXzeiw": "5428571428571429",
-              "37btjrVyb4KDHDPBVenqrh8tUTVNYX5ZGwjd4r3svqdnwWicGnMZZV1E7nBJVQsDY69co936H9onHpmA3PYSabYH4ibbULphL1CitDgArH9KknBARc": "19999999999999",
-              "37btjrVyb4KD9Z53z9qD7gTWMHr22e8jDcpCHgJFQaGQsvnNkycRehAaxLAnufNRjhLzQ57XVGJnR6mcsk6MorapLpADT77tyTaX9xfUSZyTA32ZAy": "19999999999999",
-              "37btjrVyb4KCsozLcUUHR8GyVG7erY6j9zehKTADn3e5xpRJtu1YgfJzSmAyERBHUXa5LGWY2aR2KqcssnRjwugh1bGjxc6U6ZrePJnALYTw2TR3yh": "19999999999999",
-              "37btjrVyb4KEDBSAmNtUBy6pfXesvTvtrDZQsSYcyo7SUwjLkhoSaPDCsNqMmoGbqzFQyEe9DNwK59BMudtdkzFPBpbgiEWx5SZr6vVMbpe86qsQJV": "19999999999999",
-              "37btjrVyb4KFf5NQ1DuNoAP4phRomqdEUmtFb6sWcDHkizGj56dwn54LfKrfWa6Er5sxDXYrzpWwS56PKmKaBjJtn1JqN67K3CihFXXospn8B2TDz2": "19999999999999",
-              "37btjrVyb4KBPHxFJqCekpPztGnLgbVsUA46Q8Lj2LKbFJL5Nqk5LgP2u28eBJAxkkU2r118ARdXW7fXLPQgctwK22L4N3zc6XeoDqkadGmTd4s8a1": "19999999999999",
-              "37btjrVyb4KBYe4RSCngNCgVMAeMJkRQqoJs8t6t9e9BHcNvvT6awv4CruMWH2FyiudxcGfZHmjghDvqk39iFrmCt4XE2XDuYzyo97BxwS6MngfeWp": "19999999999999",
-              "37btjrVyb4KF3MxxJBeJqCPFgHyUsSDkrDqoctSSVi9h7F4Wj9zFKcPVuVju76KYhdp7nJhy44512Wjhw7WH4sed3MMSh1HYnKUfjZXGkoZXMajaye": "19999999999999",
-              "37btjrVyb4KDsi9fc3RfExWLumjkp2YrcMjZpew19Z92kZnjPy5Xa84KY2WZw6xmjJA7AXFJCBWtrF9RFw1BjCewEqK77CVYj2s7bk9aAA7yyZARRz": "19999999999999",
-              "2cWKMJemoBaj34AMeqLspGBgX1PVc7z6VkALK3rtVd8iFgCtMUenNoHhVRnjeGfYVQJM1": "5428571428571429",
-              "37btjrVyb4KDpppzxzoaPgnstPejNxGaSZ3Vh22Qd2DWGrwfLJ2tizs33Y5Yjya1U6TXPzVX2PT5g1PXMy4jR4aWZRGZqYJk4Uw9p1h6BhEa189eiN": "19999999999999",
-              "37btjrVyb4KEXaPVoMuKpnVEKKLMFuGSvYL7YMAD529yxeK8Y1zqnbh5FQ8GMYpJwARugWmzaXdJ1gopgsxziC4e5wgjf3zkp7RH41KTJ73xLyfrFP": "19999999999999",
-              "37btjrVyb4KBrhG1yaBVY3X1ZoTCjUH7gbiA4qSFsMGgtLUBgwHiMZPiAJ3kQrRiboPV3s7eYXZD9fnd27qRb1cCEMc4oU57aPn2cYcEdAEJHrsyLB": "19999999999999",
-              "37btjrVyb4KEC4vC63KNqRBD7RX1KBwWDdPDE6oXGxP8x5aKrbVTALaq4XBdak8F47Kt9VcsQvVsKZfAit8vBtZpG2mc6VKUXCFv8pTYWwQMnABckB": "19999999999999",
-              "37btjrVyb4KFPbetkmdvqD8nLRFsUVL4HsVUYmgaZhAmBXcr78M3XoZkptjuszd2T1FNr1fGZApkZFZXikGtyhCc7jH5JYD1q8csTNSWQn4Us3nzX9": "19999999999999",
-              "37btjrVyb4KDfwNJcNMYsyEDVHWrGrNAPBwF9FGEnm5j2XFs4BeGdiSPqPtqCjWCvcRYBfY5EoDjRBhjsTrr2HjB1jw8XZ9Hy8wd9gz4KkCbMugSgf": "19999999999999",
-              "37btjrVyb4KEgvmzjLT7R9xHg1vNob6vCf999UFuG4qfTpHGZufdhbkUogSFJXtQXnCcJDHJ6xuZt92H6VgxGdhSLQ9gmWZy4zCJEVu8Nj8NashVQY": "19999999999999",
-              "37btjrVyb4KAtY8hCobTmAB36dzosSo644ZrzATKQhP1AsnM6BAVfTWwMX5BGXhigxLm5hk4beodymyjivxrH7ZY6BZjMu3AtafB5guvagxEZM7vJq": "19999999999999",
-              "37btjrVyb4KCRMJDqQ3iK4M19XhWGWpFbCoxjgeDB7ZqUhgW7jSYLEk5oVL4okVPVx5rXCgoK2ND9kAWnNU5QncJp1qvuCngRdJaLrvFwp4boE56VR": "19999999999999",
-              "37btjrVyb4KBTRHUnz17FQNFzHR8PpoGGwuNQZauAUxmvTb1o7Ragv9Zvyiv6Cb3rnrmYY1PGtVFTmom3TGg4mK5XpkRyf7PnnCG5EQM69i7MViLpU": "19999999999999",
-              "2cWKMJemoBam1WPtZrz3Fi4EMUDao74k9Xn4fhyVYLqK4o1VRzoxPFU91QBRToLbVyrjX": "5428571428571429",
-              "37btjrVyb4KBUH8nDpwtt3sSc6rJ7AkYjmnqvt1tJ4J8ZKCuqPrEuEioJJZXeD9aohveoB9zhRWru6oM5zyBcgMtkA26HLtTDKsSVwzoqugfftbiPu": "19999999999999",
-              "37btjrVyb4KCgWqZ8sJW46mQGdZS9wKW2TEQesyCoRScUxvisbdvEkfsxYLR49i6wE6uP1BBgPX9eg8cxKHPuNyKpStwf5UVmRCXD2ahotjamotMwV": "19999999999999",
-              "37btjrVyb4KCR9vZcXetWv4QdP4jPSH4msGeXs8DUBUMVYJHgD62etfv2jiD7gmLbLezCAiGTQu9JvrHd9Wfu74wguKgkX1vCUQkzcWsn4rVWsKCyt": "19999999999999",
-              "37btjrVyb4KFV3TiBqtLDN3oHQr5NrA8ouAAqasFU4ZuB9W13xgcgWsSy5fUtbNL4imCruQz19hjzBzykxGxCAarrviCUBh3sxWbvvTTHdvpyWGgXc": "19999999999999",
-              "37btjrVyb4KGM5rFFreGtZAs4PFB2Drb37uXRHebh8rCeVWFkW8De8XAbYqvfQrAqVthfJp9Qy2YzbzNhWSiUGY3D7yJkRkChyMveKCWT8qUTNEu6e": "19999999999999",
-              "2cWKMJemoBahEJS9xuB3R1ofSgtG621enmfpxfx9Unpo2K26wJPioaA4tizZrNMACNoQb": "5428571428571429",
-              "37btjrVyb4KFGV8HUDv7S5E8CSBV3pQLgGFt5HXa2jb9ofbAo3gTxcaQ4So84mHsNk9mhAybq6miH2VZU3iz7cqCd74gPMyn3zdUsrF1u2rib7HSXq": "19999999999999",
-              "37btjrVyb4KCF4JTyyC27XuFmcrn9Nxj1DmM4G5BKnf8F8F8BSpvn3PnsLRNH2RZJoajmg4yqHnwMXpUnbb7sFSuthjXv6YUenX8EWsApQUzAm77Dm": "19999999999999",
-              "37btjrVyb4KD5zMmtnD3jWpX3TSJnZJ8jMzCFQHYa3HcHNXxdAnK5A88SiWncRpJQxesMDrYgzPHk7SnFNag5teaFELV6hE9opnJpJzMGpVicDDRX4": "19999999999999",
-              "37btjrVyb4KDTABtj2RScLVCLVyFhxcURYUZNVta8CghbH5Edz32XSP79NHc28QTkKLMNUBupRnJXs4zcZt8C2fiPFGZfgSBMqMGMidWc2zo9piRb4": "19999999999999",
-              "37btjrVyb4KCGn7x5G6obn9NPNoTuv25LrBcqK9wHCm3XbrhxqycSQrbPfsDxgDp2M8pqTjCk8cVEG2fRxWrTjfG4q71MtyMo6nt8WG11kJzdQQSNL": "19999999999999",
-              "37btjrVyb4KEhnv3cCqP8jzRBbwE5v6ymPkBjTexHCcCgYJarjHHaxipJvz4aaXc5Xmp5KXxnC3SoE1oqR8sdGHobyfsAqJy7DwejZWpkkoYD7LJsS": "19999999999999",
-              "37btjrVyb4KDvKgSbCTx1gwwZFGe5DZaXyGwTYGGnJNCQ9C61XP4n1pKFQtNbYEowGeRoKHCGUvuU8Ebz2vQwN7YhcJ9bSb5oNpAoCe8UxX5KK5C3e": "19999999999999",
-              "37btjrVyb4KB6yr5YozXGqSKemHyZfsgiRQFX3VdJBKx7waoSaScNWc2dNvhNp6HSnXMxUwDtBvicXDWdpoJ7cKLWAwqEYki5azdt1qDP4sHXh8XhJ": "19999999999999",
-              "37btjrVyb4KCqRLQRj8svdZGGLQDZGdXztzeC15Vvt6uZWg23QAdfL1dMc52dpc8jqKquWNj6xjyLnLciVnRxzEq1kiq54ssmc6h7V5xK1cqqKJWBT": "19999999999999",
-              "37btjrVyb4KEW3PG2LAJNwmok2H6i149HetvT6fYrPsqPGpUkucNkA4b5TQmv896EF44UmcCAXDycfxFB7GcVefBCgk9cZffVUdX3kri3i5TEqSjKm": "19999999999999",
-              "37btjrVyb4KDdgCo1a7URfpQVFoTJEUcn4LqWpAtCeLaW7NeGMJtecsahTJM7886BjLcnhU2CboLSUojCPcab3WNTmXFDrRMHMHdmWefCAyYA7QaaL": "19999999999999",
-              "37btjrVyb4KG5vwKTPpCSQ14a7Cv4TESosSVoFVRHsw1vHj7Tpb7N4j1U5dtFcY7L3MWsH9BJqQjU9NxwaHpbHCJAhmsLi2mC2BE8k8Rj7zcjiiVhR": "19999999999999",
-              "37btjrVyb4KAr171Hd3fu65bbtKxqwktHGwY9kNanPYGXQcFKA8d9Hp1RgLrxzU1AdJCJbJDByTnHdDmtA7pm985tKK8hr5JdHPXFfSvkkYZn3kb9G": "19999999999999",
-              "37btjrVyb4KEZWqFxGYhFuLE23i92B8BiLRwwFUdnjmM24KHCNuWik5dc6MJqz7GxupgKGK5zzbYSXJyA8DQVDszyFmJuoxgzPn2GSnfBoREZ82ZdF": "19999999999999",
-              "37btjrVyb4KDB6sZamEoJWYBLoDWucRdDtRXCuQvLCoVoHPNjrywJKDz8PQg65ZtLvYvREwAK9oLzGGb6UcdAf9zwQcFaKRRHhLzCZxwTsRDVyPkSy": "19999999999999",
-              "37btjrVyb4KDJc8Af5dfJY2jcFbtkofFL6qXBxWnk2kHzCE63qAQR9Ynnk1XkfUrcnBrN7EEyvxmUDEFdNFfZHzXKhmkSQht3b6Y5rHHmuFYYoKdZz": "19999999999999",
-              "37btjrVyb4KDjPpuxBuJM1Ma5NGBqriSEAcozZMqYkWEkoJ3GgR8MAy3Zeb8q5BvtsWGEpSFQ69znPuaX4kVCcnEiEMDp91A6EL8A5YM12cpYYogLm": "19999999999999",
-              "37btjrVyb4KDmCmpc6FutA3PbQmWxcsbzZsFEdMKhHxrJVtGkmaiWd18dKmiaRA6o4Y2sAjDwjFozKzNzQg3dp8CXVSPpWgDLAXaozoRyPanW7UM8B": "19999999999999",
-              "37btjrVyb4KCLfSBFhCBdrb72YBNJkKcDCqpdxf3k7iwJTj7M3txxiq3fcam7Nyi8sLcJNSfgnUrh8C7RKEMN5wWpku7HLdZqZVuPRjeihhgXmEpCe": "19999999999999",
-              "37btjrVyb4KF3ZQhHTvVH3L7jNYoZ3XWK6SWpqZKiu9AGz6qNtxoxhAmmJpenFMA6fedYDT3Lt7cihgc1q4pE2GJXvPuknAkjvESmPxhhzkBzuiRis": "19999999999999",
-              "37btjrVyb4KF9xNLdS47pRBLB8e8bQLuvrBiGJbnHPNCbKU4wrMerJztEtYJdHayvaoUEmJ1vc3aiq9Z3UgP83Y1b4rpiyrGeYjzQhhDgB6DW8sWJm": "19999999999999",
-              "37btjrVyb4KC4LdZLvrexUgAntpySomDAPVwdMEnz1cP9pZxsxZqVYzM6zPPWAhc7byfwsLdgW8GEMTuTUagYFAKEmYgaDmYxK7cHxtWJG3hiMHxVU": "19999999999999",
-              "37btjrVyb4KFfXPG5GDEc4tLyVUSepKD9GGXZcSuP1xtLLRQnQr4wSXawT62bSJsiPzS25kdADKh94V3iDksm9nq5fhV4jixCnpNjsn7k2hSkwrAUa": "19999999999999",
-              "37btjrVyb4KC1L9MsZ8htPomWp4FV4hULeBVT6jf3GGqmDcw3k9tPn6pnfqGTWowQDvqVr7BqtQ5rcQ7gc5z41qh9vyBV7Ds83bRsndDbTAwkEUJ21": "19999999999999",
-              "37btjrVyb4KBtLs3NwnoLkyVx9ZxSoQ7mQx2ZvzanG7PGWWdMA9ksXqZxakLxdj9MAPKw7eQoZJWHxJJCsd7MeWj7ujfXtPsthGhcURT3Hste4Kr4n": "19999999999999",
-              "37btjrVyb4KCaYYFDdnbHEdBzpDPcL5iH98AGF8J5avuweDHwKChDq9mBvLKVJS6F4YTuAVDigPjMnAcuYUJ2UUbvDPePFZBhLhBrFUKeauoKC8X5z": "19999999999999",
-              "37btjrVyb4KFfnmiGpxNSGQVMfmFpAFrEAEhZwGPQDutSHnZqQXPhcXxDNcbdoKiztyQHpTA3jSmVowZCxcaJMS1k1wu8U6nXTzejgh7wYZjycamU6": "19999999999999",
-              "37btjrVyb4KCTVE8b2UitH791rYrkSrHG9u449h6JHKotuPWRsdVZQfP1jXrs4ygSxAnG1rM5mGFM6cmUqA44e9fenjbVC1QFYyn3R4CaptVZypKgW": "19999999999999",
-              "37btjrVyb4KDaKs8A6CU8Lrzxpr3WNM1kDdd4CPe66TqSP2ehHexrAuZ3ykMmhkaUZEHUEiq78ELQx5vpSFGHXFKbyGgrWa8rokqamCV8bSKiqsqVt": "19999999999999",
-              "37btjrVyb4KCdPziHrv1QgXL5zMy3KYxr7zPqoRd96iz3LNrkWbobRmPswTpRKgCQEkZcEnipiNJ5UoULAc33mbR44MchdHT5vLNYT9sPxwzpgNUWj": "19999999999999",
-              "37btjrVyb4KGAZJWCpicgRkb9ijP3Jnv6y9EYvnpMqkPdBZ2d6fdnCa9C97HUmfHLWF846AKjViPvnY7MbSM8mTM3VDx5RazBFxA7C7mZ9CyM48AW9": "19999999999999",
-              "37btjrVyb4KFfgfRyETGNXNXm6gAxNpTQSxr6bM7T6yZE1ibiZBovxG52PioVmLRnPYxs4wYddAfgTH4mbmtLFnwuZYSBh2eNsdLdc6vWb4AdJNNym": "19999999999999",
-              "37btjrVyb4KBsV28Wce4x44WsTVoXa5s4zaBKALWXxMQ2MtfVgB8LJJW34QFpvjrxKmheLtpcLyVqaeu36oB6ZcgQPppFN4oqhdueoKBEpn8dfQUVF": "19999999999999",
-              "37btjrVyb4KBEKzyCGqao8GmErVER19oBH3L8xVNCSZs8tCVd53iV5FXZAZ7bNCT67bKoasGeiYZxEoDzGBsKxb4uJxStU1e9wkaPo6BxUEErZG7LD": "19999999999999",
-              "37btjrVyb4KCi8WRzrkFiE1AVYbSiXBzMRTuTLv8DAchfg4tPaDgHRuDN6m4dq4VkA17pkWwCoa2NmvNb5sGeU1ZkjcqFuYrWPK2C5a3TLBfx64uLs": "19999999999999",
-              "37btjrVyb4KDz8QGqk9LJ9kSsSd1zKgqfTuiTKbL92b4aDSXmRPyrFZp3VPEwhMyEmwCiSkpd7KQztirmU6CGwiphhiHoXbbZjkbfiHN5Mq1y7fmJM": "19999999999999",
-              "37btjrVyb4KEcCa8yc1d8Zrne1hRtedHQQGPbkRJcvHak2ygcCndPfSqWwb2L59ERxhtqsMJLdS1fPQPs2vcJcQCvB52tCm4rGCDwUmRG51PUzjSVh": "19999999999999",
-              "37btjrVyb4KEhvykuoQZKWdNKFgTrugRUSV66yr8GCXREuaX2PfVQJeuXS4h1bNP8SeUxHAG2J6RfK35YnsZj5qkWQCWV7tVYMVokU5bw9y8CcmqPy": "19999999999999",
-              "37btjrVyb4KDsFS7rbQjZQGX6Fz53u76NF2hF9iqRhfbx8ePmjJKCsv5rZV1hhtP6DHdKwLAf5zkVH9FE51xYuCvJzNppSn1tgExVQJpuTwKmyTekT": "19999999999999",
-              "37btjrVyb4KFtfVixJcJdD27YZfXfRM5diZFj4TEazkCAhF8KyztTbe67zQpBc1RTjruHNvefdJ9Jtr7u5rebR71tGrGtKioSSGKy2hMKd6GUVFkEg": "19999999999999",
-              "2cWKMJemoBaiXc4dYCHfDyvy3LcqPebJ8zfRJsZZoHDqik2SzK9Be73YQ5W9u5jEiMPXa": "5428571428571429",
-              "37btjrVyb4KFNpxUYvzqFKsRfRYJKHjEuFfgy6rpoGq29dcMrNhbKTvqNr719U282rp9PcnFonAENkUdv2nE36wZmyNkj8JVQJL1TLu25SKjGFNzVs": "19999999999999",
-              "37btjrVyb4KFYnqsKFfMwj4S3PcCxwxutoiUubHazLfw4wJc5bfrQgpNEpRnGCS2UUfzvMWRRV2vy4wzPKE7tshLS2YEW219R6QfAenXzktMoXCmuU": "19999999999999",
-              "37btjrVyb4KEbo96SLroMfZB11rEvztPswgdqC5ESkHXc4EaFdAhsDQ24vJK23XsjTJzpPS3ZcDWiHiFVtmp5wkJrcnRcMe74s88eTy8YLvLL7EBRj": "19999999999999",
-              "37btjrVyb4KBcyGa22cYKz3Xo9UnB2kzZg4nqVX863JCAvUd54ehdg94DWwnBasCv6sUdbKdh9t4tf48oaXokeoms1HDNuegsmRjVntHBX3Z2hnrV7": "19999999999999",
-              "37btjrVyb4KDHmdZ8ewhythkmGaUzLCwME5pGtWR7nPhE9nCjLMcKstQFyKq1vTSagA2BXtiopfGwtLq2e1jhUVKsw1Z8Me6XTmLm5C9MzRYCZCd3n": "19999999999999",
-              "37btjrVyb4KBGJtifVyePJjSHTno1XNBeTcqmSqEhyUznts9KGQTsvCd9Hq6zM2w29njvmJYCtWmNkUXvayfqyv7epN1awWkKK1WUFQKJsjtevSKz7": "19999999999999",
-              "37btjrVyb4KEwqVLa1yaRPdDUctf525DovPsxoXZfqNp26eXQnmTSFwY3Q3rgPsjRfTKHKtjFpxPy6XYvjzscccsZYfXSaL9MmgrKAaeQgQhCtoXih": "19999999999999",
-              "37btjrVyb4KDxRyqtP9nWyEd7sfzdB8Xgh2egCATJAVtvxM2LhKLp1ALCE714vMCsbQZ5SwvVgiAvmieJTkae865ycwU39JN4pgt27pqEuB8uvi947": "19999999999999",
-              "37btjrVyb4KDA9F68PUv9efaoQHTvacu98Dk6Zx3784ADx4SDnwMfDt3uRfJwqBELeVuis5UEqsf9u4zAD9YC82s6YNmQu43avWDqrQq9Z4hHkEVrL": "19999999999999",
-              "37btjrVyb4KCjschbSccsYGDJo1rVBjdVrpH27iRtc5h1q4XRqpQJTma1NA9t9t8PrTsJjFE7WzNCczJHQR1RGXW1jDNEiEqNa6xctAZ4ZBtXKHVtp": "19999999999999"
+              ...
             }
           }
         }
@@ -2998,7 +2676,7 @@ Get information about the genesis block.
 === "cardano-rosetta"
 
     !!! warning
-        Not available in Rosetta!
+        No equivalent in Rosetta!
 
 #### [/api/genesis/address/pages/total](https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_genesisPagesTotal)
 
@@ -3010,7 +2688,7 @@ Get information about the genesis block.
 === "cardano-rest"
 
     ```console
-    $ $BASEURL/api/genesis/address?page=1
+    $ curl $BASEURL/api/genesis/address?page=1
     ```
 
     <details>
@@ -3129,211 +2807,14 @@ Get information about the genesis block.
               "h48-GEVDKf_0_vGKzmGOuAOhhIm2uc0OEDSNwFayV28=": "20000000000000",
               "PO1Kz9bpAowfWD8u9Ial2OkmxDiw6bK_ICDPvuHshJM=": "20000000000000",
               "mqJXwreGLRzV9a--egcVvKN4hzIcNUULsXqcPWe3YXI=": "20000000000000",
-              "ENoYC3dNAtKL-lvjCTZDVhQYmfyWVtI0GNbz4QKqVdY=": "20000000000000",
-              "o0O4s8YkitBZPeZLVyjn8pjtpBoncr-H9mbtAJS_KfE=": "20000000000000",
-              "1XEVfDyaheIAeQICkHlwmvEuY9A7E50hA1v_E_QB3Fg=": "20000000000000",
-              "OKVfmKrrzY0-10uxl9IxlYA6CFWwOU1dN-NyUI0bobU=": "20000000000000",
-              "LYOSBM00cdDToqHepveoat2SN6vdPntA0nSFXRch83Q=": "20000000000000",
-              "3Z-Z3rLCxLt0C3KgagBq3wOXrfm68_zh2st5Bi6Covs=": "20000000000000",
-              "VTx9H6wpJNMC-H-pThklJ9uCllwqXaU0WXHcVTEFAIU=": "20000000000000",
-              "beyF5mz8icvrBvM-mvQzLfbnHCmxOOg8Z7kJs7nySZs=": "20000000000000",
-              "rs_VPO7SNO2YlSY2N881xHFeBnW_Sn2o4uSfuGpq9cc=": "20000000000000",
-              "5RZPTI9FoSvLmiXjKYtUdkrqoMg99tIw8k4enSB1qlQ=": "20000000000000",
-              "QRBLXNJdJCVDjbwPvQmg_liOcYIWfvoKf7Ns5w_RDvU=": "20000000000000",
-              "YG9mVGb_MAvTSdFgOUV8JbRBxnj3sPELZxQNVup_X18=": "20000000000000",
-              "7dEmv0hdv1a7imviD3q3p9pFBFMC77Byx9oinyGwdIQ=": "20000000000000",
-              "H_Qs3m89FGw8QxVTUGuPjdbOPQyP8vzcD8I37BkRAXY=": "20000000000000",
-              "pa6NZ1j_bs8kezg23cUQiba3UyLxLiGDQfDXMQmuPSE=": "20000000000000",
-              "Qi5VCXOUdP-U-Pd--boAii_-gwMpB0IRfibzxWEN53s=": "20000000000000",
-              "cLJrI380JOISi9A14PYTRmClcxPNQS3_GIZdqcXC1JQ=": "20000000000000",
-              "BVY8wsqEPXPQ7DPTvnvat7GRiwxFPHC4jY1x3ZvY1PE=": "20000000000000",
-              "FBlBD9ykcwuFmoogsVjRCUag9xpkwCAgbYDNazT1oY4=": "20000000000000",
-              "KHwUZRYdwRs5UYIhOO9ycjucY8WvTzpkZgZ4PSbDDPI=": "20000000000000",
-              "ED2RmO7Wfad2p4gxyzhr4gqlhavksgHEg1acZiKMQF4=": "20000000000000",
-              "BOjqPWCmGewTKqKekH0HSgpnOEYT8g0qV4t4t6Nj7-c=": "20000000000000",
-              "b-8mgbBV-r9bqufItyyPp2WLitNhBjaMAajl3GfteeE=": "20000000000000",
-              "JW_kuEdd0TkJEUA35YUbf_K9C4OlpZd83iTUqrD0q0g=": "20000000000000",
-              "IF7PMOFaXdwztrj1j_yx_YBafdZpb3pc5EF6y822KgI=": "20000000000000",
-              "r9HNGwms9l0cMBuT8CznPoadXKbzLPceo4-vDydXUwE=": "20000000000000",
-              "rM0RFpsVm738CCDdzBhrEz8Q0CLIqiBKMl5rtdFlWmA=": "20000000000000",
-              "jFyHtgHVcd70V1SZ7O55mo8yvYw5KsijV6fMQEWkJaE=": "20000000000000",
-              "qWmtDqvA3KZyySJLRPFPO2TiOZh3Dpv1FCJTdEilJvc=": "20000000000000",
-              "5YYkqAleNp8VXGYiD7WsXvWZQwybkqAUR9xMf5lLvzs=": "20000000000000",
-              "bi2YeYdi2W2r7IDYToq_N0RR1k3z4GYsRo2xddi2Y7I=": "20000000000000",
-              "vENWfzLRm1wwHYWTUIOznVCXC3ISPt8J6n3gYFrwfpg=": "20000000000000",
-              "G71fGc7_2IoExvY8VctjxMCd7lJsTWgvWzg__lF4qcY=": "20000000000000",
-              "pFzX1lvX3LPolGCv8TQXfWAZupMZEjVlMWmT7nUV70I=": "20000000000000",
-              "pE7umM4kIaTYqKOviWvgTb34xky-kpbN7VvSzhOT8wo=": "20000000000000",
-              "P6J7kBAlCPD4wxAnzuzlqTBWMyqI1zVkqVWM5kKoCwg=": "20000000000000",
-              "CmwjLeSIEKfLzd5ks16QoGCtYNc--wiGsgWWM4OKsco=": "20000000000000",
-              "-RTrh8sxu9mOYYpcfmyod8-v1Z0nqxMunwK-_NFDzYQ=": "20000000000000",
-              "EnoSKFBfSJ_l7RXMglXTSolDt6VeNRMay4soxkUmk0E=": "20000000000000",
-              "VzxlTAQWmOH7ALIXviuXH2pjjYmtW77r9ypeEZlg4mc=": "20000000000000",
-              "93QRpWUE-Yqthy85Y8poB_WeWdG8A_9nnq4HJiMfJQc=": "20000000000000",
-              "H7YIN-FF0kUawzVnhQpCoMLuOJkLzYAtZ2xof7vhtPs=": "20000000000000",
-              "a9_Q5Pzte2G7wXujwVBaAzLcMki6_UjKrxvWzayJ3gY=": "20000000000000",
-              "O4h-7y-2Izq3ojxailZAbMd0VCq78-kIMv8gIcaA6cA=": "20000000000000",
-              "mlzqpS0hE6s7apMGRQP4Cx5Fc380yt9gQX7XVcVrmQQ=": "20000000000000",
-              "aK-WCeAwKHQE9H02zvRLRdoMPIsZWiOfKkbA6yTyMxs=": "20000000000000",
-              "b3fq65eebunM4fM3AQubawjF6Mt9v9jyEXF5f3hewbo=": "20000000000000",
-              "ZbZ7v6OcrjZ3vqPFVzaHOK2A5UzRYy-wm0C-ngebU_s=": "20000000000000",
-              "zXza46kY7Gs5cJEoN2TUwAaXth5W7uUKQfNiaPyWDSc=": "20000000000000",
-              "5q5RzTcpFFUne5AKkua3DJO1IFQEOGyb2jQvV4DmDT8=": "20000000000000",
-              "5CzeQFC__uUi8TRPuWVgsUeJauYR3i1f3rvD0CrC34o=": "20000000000000",
-              "KOp96-E17RXmCf0_vEOcecpTmY8W0wpbpBwFuPwFbKM=": "20000000000000",
-              "EFK3F4mO823aCcko3QmFJ3Klm7glGs8a0f_f6WVIwdg=": "20000000000000",
-              "e4TOcy9Qp5BQ8tXkEXaWpuHRmAVcJRfPEV3sVCOKZsQ=": "20000000000000",
-              "w-2bM_wksghmtHp4ZB2ZOQ-V9Dw1ZivS7RwxgY-DsB4=": "20000000000000",
-              "9pKGBzQJLoqY6vcOM_OqHRgq9KIdO3ovCBp1mBEFKek=": "20000000000000",
-              "TMFEEMjP7q64-Liae7CEG0ELKtEC2e2vDuCpMItyfzU=": "20000000000000",
-              "nrRREQUC1zKTpQRRNDzO-NiQh6DJahitvTk0SWLkc8g=": "20000000000000",
-              "9xnVxPVNI9fdN5zGa5Fa3HcIwof5T-2lMbdLh3_Nbpk=": "20000000000000",
-              "NqOaYkD2B5yTFQ1dHMY7X2LmV0Q9tZI6KYR1-dFW_z8=": "20000000000000",
-              "zhXX6D5r4CDjlLLQiC87LZZL2zWUIYaXhxbcgq_Ww3w=": "20000000000000",
-              "CXMg_ROxPjiJAyxUpBlUepLDhcdhMffR89izVr9vcRU=": "20000000000000",
-              "vfTTtqpmg_3jQ7zWV3XhNfmtbtn32Z0fcfNc6_Cx-4E=": "20000000000000",
-              "3UAwyThFcR1vKSBpktCSkJg3NpMQhL1z4l46NHpfJkY=": "20000000000000",
-              "K4m8Vu1qtFRavgx0jrctVErZf6VbKDfBnigjQef6k-o=": "20000000000000",
-              "rmyqI_SuwRsbR4rG1Uk6bUlSJRvo004w5SeejGQERT4=": "20000000000000",
-              "oo8sxwl7TO2JP-QfW3_aQbE9zZCLBogFPnwEMPUBuYs=": "20000000000000",
-              "lif3znin9EWfZBoYZ9Ta1c69eINSJNmaqkKJVpFuF2U=": "20000000000000",
-              "kMAvVvgk0sEf3kHXyfb8gQ6H4gWaFBDSUwms4IFs2jo=": "20000000000000",
-              "8CMex0Km9bk2J1r4FaSD_FSwlGRgh1e8C1-7fCGUAJE=": "20000000000000",
-              "pUliJY_tq41pTdo5VJISdWbGGBnL_82pupm4AjZF-y0=": "20000000000000",
-              "E7dg9_nI8tY9CXli9OyIHtx0FUsq0QZKLBVx9Cr8Daw=": "20000000000000",
-              "cpO_GBP5qVwOCGxws6oGvgZszu7jy_LwbKZj_f2pg8o=": "20000000000000",
-              "n8MZ16U_jB4Vg4BPZHGorDzVO7dC9qOfAdYhAluKD4Y=": "20000000000000",
-              "hqzkwiRusxDSgY-MyqmCyTC0VxELSFdJKJVpzBGOdQM=": "20000000000000",
-              "QCiQStlI-PWCbwclsM8ZvfrmP49kql7lAwJjgzZ_OvI=": "20000000000000",
-              "7prDyNFRXierLX1UE26h-TSO0fmfC2lFHQoelogU3hg=": "20000000000000",
-              "32mL1n7cF_xLIjWAGTC6vISGcafcJe0EgXaxaQNtrzQ=": "20000000000000",
-              "H94Fk3T5fiEXPd1eGYfpwPP4_y9FVQWsi2bhIAf9hFE=": "20000000000000",
-              "YLQqBDTjfVrQJcqCzgn0js4ScjJpbh3_dGRmg_wQ9WM=": "20000000000000",
-              "Ctfg-00LO1JetbfqwOOIwrm56xdZSzzZRccGW52eCps=": "20000000000000",
-              "GCkRs5Iqi5jyzRhF-Z5B4-EzgCRAb55pJK8a3kmrbwU=": "20000000000000",
-              "975KNlfAi1B-u2Q0X0qBZpuZNLCUNnKnX-jvBzah3pE=": "20000000000000",
-              "SrxXeNRxF0accD3dsKoj8ymSQeJoUVs78Llsy-4ZIO0=": "20000000000000",
-              "m5zF99P2vG3cqGrG17VvRti7d2XRi3fuUHfec-jM6tQ=": "20000000000000",
-              "A-w4r_kJIZpI8TqDAY-F44cR0lhZtnB25UhT0NXM6Zc=": "20000000000000",
-              "7mglsAKSgUEkAyA6C5Ni-v_1xoGNPCN_cj7ctQZGZqg=": "20000000000000",
-              "x3DrzZ_Yp8df2EGsGlwNAnclV2Tv3lcdqnI3Lk_0bF4=": "20000000000000",
-              "GWoauU1tVb37fjs6mPrxXiBoy9HarPqyGI8zj1mc7cw=": "20000000000000",
-              "op9p-7Xy9fBmzrjLbMD1jEuW1QVXTOsXSIwgaFN3sDk=": "20000000000000",
-              "KC7yE_m_JSiWGVP9cpcfYTLF77taAPTgveRKEiIPg1A=": "20000000000000",
-              "6V6sxoH3dMLw8vWcH0NQF2SZNPDzmtULTX4vxkeCQd4=": "20000000000000",
-              "y0DLZDhvfU-M5MvdhoyxEFp811PWFfrAdIfDVhYCMzE=": "20000000000000",
-              "wCHhA7PS7wdfEuMpzrOJfdGyF2uIChR2LnnAcQE3hHI=": "20000000000000",
-              "s4iYnscFXdEK56b7o4ZvKpgN0YoKchpR-U9MZEqbGb8=": "20000000000000",
-              "WkMPzKKtocKcbc7_fsFND1oln6gAfWJspg9REi75pMw=": "20000000000000"
+              ...
             },
             "nonAvvmBalances": {
-              "2cWKMJemoBajGgvgVVziaKmUFa4LwJnAHffmuaSJBMDqethwJVQsyBsTSfFhp5jFpkVQM": "5428571428571429",
               "37btjrVyb4KEg6anTcJ9E4EAvYtNV9xXL6LNpA15YLhgvm9zJ1D2jwme574HikZ36rKdTwaUmpEicCoL1bDw4CtH5PNcFnTRGQNaFd5ai6Wvo6CZsi": "19999999999999",
               "37btjrVyb4KCRtni6YrG77RLPosnDqtEYoAD5xLdKYkWgnLqGa8yuXDUQd3psHrfxqaRcvNTsAW4ngUe6bzstbzSUJtwoaKbYaL8zjFAJJsZkQ42ti": "19999999999999",
               "37btjrVyb4KGDMix4Uj5opvbMDgjZYUjeARAqTEFEbgLUH3qyju9gkBpcm2fVWgkcNgK3xFsQgWm1w8zxqvm9P6xJj9mHqLeMJPwDMUKUGPcDyUaDS": "19999999999999",
               "37btjrVyb4KEkSeCVx985rXc38DCud2AW4LdasNmyoPLbtDGcDCyYVdf8BzxvDnzPehv4kyVBkzThjVEkSpGTv8PGQs4yRUgiCaKa7PTtBY4ohNGqR": "19999999999999",
-              "37btjrVyb4KFGS7upvgJHtmp7y7EFB67utzaHf7PM8y8U4tNkpmARNwiD7seN4NSAceHmj64KLGgh9qn1BpYF49NyWxocBHn1N533qBUYfhQar9ceu": "19999999999999",
-              "37btjrVyb4KCfir7GrvC6Y5kBNjeakZNd5po62AzQQ85SGkBB4QfXibC4fSNK5YvNeVgmPc8WbEeSUHRjoiqhJ4HDtinK2deBHSdCH6Cw8k2u92rdh": "19999999999999",
-              "37btjrVyb4KGAExHTQjLUHJBksSXGTomjgNsw8a4KepCgQYk4gxacKb84vGpPSv9Pjt3gdgMjA1nB67Pq3XyJpTDk8kLcXpJawCe6SCJf5jUowvAz8": "19999999999999",
-              "37btjrVyb4KCE1qeEoUh9b8CpcZcJ794Di14AxAELGoppJNVdB79nnuKcgRut566MdDkxTqravFaDSD9iwAvDByUHi59xocCY3ButEjmCQeLTLZXQ7": "19999999999999",
-              "37btjrVyb4KGGSGD8KgQD6qUBaSjxy5JRtsmMSHEGGAZqA29ULGwci8TcM16vBhywuBw54izQtpAqXeyUnbjh56hCgoqGZp9tHTMLLkEgLzwxVCZ4N": "19999999999999",
-              "37btjrVyb4KG5ZZfwwiQuhAGWiNJ2FhXP3oAuiq75qknCz4CZWNMVY4B9BmiHRHnWfhUbkLHUqfabCYASUk2V1qGuDw97x1gdf871aFY7Lpz3N1NvT": "19999999999999",
-              "37btjrVyb4KFtDHT2vDtMvQbLBgfH5hnpyVTTqqpPsieykukuxrDShHNccAEEj7M87UuV2GJ5pPA7YJ4JPjSokA99XaDgLmeaAumhZPHMwzg2Laspr": "19999999999999",
-              "37btjrVyb4KDHFyvvKb29RD53ebt6N8kpbL41J4VxWpiFC4FnxxybP33M9tBbdqfMXvSvyTQpv4dULXf5B838kEWXSJ24bpHtFgcbRkiHQwqWFQ5du": "19999999999999",
-              "37btjrVyb4KFh7jhHCtWxW942ceq7Xhxay8FZ7GkEBezGyFm3wJcVBGy1YYJDZ4Z7GbrFZmHLSe47zFs8Rjxk8rveoRpo1s43HXrMrhd4ijim4jJVP": "19999999999999",
-              "37btjrVyb4KFhYgC9Lr4Se7C1gL39d5WBVADyUyQZz2BfG4BZxczyW827JRQR5enyWaoj6NnA5NyKsheV6Eb7WvQtbN8D6116HTknHhEb5jh1yUU6Z": "19999999999999",
-              "37btjrVyb4KDLtM8HUJsBwergjZUj4DcMfkFmbV4bXUFGJk815o9nowX9ndPPVAeSNjAFYqJeFwTiMa9Ka8LqBnqFZgPpacyx9LrQLoXVMjvvLB7DK": "19999999999999",
-              "37btjrVyb4KDec7E64byKc4XjmmCRDaTGQYgHJTPDijZVr7NwZSP8g7ienzTLx5Z1quaQRhJqqAyV8Z2QdkzXvjTTRiVDCqps78uGp3uuth4wEJKP9": "19999999999999",
-              "37btjrVyb4KF5R1LEsaQgjWFWXwbgJ51naDEaCRG23KiAN3UtGzaT5PvUANtFBgjmcCtPLMBYMTGL4S8px4HyQMLAyF4fakYoFAJC3PkxCWMUatGWD": "19999999999999",
-              "37btjrVyb4KFB5Tmw1wsLmuv17Q6y8i6HGpVxbW8k4bevmob3DcdbH6jzrAtUrBpKgfTGgPMpLAbJcpaByGGJErkXQWFwrNMW35S79hxFvAN2GTXVQ": "19999999999999",
-              "37btjrVyb4KDEX2XToMQoi1No3YdREgZWzrf1xQPbfhbZTZnprFwDsRMiBxqUrA7p4BwjxXHDyqAccPwyX8iWWquz2CrLazJMR4s8AMz2US1D1ffJL": "19999999999999",
-              "37btjrVyb4KFTKCoqtZBdbh7LtJ9mRR1nbkX7ggP6a7AwvkSDxUN6U5GJWfuRXnL3a5x5e16uQwyjC6PoPVQ7VLdJXr8Kd3eFknLu6NDf2ey4AaJo2": "19999999999999",
-              "37btjrVyb4KCHCpiGd1J2GtVjP4KxEWP7RE6K6yxHzE97cbDgFD63fUFygbni8jKw1N37nGsT43KBvBn5w9ee8sVegr6Tg8fAr52mUkhdvTZYJV52T": "19999999999999",
-              "37btjrVyb4KGLRpX3uQfSeLovpMTcWfVZSM5RCufYvy2tyCMwrLXyHKCM9VqQh8dCQA6WcTrViaxqpvBSeKreHFL4CftfJU1z7CjHAze236NLesbL8": "19999999999999",
-              "37btjrVyb4KEdwV1MS3Pjek1HjLN2CSq3SJZGFBbZctkGLz569i9RWN15bAvCcZ8R5dgEi8iYjpmMVKioufoGv3issZQvVtzPz38pWHBViyRK2how5": "19999999999999",
-              "37btjrVyb4KD1x4cqHfGxrvBubZ8pSM8Jmw15UiHpy77eMsqpMewGND2GdvAwTBZhf4KA4uypBJnuUPbPYFovpRVJ92BUaMBHfQnAD3i15DAzD8EvL": "19999999999999",
-              "2cWKMJemoBait15xg1M73WAvWafoieg2GrcykbRk6J1QC2jMUXn7LpXf4mk5RUeu8qYeG": "5428571428571429",
-              "37btjrVyb4KC3HyNR82Bj2Sr9o6CF9o3J5hBNycGb9JwrHggTYUHfivi87akkYDv8ayepMkM4mNvxTKvoVdMHFkMnZZgrk5qobwPKM8idSnYYmvTRU": "19999999999999",
-              "37btjrVyb4KCmCLYttFEWLNQc1MRbV1NyhhssRioZ5CgkqHgYUTT1pPSr2hrfevSe8bSwLiPsLnaCbsxJQc5SWgWYEJDPWuUA1s4AotQxERNbT9ReA": "19999999999999",
-              "2cWKMJemoBahLnFCQ8wrTuZ3sMyiCeEkUZDYLNucPiVTJr8UU3BgADsKtqosDYNFXzeiw": "5428571428571429",
-              "37btjrVyb4KDHDPBVenqrh8tUTVNYX5ZGwjd4r3svqdnwWicGnMZZV1E7nBJVQsDY69co936H9onHpmA3PYSabYH4ibbULphL1CitDgArH9KknBARc": "19999999999999",
-              "37btjrVyb4KD9Z53z9qD7gTWMHr22e8jDcpCHgJFQaGQsvnNkycRehAaxLAnufNRjhLzQ57XVGJnR6mcsk6MorapLpADT77tyTaX9xfUSZyTA32ZAy": "19999999999999",
-              "37btjrVyb4KCsozLcUUHR8GyVG7erY6j9zehKTADn3e5xpRJtu1YgfJzSmAyERBHUXa5LGWY2aR2KqcssnRjwugh1bGjxc6U6ZrePJnALYTw2TR3yh": "19999999999999",
-              "37btjrVyb4KEDBSAmNtUBy6pfXesvTvtrDZQsSYcyo7SUwjLkhoSaPDCsNqMmoGbqzFQyEe9DNwK59BMudtdkzFPBpbgiEWx5SZr6vVMbpe86qsQJV": "19999999999999",
-              "37btjrVyb4KFf5NQ1DuNoAP4phRomqdEUmtFb6sWcDHkizGj56dwn54LfKrfWa6Er5sxDXYrzpWwS56PKmKaBjJtn1JqN67K3CihFXXospn8B2TDz2": "19999999999999",
-              "37btjrVyb4KBPHxFJqCekpPztGnLgbVsUA46Q8Lj2LKbFJL5Nqk5LgP2u28eBJAxkkU2r118ARdXW7fXLPQgctwK22L4N3zc6XeoDqkadGmTd4s8a1": "19999999999999",
-              "37btjrVyb4KBYe4RSCngNCgVMAeMJkRQqoJs8t6t9e9BHcNvvT6awv4CruMWH2FyiudxcGfZHmjghDvqk39iFrmCt4XE2XDuYzyo97BxwS6MngfeWp": "19999999999999",
-              "37btjrVyb4KF3MxxJBeJqCPFgHyUsSDkrDqoctSSVi9h7F4Wj9zFKcPVuVju76KYhdp7nJhy44512Wjhw7WH4sed3MMSh1HYnKUfjZXGkoZXMajaye": "19999999999999",
-              "37btjrVyb4KDsi9fc3RfExWLumjkp2YrcMjZpew19Z92kZnjPy5Xa84KY2WZw6xmjJA7AXFJCBWtrF9RFw1BjCewEqK77CVYj2s7bk9aAA7yyZARRz": "19999999999999",
-              "2cWKMJemoBaj34AMeqLspGBgX1PVc7z6VkALK3rtVd8iFgCtMUenNoHhVRnjeGfYVQJM1": "5428571428571429",
-              "37btjrVyb4KDpppzxzoaPgnstPejNxGaSZ3Vh22Qd2DWGrwfLJ2tizs33Y5Yjya1U6TXPzVX2PT5g1PXMy4jR4aWZRGZqYJk4Uw9p1h6BhEa189eiN": "19999999999999",
-              "37btjrVyb4KEXaPVoMuKpnVEKKLMFuGSvYL7YMAD529yxeK8Y1zqnbh5FQ8GMYpJwARugWmzaXdJ1gopgsxziC4e5wgjf3zkp7RH41KTJ73xLyfrFP": "19999999999999",
-              "37btjrVyb4KBrhG1yaBVY3X1ZoTCjUH7gbiA4qSFsMGgtLUBgwHiMZPiAJ3kQrRiboPV3s7eYXZD9fnd27qRb1cCEMc4oU57aPn2cYcEdAEJHrsyLB": "19999999999999",
-              "37btjrVyb4KEC4vC63KNqRBD7RX1KBwWDdPDE6oXGxP8x5aKrbVTALaq4XBdak8F47Kt9VcsQvVsKZfAit8vBtZpG2mc6VKUXCFv8pTYWwQMnABckB": "19999999999999",
-              "37btjrVyb4KFPbetkmdvqD8nLRFsUVL4HsVUYmgaZhAmBXcr78M3XoZkptjuszd2T1FNr1fGZApkZFZXikGtyhCc7jH5JYD1q8csTNSWQn4Us3nzX9": "19999999999999",
-              "37btjrVyb4KDfwNJcNMYsyEDVHWrGrNAPBwF9FGEnm5j2XFs4BeGdiSPqPtqCjWCvcRYBfY5EoDjRBhjsTrr2HjB1jw8XZ9Hy8wd9gz4KkCbMugSgf": "19999999999999",
-              "37btjrVyb4KEgvmzjLT7R9xHg1vNob6vCf999UFuG4qfTpHGZufdhbkUogSFJXtQXnCcJDHJ6xuZt92H6VgxGdhSLQ9gmWZy4zCJEVu8Nj8NashVQY": "19999999999999",
-              "37btjrVyb4KAtY8hCobTmAB36dzosSo644ZrzATKQhP1AsnM6BAVfTWwMX5BGXhigxLm5hk4beodymyjivxrH7ZY6BZjMu3AtafB5guvagxEZM7vJq": "19999999999999",
-              "37btjrVyb4KCRMJDqQ3iK4M19XhWGWpFbCoxjgeDB7ZqUhgW7jSYLEk5oVL4okVPVx5rXCgoK2ND9kAWnNU5QncJp1qvuCngRdJaLrvFwp4boE56VR": "19999999999999",
-              "37btjrVyb4KBTRHUnz17FQNFzHR8PpoGGwuNQZauAUxmvTb1o7Ragv9Zvyiv6Cb3rnrmYY1PGtVFTmom3TGg4mK5XpkRyf7PnnCG5EQM69i7MViLpU": "19999999999999",
-              "2cWKMJemoBam1WPtZrz3Fi4EMUDao74k9Xn4fhyVYLqK4o1VRzoxPFU91QBRToLbVyrjX": "5428571428571429",
-              "37btjrVyb4KBUH8nDpwtt3sSc6rJ7AkYjmnqvt1tJ4J8ZKCuqPrEuEioJJZXeD9aohveoB9zhRWru6oM5zyBcgMtkA26HLtTDKsSVwzoqugfftbiPu": "19999999999999",
-              "37btjrVyb4KCgWqZ8sJW46mQGdZS9wKW2TEQesyCoRScUxvisbdvEkfsxYLR49i6wE6uP1BBgPX9eg8cxKHPuNyKpStwf5UVmRCXD2ahotjamotMwV": "19999999999999",
-              "37btjrVyb4KCR9vZcXetWv4QdP4jPSH4msGeXs8DUBUMVYJHgD62etfv2jiD7gmLbLezCAiGTQu9JvrHd9Wfu74wguKgkX1vCUQkzcWsn4rVWsKCyt": "19999999999999",
-              "37btjrVyb4KFV3TiBqtLDN3oHQr5NrA8ouAAqasFU4ZuB9W13xgcgWsSy5fUtbNL4imCruQz19hjzBzykxGxCAarrviCUBh3sxWbvvTTHdvpyWGgXc": "19999999999999",
-              "37btjrVyb4KGM5rFFreGtZAs4PFB2Drb37uXRHebh8rCeVWFkW8De8XAbYqvfQrAqVthfJp9Qy2YzbzNhWSiUGY3D7yJkRkChyMveKCWT8qUTNEu6e": "19999999999999",
-              "2cWKMJemoBahEJS9xuB3R1ofSgtG621enmfpxfx9Unpo2K26wJPioaA4tizZrNMACNoQb": "5428571428571429",
-              "37btjrVyb4KFGV8HUDv7S5E8CSBV3pQLgGFt5HXa2jb9ofbAo3gTxcaQ4So84mHsNk9mhAybq6miH2VZU3iz7cqCd74gPMyn3zdUsrF1u2rib7HSXq": "19999999999999",
-              "37btjrVyb4KCF4JTyyC27XuFmcrn9Nxj1DmM4G5BKnf8F8F8BSpvn3PnsLRNH2RZJoajmg4yqHnwMXpUnbb7sFSuthjXv6YUenX8EWsApQUzAm77Dm": "19999999999999",
-              "37btjrVyb4KD5zMmtnD3jWpX3TSJnZJ8jMzCFQHYa3HcHNXxdAnK5A88SiWncRpJQxesMDrYgzPHk7SnFNag5teaFELV6hE9opnJpJzMGpVicDDRX4": "19999999999999",
-              "37btjrVyb4KDTABtj2RScLVCLVyFhxcURYUZNVta8CghbH5Edz32XSP79NHc28QTkKLMNUBupRnJXs4zcZt8C2fiPFGZfgSBMqMGMidWc2zo9piRb4": "19999999999999",
-              "37btjrVyb4KCGn7x5G6obn9NPNoTuv25LrBcqK9wHCm3XbrhxqycSQrbPfsDxgDp2M8pqTjCk8cVEG2fRxWrTjfG4q71MtyMo6nt8WG11kJzdQQSNL": "19999999999999",
-              "37btjrVyb4KEhnv3cCqP8jzRBbwE5v6ymPkBjTexHCcCgYJarjHHaxipJvz4aaXc5Xmp5KXxnC3SoE1oqR8sdGHobyfsAqJy7DwejZWpkkoYD7LJsS": "19999999999999",
-              "37btjrVyb4KDvKgSbCTx1gwwZFGe5DZaXyGwTYGGnJNCQ9C61XP4n1pKFQtNbYEowGeRoKHCGUvuU8Ebz2vQwN7YhcJ9bSb5oNpAoCe8UxX5KK5C3e": "19999999999999",
-              "37btjrVyb4KB6yr5YozXGqSKemHyZfsgiRQFX3VdJBKx7waoSaScNWc2dNvhNp6HSnXMxUwDtBvicXDWdpoJ7cKLWAwqEYki5azdt1qDP4sHXh8XhJ": "19999999999999",
-              "37btjrVyb4KCqRLQRj8svdZGGLQDZGdXztzeC15Vvt6uZWg23QAdfL1dMc52dpc8jqKquWNj6xjyLnLciVnRxzEq1kiq54ssmc6h7V5xK1cqqKJWBT": "19999999999999",
-              "37btjrVyb4KEW3PG2LAJNwmok2H6i149HetvT6fYrPsqPGpUkucNkA4b5TQmv896EF44UmcCAXDycfxFB7GcVefBCgk9cZffVUdX3kri3i5TEqSjKm": "19999999999999",
-              "37btjrVyb4KDdgCo1a7URfpQVFoTJEUcn4LqWpAtCeLaW7NeGMJtecsahTJM7886BjLcnhU2CboLSUojCPcab3WNTmXFDrRMHMHdmWefCAyYA7QaaL": "19999999999999",
-              "37btjrVyb4KG5vwKTPpCSQ14a7Cv4TESosSVoFVRHsw1vHj7Tpb7N4j1U5dtFcY7L3MWsH9BJqQjU9NxwaHpbHCJAhmsLi2mC2BE8k8Rj7zcjiiVhR": "19999999999999",
-              "37btjrVyb4KAr171Hd3fu65bbtKxqwktHGwY9kNanPYGXQcFKA8d9Hp1RgLrxzU1AdJCJbJDByTnHdDmtA7pm985tKK8hr5JdHPXFfSvkkYZn3kb9G": "19999999999999",
-              "37btjrVyb4KEZWqFxGYhFuLE23i92B8BiLRwwFUdnjmM24KHCNuWik5dc6MJqz7GxupgKGK5zzbYSXJyA8DQVDszyFmJuoxgzPn2GSnfBoREZ82ZdF": "19999999999999",
-              "37btjrVyb4KDB6sZamEoJWYBLoDWucRdDtRXCuQvLCoVoHPNjrywJKDz8PQg65ZtLvYvREwAK9oLzGGb6UcdAf9zwQcFaKRRHhLzCZxwTsRDVyPkSy": "19999999999999",
-              "37btjrVyb4KDJc8Af5dfJY2jcFbtkofFL6qXBxWnk2kHzCE63qAQR9Ynnk1XkfUrcnBrN7EEyvxmUDEFdNFfZHzXKhmkSQht3b6Y5rHHmuFYYoKdZz": "19999999999999",
-              "37btjrVyb4KDjPpuxBuJM1Ma5NGBqriSEAcozZMqYkWEkoJ3GgR8MAy3Zeb8q5BvtsWGEpSFQ69znPuaX4kVCcnEiEMDp91A6EL8A5YM12cpYYogLm": "19999999999999",
-              "37btjrVyb4KDmCmpc6FutA3PbQmWxcsbzZsFEdMKhHxrJVtGkmaiWd18dKmiaRA6o4Y2sAjDwjFozKzNzQg3dp8CXVSPpWgDLAXaozoRyPanW7UM8B": "19999999999999",
-              "37btjrVyb4KCLfSBFhCBdrb72YBNJkKcDCqpdxf3k7iwJTj7M3txxiq3fcam7Nyi8sLcJNSfgnUrh8C7RKEMN5wWpku7HLdZqZVuPRjeihhgXmEpCe": "19999999999999",
-              "37btjrVyb4KF3ZQhHTvVH3L7jNYoZ3XWK6SWpqZKiu9AGz6qNtxoxhAmmJpenFMA6fedYDT3Lt7cihgc1q4pE2GJXvPuknAkjvESmPxhhzkBzuiRis": "19999999999999",
-              "37btjrVyb4KF9xNLdS47pRBLB8e8bQLuvrBiGJbnHPNCbKU4wrMerJztEtYJdHayvaoUEmJ1vc3aiq9Z3UgP83Y1b4rpiyrGeYjzQhhDgB6DW8sWJm": "19999999999999",
-              "37btjrVyb4KC4LdZLvrexUgAntpySomDAPVwdMEnz1cP9pZxsxZqVYzM6zPPWAhc7byfwsLdgW8GEMTuTUagYFAKEmYgaDmYxK7cHxtWJG3hiMHxVU": "19999999999999",
-              "37btjrVyb4KFfXPG5GDEc4tLyVUSepKD9GGXZcSuP1xtLLRQnQr4wSXawT62bSJsiPzS25kdADKh94V3iDksm9nq5fhV4jixCnpNjsn7k2hSkwrAUa": "19999999999999",
-              "37btjrVyb4KC1L9MsZ8htPomWp4FV4hULeBVT6jf3GGqmDcw3k9tPn6pnfqGTWowQDvqVr7BqtQ5rcQ7gc5z41qh9vyBV7Ds83bRsndDbTAwkEUJ21": "19999999999999",
-              "37btjrVyb4KBtLs3NwnoLkyVx9ZxSoQ7mQx2ZvzanG7PGWWdMA9ksXqZxakLxdj9MAPKw7eQoZJWHxJJCsd7MeWj7ujfXtPsthGhcURT3Hste4Kr4n": "19999999999999",
-              "37btjrVyb4KCaYYFDdnbHEdBzpDPcL5iH98AGF8J5avuweDHwKChDq9mBvLKVJS6F4YTuAVDigPjMnAcuYUJ2UUbvDPePFZBhLhBrFUKeauoKC8X5z": "19999999999999",
-              "37btjrVyb4KFfnmiGpxNSGQVMfmFpAFrEAEhZwGPQDutSHnZqQXPhcXxDNcbdoKiztyQHpTA3jSmVowZCxcaJMS1k1wu8U6nXTzejgh7wYZjycamU6": "19999999999999",
-              "37btjrVyb4KCTVE8b2UitH791rYrkSrHG9u449h6JHKotuPWRsdVZQfP1jXrs4ygSxAnG1rM5mGFM6cmUqA44e9fenjbVC1QFYyn3R4CaptVZypKgW": "19999999999999",
-              "37btjrVyb4KDaKs8A6CU8Lrzxpr3WNM1kDdd4CPe66TqSP2ehHexrAuZ3ykMmhkaUZEHUEiq78ELQx5vpSFGHXFKbyGgrWa8rokqamCV8bSKiqsqVt": "19999999999999",
-              "37btjrVyb4KCdPziHrv1QgXL5zMy3KYxr7zPqoRd96iz3LNrkWbobRmPswTpRKgCQEkZcEnipiNJ5UoULAc33mbR44MchdHT5vLNYT9sPxwzpgNUWj": "19999999999999",
-              "37btjrVyb4KGAZJWCpicgRkb9ijP3Jnv6y9EYvnpMqkPdBZ2d6fdnCa9C97HUmfHLWF846AKjViPvnY7MbSM8mTM3VDx5RazBFxA7C7mZ9CyM48AW9": "19999999999999",
-              "37btjrVyb4KFfgfRyETGNXNXm6gAxNpTQSxr6bM7T6yZE1ibiZBovxG52PioVmLRnPYxs4wYddAfgTH4mbmtLFnwuZYSBh2eNsdLdc6vWb4AdJNNym": "19999999999999",
-              "37btjrVyb4KBsV28Wce4x44WsTVoXa5s4zaBKALWXxMQ2MtfVgB8LJJW34QFpvjrxKmheLtpcLyVqaeu36oB6ZcgQPppFN4oqhdueoKBEpn8dfQUVF": "19999999999999",
-              "37btjrVyb4KBEKzyCGqao8GmErVER19oBH3L8xVNCSZs8tCVd53iV5FXZAZ7bNCT67bKoasGeiYZxEoDzGBsKxb4uJxStU1e9wkaPo6BxUEErZG7LD": "19999999999999",
-              "37btjrVyb4KCi8WRzrkFiE1AVYbSiXBzMRTuTLv8DAchfg4tPaDgHRuDN6m4dq4VkA17pkWwCoa2NmvNb5sGeU1ZkjcqFuYrWPK2C5a3TLBfx64uLs": "19999999999999",
-              "37btjrVyb4KDz8QGqk9LJ9kSsSd1zKgqfTuiTKbL92b4aDSXmRPyrFZp3VPEwhMyEmwCiSkpd7KQztirmU6CGwiphhiHoXbbZjkbfiHN5Mq1y7fmJM": "19999999999999",
-              "37btjrVyb4KEcCa8yc1d8Zrne1hRtedHQQGPbkRJcvHak2ygcCndPfSqWwb2L59ERxhtqsMJLdS1fPQPs2vcJcQCvB52tCm4rGCDwUmRG51PUzjSVh": "19999999999999",
-              "37btjrVyb4KEhvykuoQZKWdNKFgTrugRUSV66yr8GCXREuaX2PfVQJeuXS4h1bNP8SeUxHAG2J6RfK35YnsZj5qkWQCWV7tVYMVokU5bw9y8CcmqPy": "19999999999999",
-              "37btjrVyb4KDsFS7rbQjZQGX6Fz53u76NF2hF9iqRhfbx8ePmjJKCsv5rZV1hhtP6DHdKwLAf5zkVH9FE51xYuCvJzNppSn1tgExVQJpuTwKmyTekT": "19999999999999",
-              "37btjrVyb4KFtfVixJcJdD27YZfXfRM5diZFj4TEazkCAhF8KyztTbe67zQpBc1RTjruHNvefdJ9Jtr7u5rebR71tGrGtKioSSGKy2hMKd6GUVFkEg": "19999999999999",
-              "2cWKMJemoBaiXc4dYCHfDyvy3LcqPebJ8zfRJsZZoHDqik2SzK9Be73YQ5W9u5jEiMPXa": "5428571428571429",
-              "37btjrVyb4KFNpxUYvzqFKsRfRYJKHjEuFfgy6rpoGq29dcMrNhbKTvqNr719U282rp9PcnFonAENkUdv2nE36wZmyNkj8JVQJL1TLu25SKjGFNzVs": "19999999999999",
-              "37btjrVyb4KFYnqsKFfMwj4S3PcCxwxutoiUubHazLfw4wJc5bfrQgpNEpRnGCS2UUfzvMWRRV2vy4wzPKE7tshLS2YEW219R6QfAenXzktMoXCmuU": "19999999999999",
-              "37btjrVyb4KEbo96SLroMfZB11rEvztPswgdqC5ESkHXc4EaFdAhsDQ24vJK23XsjTJzpPS3ZcDWiHiFVtmp5wkJrcnRcMe74s88eTy8YLvLL7EBRj": "19999999999999",
-              "37btjrVyb4KBcyGa22cYKz3Xo9UnB2kzZg4nqVX863JCAvUd54ehdg94DWwnBasCv6sUdbKdh9t4tf48oaXokeoms1HDNuegsmRjVntHBX3Z2hnrV7": "19999999999999",
-              "37btjrVyb4KDHmdZ8ewhythkmGaUzLCwME5pGtWR7nPhE9nCjLMcKstQFyKq1vTSagA2BXtiopfGwtLq2e1jhUVKsw1Z8Me6XTmLm5C9MzRYCZCd3n": "19999999999999",
-              "37btjrVyb4KBGJtifVyePJjSHTno1XNBeTcqmSqEhyUznts9KGQTsvCd9Hq6zM2w29njvmJYCtWmNkUXvayfqyv7epN1awWkKK1WUFQKJsjtevSKz7": "19999999999999",
-              "37btjrVyb4KEwqVLa1yaRPdDUctf525DovPsxoXZfqNp26eXQnmTSFwY3Q3rgPsjRfTKHKtjFpxPy6XYvjzscccsZYfXSaL9MmgrKAaeQgQhCtoXih": "19999999999999",
-              "37btjrVyb4KDxRyqtP9nWyEd7sfzdB8Xgh2egCATJAVtvxM2LhKLp1ALCE714vMCsbQZ5SwvVgiAvmieJTkae865ycwU39JN4pgt27pqEuB8uvi947": "19999999999999",
-              "37btjrVyb4KDA9F68PUv9efaoQHTvacu98Dk6Zx3784ADx4SDnwMfDt3uRfJwqBELeVuis5UEqsf9u4zAD9YC82s6YNmQu43avWDqrQq9Z4hHkEVrL": "19999999999999",
-              "37btjrVyb4KCjschbSccsYGDJo1rVBjdVrpH27iRtc5h1q4XRqpQJTma1NA9t9t8PrTsJjFE7WzNCczJHQR1RGXW1jDNEiEqNa6xctAZ4ZBtXKHVtp": "19999999999999"
+              ...
             }
           }
         }
@@ -3345,7 +2826,7 @@ Get information about the genesis block.
 === "cardano-rosetta"
 
     !!! warning
-        Not available in Rosetta!
+        No equivalent in Rosetta!
 
 #### [/api/supply/ada](https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_totalAda)
 
@@ -3354,7 +2835,7 @@ Get the total ADA supply in the blockchain.
 === "cardano-rest"
 
     ```console
-    $ $BASEURL/api/supply/ada
+    $ curl $BASEURL/api/supply/ada
     ```
 
     <details>
@@ -3373,8 +2854,7 @@ Get the total ADA supply in the blockchain.
     query getAdaSupply {
       ada {
         supply {
-          total # corresponds to REST output
-                # total = max - reserves
+          total # corresponds to REST output, total = max - reserves
           # additional interesting output
           circulating
           max
@@ -3383,17 +2863,7 @@ Get the total ADA supply in the blockchain.
     }
     ```
 
-    ```console
-    ```
-
-    <details>
-      <summary>see JSON response</summary>
-    ```json
-    ```
-    </details>
-
 === "cardano-rosetta"
 
     !!! warning
-        Not available in Rosetta!
-
+        No equivalent in Rosetta!
