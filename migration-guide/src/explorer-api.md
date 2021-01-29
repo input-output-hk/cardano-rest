@@ -6,6 +6,16 @@ below are in reality much more flexible and capable than the queries given in th
 !!! tip
     Any GraphQL query can be run interactively in the Cardano GraphQL playground, which is accessible [here](https://cardano-graphql-testnet.daedalus-operations.com/) online.
 
+!!! info
+    cURL Examples below refers to a `$BASEURL` environment variable. Replace this to point to the host and port of the right services. If you're using the default local setup with the 
+    default configuration, it should correspond to:
+
+    | Service         | Protocol | Hostname  | Port |
+    | ---             | ---      | ---       | ---  |
+    | cardano-rest    | http     | localhost | 8090 |
+    | cardano-graphql | http     | localhost | 3100 |
+    | cardano-rosetta | http     | localhost | 8080 |
+
 ## Blocks
 
 #### [/api/blocks/pages](https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_blocksPages)
@@ -15,7 +25,7 @@ Get the list of blocks, contained in pages.
 === "cardano-rest"
 
     ```console
-    $ curl "https://explorer.cardano-testnet.iohkdev.io/api/blocks/pages?page=221038"
+    $ curl "$BASEURL/api/blocks/pages?page=221038"
     ```
 
     <details>
@@ -227,7 +237,10 @@ Get the list of blocks, contained in pages.
     ```
 
     ```console
-    $ curl 'https://cardano-graphql-testnet.daedalus-operations.com/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"    query getBlocks($limit: Int!, $epoch: Int!) {\n      blocks(limit: $limit, where: { epoch: { number: { _eq: $epoch } } }) {\n        slotNo # cbeSlot\n        slotInEpoch # cbeEpoch\n        number # cbeBlkHeight\n        hash # cbeBlkHash\n        forgedAt # cbeTimeIssued\n        transactionsCount # cbeTxNum\n        transactions_aggregate {\n          aggregate {\n            sum {\n              totalOutput # cbeTotalSent\n            }\n          }\n        }\n        slotLeader {\n          hash # cbeBlockLead\n        }\n        size # cbeSize\n        fees # cbeFees\n      }\n    }\n","variables":{"limit":2,"epoch":86}}' --compressed
+    $ curl "$BASEURL" \
+      -H 'Content-Type: application/json' \
+      -H 'Accept: application/json' \
+      --data-binary '{"variables":{"limit":2,"epoch":86},{ "query":"query getBlocks($limit: Int!, $epoch: Int!) { blocks(limit: $limit, where: { epoch: { number: { _eq: $epoch } } }) { slotNo slotInEpoch number hash forgedAt transactionsCount transactions_aggregate { aggregate { sum { totalOutput } } } slotLeader { hash } size fees } }"}' 
     ```
 
 
@@ -302,7 +315,7 @@ Get block's summary information.
 === "cardano-rest"
 
     ```console
-    $ https://explorer.cardano-testnet.iohkdev.io/api/blocks/summary/1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6
+    $ $BASEURL/api/blocks/summary/1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6
     ```
 
     <details>
@@ -376,7 +389,7 @@ Get block's summary information.
     ```
 
     ```console
-    $ curl 'https://cardano-graphql-testnet.daedalus-operations.com/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getBlock($hash: Hash32Hex!) {\n  blocks(limit: 1, where: { hash: { _eq: $hash } }) {\n    slotInEpoch # cbeEpoch\n    slotNo # cbeSlot\n    number # cbeBlkHeight\n    hash # cbeBlkHash\n    forgedAt # cbeTimeIssued\n    transactionsCount # cbeTxNum\n    transactions_aggregate {\n      aggregate {\n        sum {\n          totalOutput # cbeTotalSent\n        }\n      }\n    }\n    size # cbeSize\n    slotLeader {\n      hash # cbeBlockLead\n    }\n    fees # cbeFees\n    previousBlock {\n      hash # cbsPrevHash\n    }\n    nextBlock {\n      hash # cbsNextHash\n    }\n    merkelRoot # cbsMerkleRoot\n  }\n}","variables":{"hash":"1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6"}}' --compressed
+    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getBlock($hash: Hash32Hex!) {\n  blocks(limit: 1, where: { hash: { _eq: $hash } }) {\n    slotInEpoch # cbeEpoch\n    slotNo # cbeSlot\n    number # cbeBlkHeight\n    hash # cbeBlkHash\n    forgedAt # cbeTimeIssued\n    transactionsCount # cbeTxNum\n    transactions_aggregate {\n      aggregate {\n        sum {\n          totalOutput # cbeTotalSent\n        }\n      }\n    }\n    size # cbeSize\n    slotLeader {\n      hash # cbeBlockLead\n    }\n    fees # cbeFees\n    previousBlock {\n      hash # cbsPrevHash\n    }\n    nextBlock {\n      hash # cbsNextHash\n    }\n    merkelRoot # cbsMerkleRoot\n  }\n}","variables":{"hash":"1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6"}}' --compressed
     ```
 
 
@@ -422,7 +435,7 @@ Get block's summary information.
 === "cardano-rosetta"
 
  ```console
-    $ curl -X POST 'http://localhost:8080/block' -H "Content-Type: application/json" -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
+    $ curl -X POST '$BASEURL/block' -H "Content-Type: application/json" -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
     ```
 
     <details>
@@ -497,7 +510,7 @@ Get brief information about transactions.
 === "cardano-rest"
 
     ```console
-    $ https://explorer.cardano-testnet.iohkdev.io/api/blocks/txs/1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6
+    $ $BASEURL/api/blocks/txs/1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6
     ```
 
     <details>
@@ -602,7 +615,7 @@ Get brief information about transactions.
     ```
 
     ```console
-    $ curl 'https://cardano-graphql-testnet.daedalus-operations.com/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getBlockTxs($hash: Hash32Hex!) {\n  blocks(limit: 1, where: { hash: { _eq: $hash } }) {\n    transactions {\n      hash # ctbId\n      includedAt # ctbTimeIssued\n      fee # ctbFees\n      inputs {\n        # ctbInputs\n        address # ctaAddress\n        value # ctaAmount\n        sourceTxHash # ctaTxHash\n        sourceTxIndex # ctaTxIndex\n      }\n      inputs_aggregate {\n        aggregate {\n          sum {\n            value # ctbInputSum\n          }\n        }\n      }\n      outputs { # ctbOutputs\n        address # ctaAddress\n        index # ctaTxIndex\n        value # ctaAmount\n        transaction {\n          hash # ctaTxHash\n        }\n      }\n      outputs_aggregate {\n        aggregate {\n          sum {\n            value # ctbOutputSum\n          }\n        }\n      }\n    }\n  }\n}","variables":{"hash":"1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6"}}' --compressed
+    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getBlockTxs($hash: Hash32Hex!) {\n  blocks(limit: 1, where: { hash: { _eq: $hash } }) {\n    transactions {\n      hash # ctbId\n      includedAt # ctbTimeIssued\n      fee # ctbFees\n      inputs {\n        # ctbInputs\n        address # ctaAddress\n        value # ctaAmount\n        sourceTxHash # ctaTxHash\n        sourceTxIndex # ctaTxIndex\n      }\n      inputs_aggregate {\n        aggregate {\n          sum {\n            value # ctbInputSum\n          }\n        }\n      }\n      outputs { # ctbOutputs\n        address # ctaAddress\n        index # ctaTxIndex\n        value # ctaAmount\n        transaction {\n          hash # ctaTxHash\n        }\n      }\n      outputs_aggregate {\n        aggregate {\n          sum {\n            value # ctbOutputSum\n          }\n        }\n      }\n    }\n  }\n}","variables":{"hash":"1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6"}}' --compressed
     ```
 
 
@@ -670,7 +683,7 @@ Get brief information about transactions.
 === "cardano-rosetta"
 
 ```console
-    $ curl -X POST 'http://localhost:8080/block' -H "Content-Type: application/json" -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
+    $ curl -X POST '$BASEURL/block' -H "Content-Type: application/json" -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
     ```
 
     <details>
@@ -749,7 +762,7 @@ Get information about the N latest transactions.
 === "cardano-rest"
 
     ```console
-    $ https://explorer.cardano-testnet.iohkdev.io/api/txs/last
+    $ $BASEURL/api/txs/last
     ```
 
     <details>
@@ -929,7 +942,7 @@ Get information about the N latest transactions.
     ```
 
     ```console
-    $ curl 'https://cardano-graphql-testnet.daedalus-operations.com/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getTxs($limit: Int!) {\n  transactions(limit: $limit, order_by: { includedAt: desc }) {\n    hash # cteId\n    includedAt # cteTimeIssued\n    outputs_aggregate {\n      aggregate {\n        sum {\n          value # cteAmount\n        }\n      }\n    }\n  }\n}\n","variables":{"limit":20}}' --compressed
+    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getTxs($limit: Int!) {\n  transactions(limit: $limit, order_by: { includedAt: desc }) {\n    hash # cteId\n    includedAt # cteTimeIssued\n    outputs_aggregate {\n      aggregate {\n        sum {\n          value # cteAmount\n        }\n      }\n    }\n  }\n}\n","variables":{"limit":20}}' --compressed
     ```
 
     <details>
@@ -1167,7 +1180,7 @@ Get information about the N latest transactions.
 === "cardano-rosetta"
 
  ```console
-    $ curl -X POST 'http://localhost:8080/network/status' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {} }' | jq
+    $ curl -X POST '$BASEURL/network/status' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {} }' | jq
     ```
 
     <details>
@@ -1193,7 +1206,7 @@ Get information about the N latest transactions.
     </details>
     
  ```console
-    $ curl -X POST 'http://localhost:8080/block' -H "Content-Type: application/json" -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
+    $ curl -X POST '$BASEURL/block' -H "Content-Type: application/json" -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
     ```
 
     <details>
@@ -1269,7 +1282,7 @@ Get summary information about a transaction.
 === "cardano-rest"
 
     ```console
-    $ https://explorer.cardano-testnet.iohkdev.io/api/txs/summary/382a5274ebf102910c6c923a8b11f108e79ecedb5d7433cd0dd15a8a443f0fa5
+    $ $BASEURL/api/txs/summary/382a5274ebf102910c6c923a8b11f108e79ecedb5d7433cd0dd15a8a443f0fa5
     ```
 
     <details>
@@ -1381,7 +1394,7 @@ Get summary information about a transaction.
     ```
 
     ```console
-    $ curl 'https://cardano-graphql-testnet.daedalus-operations.com/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getTxSummary($hash: Hash32Hex!) {\n  transactions(where: { hash: { _eq: $hash } }) {\n    hash # ctsId\n    includedAt # ctsTxTimeIssued\n    fee # ctsFees\n    block {\n      epochNo # ctsBlockEpoch\n      slotNo # ctsBlockSlot\n      slotInEpoch\n      number # ctsBlockHeight\n      hash # ctsBlockHash\n    }\n    inputs { # ctsInputs\n      address # ctaAddress\n      value # ctaAmount\n      sourceTxHash # ctaTxHash\n      sourceTxIndex # ctaTxIndex\n    }\n    inputs_aggregate {\n      aggregate {\n        sum {\n          value # ctsTotalInput\n        }\n      }\n    }\n    outputs { # ctsOutputs\n      address # ctaAddress\n      value # ctaAmount\n      index # ctaTxIndex\n      txHash # ctaTxHash\n    }\n    outputs_aggregate {\n      aggregate {\n        sum {\n          value # ctsTotalOutput\n        }\n      }\n    }\n  }\n}\n","variables":{"hash":"382a5274ebf102910c6c923a8b11f108e79ecedb5d7433cd0dd15a8a443f0fa5"}}' --compressed
+    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getTxSummary($hash: Hash32Hex!) {\n  transactions(where: { hash: { _eq: $hash } }) {\n    hash # ctsId\n    includedAt # ctsTxTimeIssued\n    fee # ctsFees\n    block {\n      epochNo # ctsBlockEpoch\n      slotNo # ctsBlockSlot\n      slotInEpoch\n      number # ctsBlockHeight\n      hash # ctsBlockHash\n    }\n    inputs { # ctsInputs\n      address # ctaAddress\n      value # ctaAmount\n      sourceTxHash # ctaTxHash\n      sourceTxIndex # ctaTxIndex\n    }\n    inputs_aggregate {\n      aggregate {\n        sum {\n          value # ctsTotalInput\n        }\n      }\n    }\n    outputs { # ctsOutputs\n      address # ctaAddress\n      value # ctaAmount\n      index # ctaTxIndex\n      txHash # ctaTxHash\n    }\n    outputs_aggregate {\n      aggregate {\n        sum {\n          value # ctsTotalOutput\n        }\n      }\n    }\n  }\n}\n","variables":{"hash":"382a5274ebf102910c6c923a8b11f108e79ecedb5d7433cd0dd15a8a443f0fa5"}}' --compressed
     ```
 
     <details>
@@ -1447,7 +1460,7 @@ Get summary information about a transaction.
 === "cardano-rosetta"
 
  ```console
-    $ curl -X POST 'http://localhost:8080/block' -H "Content-Type: application/json" -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
+    $ curl -X POST '$BASEURL/block' -H "Content-Type: application/json" -d '{ "network_identifier": {"blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": {"index": "5264122" }}'
     ```
 
     <details>
@@ -1516,7 +1529,7 @@ Get summary information about a transaction.
     </details>
 
  ```console
-    $ curl -X POST 'http://localhost:8080/block/transaction' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": { "index": "5264122", "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a" }, "transaction_identifier": { "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"}}' | jq
+    $ curl -X POST '$BASEURL/block/transaction' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": { "index": "5264122", "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a" }, "transaction_identifier": { "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"}}' | jq
     ```
 
     <details>
@@ -1585,7 +1598,7 @@ Get statistics about transactions.
 === "cardano-rest"
 
     ```console
-    $ https://explorer.cardano-testnet.iohkdev.io/api/stats/txs?page=221444
+    $ $BASEURL/api/stats/txs?page=221444
     ```
 
     <details>
@@ -1637,7 +1650,7 @@ Get statistics about transactions.
     ```
 
     ```console
-    $ curl 'https://cardano-graphql-testnet.daedalus-operations.com/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getTxsStats($start: Int!, $end: Int!) {\n  blocks(\n    order_by: { forgedAt: desc }\n    where: {\n      number: { _gte: $start, _lte: $end }\n      transactionsCount: { _gt: \"0\" }\n    }\n  ) {\n    transactions {\n      hash\n      size\n    }\n  }\n}\n","variables":{"start":2214430,"end":2214440}}' --compressed
+    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getTxsStats($start: Int!, $end: Int!) {\n  blocks(\n    order_by: { forgedAt: desc }\n    where: {\n      number: { _gte: $start, _lte: $end }\n      transactionsCount: { _gt: \"0\" }\n    }\n  ) {\n    transactions {\n      hash\n      size\n    }\n  }\n}\n","variables":{"start":2214430,"end":2214440}}' --compressed
     ```
 
     <details>
@@ -1649,7 +1662,7 @@ Get statistics about transactions.
 === "cardano-rosetta"
 
  ```console
-    $ curl -X POST 'http://localhost:8080/block/transaction' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": { "index": "5264122", "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a" }, "transaction_identifier": { "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"}}' | jq
+    $ curl -X POST '$BASEURL/block/transaction' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "block_identifier": { "index": "5264122", "hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a" }, "transaction_identifier": { "hash": "2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772"}}' | jq
     ```
 
     <details>
@@ -1720,7 +1733,7 @@ Get summary information about an address.
 === "cardano-rest"
 
     ```console
-    $ https://explorer.cardano-testnet.iohkdev.io/api/addresses/summary/addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5
+    $ $BASEURL/api/addresses/summary/addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5
     ```
 
     <details>
@@ -1891,7 +1904,7 @@ Get summary information about an address.
     ```
 
     ```console
-    $ curl 'https://cardano-graphql-testnet.daedalus-operations.com/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getAddressSummary($address: String!) {\n  caTxNum: transactions_aggregate(\n    where: {\n      _or: [\n        { inputs: { address: { _eq: $address } } }\n        { outputs: { address: { _eq: $address } } }\n      ]\n    }\n  ) {\n    aggregate {\n      count # caTxNum\n    }\n  }\n  # TODO: caTotalFee ??\n  # TODO: caType ??\n  # TODO: caChainTip ??\n  caTotalInput: transactions_aggregate(\n    where: { inputs: { address: { _eq: $address } } }\n  ) {\n    aggregate {\n      sum {\n        totalOutput # caTotalInput ??\n      }\n    }\n  }\n  caTotalOutput: transactions_aggregate(\n    where: { outputs: { address: { _eq: $address } } }\n  ) {\n    aggregate {\n      sum {\n        totalOutput # caTotalOutput ??\n      }\n    }\n  }\n  caBalance: utxos_aggregate(where: { address: { _eq: $address } }) {\n    aggregate {\n      sum {\n        value # caBalance\n      }\n    }\n  }\n  caTxList: transactions(\n    where: {\n      _or: [\n        { inputs: { address: { _eq: $address } } }\n        { outputs: { address: { _eq: $address } } }\n      ]\n    }\n  ) {\n    hash # ctbId\n    includedAt # ctbTimeIssued\n    fee # ctbFees\n    inputs(where: { address: { _eq: $address } }) {\n      # ctbInputs\n      address # ctaAddress\n      value # ctaAmount\n      txHash # ctaTxHash\n      sourceTxIndex # ctaTxIndex\n    }\n    outputs(where: { address: { _eq: $address } }) {\n      address # ctaAddress\n      value # ctaAmount\n      txHash # ctaTxHash\n      # TODO: ctaTxIndex ??\n    }\n    inputs_aggregate(where: { address: { _eq: $address } }) {\n      aggregate {\n        sum {\n          value # ctbInputSum\n        }\n      }\n    }\n    outputs_aggregate(where: { address: { _eq: $address } }) {\n      aggregate {\n        sum {\n          value # ctbOutputSum\n        }\n      }\n    }\n  }\n}\n","variables":{"address":"addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5"}}' --compressed
+    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getAddressSummary($address: String!) {\n  caTxNum: transactions_aggregate(\n    where: {\n      _or: [\n        { inputs: { address: { _eq: $address } } }\n        { outputs: { address: { _eq: $address } } }\n      ]\n    }\n  ) {\n    aggregate {\n      count # caTxNum\n    }\n  }\n  # TODO: caTotalFee ??\n  # TODO: caType ??\n  # TODO: caChainTip ??\n  caTotalInput: transactions_aggregate(\n    where: { inputs: { address: { _eq: $address } } }\n  ) {\n    aggregate {\n      sum {\n        totalOutput # caTotalInput ??\n      }\n    }\n  }\n  caTotalOutput: transactions_aggregate(\n    where: { outputs: { address: { _eq: $address } } }\n  ) {\n    aggregate {\n      sum {\n        totalOutput # caTotalOutput ??\n      }\n    }\n  }\n  caBalance: utxos_aggregate(where: { address: { _eq: $address } }) {\n    aggregate {\n      sum {\n        value # caBalance\n      }\n    }\n  }\n  caTxList: transactions(\n    where: {\n      _or: [\n        { inputs: { address: { _eq: $address } } }\n        { outputs: { address: { _eq: $address } } }\n      ]\n    }\n  ) {\n    hash # ctbId\n    includedAt # ctbTimeIssued\n    fee # ctbFees\n    inputs(where: { address: { _eq: $address } }) {\n      # ctbInputs\n      address # ctaAddress\n      value # ctaAmount\n      txHash # ctaTxHash\n      sourceTxIndex # ctaTxIndex\n    }\n    outputs(where: { address: { _eq: $address } }) {\n      address # ctaAddress\n      value # ctaAmount\n      txHash # ctaTxHash\n      # TODO: ctaTxIndex ??\n    }\n    inputs_aggregate(where: { address: { _eq: $address } }) {\n      aggregate {\n        sum {\n          value # ctbInputSum\n        }\n      }\n    }\n    outputs_aggregate(where: { address: { _eq: $address } }) {\n      aggregate {\n        sum {\n          value # ctbOutputSum\n        }\n      }\n    }\n  }\n}\n","variables":{"address":"addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5"}}' --compressed
     ```
 
     <details>
@@ -1961,7 +1974,7 @@ Get summary information about an address.
 
 === "cardano-rosetta"
 
-                  curl -X POST http://localhost:8080/account/balance \
+                  curl -X POST $BASEURL/account/balance \
                   -H "Content-Type: application/json" \
                   -d '{ "network_identifier": {
                   "blockchain": "cardano", 
@@ -1972,7 +1985,7 @@ Get summary information about an address.
                   "metadata": {}}' | jq
                   
   ```console
-    $ curl -X POST 'http://localhost:8080/account/balance' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "account_identifier": { "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E" }, "metadata": {}}' | jq
+    $ curl -X POST '$BASEURL/account/balance' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "account_identifier": { "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E" }, "metadata": {}}' | jq
     ```
 
     <details>
@@ -2004,7 +2017,7 @@ Get address information specific to a block.
 === "cardano-rest"
 
     ```console
-    $ https://explorer.cardano-testnet.iohkdev.io/api/block/02788224fb087d9a5ed48a12a3db741ad7bd4429a63e7e5b6bc69d2f2956d205/address/addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5
+    $ $BASEURL/api/block/02788224fb087d9a5ed48a12a3db741ad7bd4429a63e7e5b6bc69d2f2956d205/address/addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5
     ```
 
     <details>
@@ -2152,7 +2165,7 @@ Get address information specific to a block.
     ```
 
     ```console
-    $ curl 'https://cardano-graphql-testnet.daedalus-operations.com/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getAddressBlockSummary($address: String!, $block: Hash32Hex!) {\n  blocks(where: { hash: { _eq: $block } }) {\n    transactions_aggregate(\n      where: {\n        _or: [\n          { inputs: { address: { _eq: $address } } }\n          { outputs: { address: { _eq: $address } } }\n        ]\n      }\n    ) {\n      aggregate {\n        count # caTxNum\n      }\n    }\n    transactions(\n      where: {\n        _or: [\n          { inputs: { address: { _eq: $address } } }\n          { outputs: { address: { _eq: $address } } }\n        ]\n      }\n    ) {\n      # caTxList\n      hash # ctbId\n      includedAt # ctbTimeIssued\n      fee # ctbFees\n      inputs(where: { address: { _eq: $address } }) {\n        address # ctaAddress\n        value # ctaAmount\n        txHash # ctaTxHash\n        sourceTxIndex # ctaTxIndex\n      }\n      outputs(where: { address: { _eq: $address } }) {\n        address # ctaAddress\n        value # ctaAmount\n        txHash # ctaTxHash\n      }\n      inputs_aggregate(where: { address: { _eq: $address } }) {\n        aggregate {\n          sum {\n            value # ctbInputSum\n          }\n        }\n      }\n      outputs_aggregate(where: { address: { _eq: $address } }) {\n        aggregate {\n          sum {\n            value # ctbOutputSum\n          }\n        }\n      }\n    }\n  }\n}\n","variables":{"address":"addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5","block":"02788224fb087d9a5ed48a12a3db741ad7bd4429a63e7e5b6bc69d2f2956d205"}}' --compressed
+    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getAddressBlockSummary($address: String!, $block: Hash32Hex!) {\n  blocks(where: { hash: { _eq: $block } }) {\n    transactions_aggregate(\n      where: {\n        _or: [\n          { inputs: { address: { _eq: $address } } }\n          { outputs: { address: { _eq: $address } } }\n        ]\n      }\n    ) {\n      aggregate {\n        count # caTxNum\n      }\n    }\n    transactions(\n      where: {\n        _or: [\n          { inputs: { address: { _eq: $address } } }\n          { outputs: { address: { _eq: $address } } }\n        ]\n      }\n    ) {\n      # caTxList\n      hash # ctbId\n      includedAt # ctbTimeIssued\n      fee # ctbFees\n      inputs(where: { address: { _eq: $address } }) {\n        address # ctaAddress\n        value # ctaAmount\n        txHash # ctaTxHash\n        sourceTxIndex # ctaTxIndex\n      }\n      outputs(where: { address: { _eq: $address } }) {\n        address # ctaAddress\n        value # ctaAmount\n        txHash # ctaTxHash\n      }\n      inputs_aggregate(where: { address: { _eq: $address } }) {\n        aggregate {\n          sum {\n            value # ctbInputSum\n          }\n        }\n      }\n      outputs_aggregate(where: { address: { _eq: $address } }) {\n        aggregate {\n          sum {\n            value # ctbOutputSum\n          }\n        }\n      }\n    }\n  }\n}\n","variables":{"address":"addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5","block":"02788224fb087d9a5ed48a12a3db741ad7bd4429a63e7e5b6bc69d2f2956d205"}}' --compressed
     ```
 
     <details>
@@ -2206,7 +2219,7 @@ Get address information specific to a block.
 === "cardano-rosetta"
 
  ```console
-    $ curl -X POST 'http://localhost:8080/account/balance' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "account_identifier": { "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E" }, "metadata": {}, "block_identifier": {"index": "5264122","hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a" },"currencies": {"symbol": "ada", "decimals": 8 }}' | jq
+    $ curl -X POST '$BASEURL/account/balance' -H "Content-Type: application/json" -d '{ "network_identifier": { "blockchain": "cardano", "network": "mainnet" }, "metadata": {}, "account_identifier": { "address": "DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E" }, "metadata": {}, "block_identifier": {"index": "5264122","hash": "b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a" },"currencies": {"symbol": "ada", "decimals": 8 }}' | jq
     ```
 
     <details>
@@ -2242,7 +2255,7 @@ Get epoch pages, all the paged slots in the epoch.
 === "cardano-rest"
 
     ```console
-    $ https://explorer.cardano-testnet.iohkdev.io/api/epochs/1?page=1
+    $ $BASEURL/api/epochs/1?page=1
     ```
 
     <details>
@@ -2458,7 +2471,7 @@ Get epoch pages, all the paged slots in the epoch.
     ```
 
     ```console
-    $ curl 'https://cardano-graphql-testnet.daedalus-operations.com/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getEpoch($epoch: Int!, $block_limit: Int!) {\n  epochs(where: { number: { _eq: $epoch } }) {\n    number # cbeEpoch\n    blocks(limit: $block_limit, order_by: { slotNo: asc }) {\n      slotInEpoch # cbeSlot\n      number # cbeBlkHeight\n      hash # cbeBlkHash\n      slotLeader {\n        hash # cbeBlockLead\n      }\n      forgedAt # cbeTimeIssued\n    }\n    startedAt\n    transactionsCount # cbeTxNum\n    blocks_aggregate {\n      aggregate {\n        sum {\n          size # cbeSize\n          fees # cbeFees\n        }\n      }\n    }\n    output # cbeTotalSent\n  }\n}","variables":{"epoch":1,"block_limit":10}}' --compressed
+    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getEpoch($epoch: Int!, $block_limit: Int!) {\n  epochs(where: { number: { _eq: $epoch } }) {\n    number # cbeEpoch\n    blocks(limit: $block_limit, order_by: { slotNo: asc }) {\n      slotInEpoch # cbeSlot\n      number # cbeBlkHeight\n      hash # cbeBlkHash\n      slotLeader {\n        hash # cbeBlockLead\n      }\n      forgedAt # cbeTimeIssued\n    }\n    startedAt\n    transactionsCount # cbeTxNum\n    blocks_aggregate {\n      aggregate {\n        sum {\n          size # cbeSize\n          fees # cbeFees\n        }\n      }\n    }\n    output # cbeTotalSent\n  }\n}","variables":{"epoch":1,"block_limit":10}}' --compressed
     ```
 
     <details>
@@ -2591,7 +2604,7 @@ Get the slot information in an epoch.
 === "cardano-rest"
 
     ```console
-    $ https://explorer.cardano-testnet.iohkdev.io/api/epochs/1/8
+    $ $BASEURL/api/epochs/1/8
     ```
 
     <details>
@@ -2660,7 +2673,7 @@ Get the slot information in an epoch.
     ```
 
     ```console
-    $ curl 'https://cardano-graphql-testnet.daedalus-operations.com/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getSlotInEpoch($epoch: Int!, $slot: Int!) {\n  epochs(where: { number: { _eq: $epoch } }) {\n    number # cbeEpoch\n    blocks(where: { slotInEpoch: { _eq: $slot } }) {\n      slotInEpoch # cbeSlot\n      number # cbeBlkHeight\n      hash # cbeBlkHash\n      slotLeader {\n        hash # cbeBlockLead\n      }\n      forgedAt # cbeTimeIssued\n    }\n    startedAt\n    transactionsCount # cbeTxNum\n    blocks_aggregate(where: { slotInEpoch: { _eq: $slot } }) {\n      aggregate {\n        sum {\n          size # cbeSize\n          fees # cbeFees\n        }\n      }\n    }\n    output # cbeTotalSent\n  }\n}","variables":{"epoch":1,"slot":8}}' --compressed
+    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"query getSlotInEpoch($epoch: Int!, $slot: Int!) {\n  epochs(where: { number: { _eq: $epoch } }) {\n    number # cbeEpoch\n    blocks(where: { slotInEpoch: { _eq: $slot } }) {\n      slotInEpoch # cbeSlot\n      number # cbeBlkHeight\n      hash # cbeBlkHash\n      slotLeader {\n        hash # cbeBlockLead\n      }\n      forgedAt # cbeTimeIssued\n    }\n    startedAt\n    transactionsCount # cbeTxNum\n    blocks_aggregate(where: { slotInEpoch: { _eq: $slot } }) {\n      aggregate {\n        sum {\n          size # cbeSize\n          fees # cbeFees\n        }\n      }\n    }\n    output # cbeTotalSent\n  }\n}","variables":{"epoch":1,"slot":8}}' --compressed
     ```
 
     <details>
@@ -2714,7 +2727,7 @@ Get information about the genesis block.
 === "cardano-rest"
 
     ```console
-    $ https://explorer.cardano-testnet.iohkdev.io/api/genesis/summary
+    $ $BASEURL/api/genesis/summary
     ```
 
     <details>
@@ -2754,7 +2767,7 @@ Get information about the genesis block.
     ```
 
     ```console
-    $ curl 'https://cardano-graphql-testnet.daedalus-operations.com/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"    query getGenesisSummary {\n      genesis {\n        byron {\n          avvmDistr\n          nonAvvmBalances\n        }\n      }\n    }\n"}' --compressed
+    $ curl "$BASEURL" -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"    query getGenesisSummary {\n      genesis {\n        byron {\n          avvmDistr\n          nonAvvmBalances\n        }\n      }\n    }\n"}' --compressed
     ```
 
     <details>
@@ -2997,7 +3010,7 @@ Get information about the genesis block.
 === "cardano-rest"
 
     ```console
-    $ https://explorer.cardano-testnet.iohkdev.io/api/genesis/address?page=1
+    $ $BASEURL/api/genesis/address?page=1
     ```
 
     <details>
@@ -3098,7 +3111,10 @@ Get information about the genesis block.
     ```
 
     ```console
-    $ curl 'https://cardano-graphql-testnet.daedalus-operations.com/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: https://cardano-graphql-testnet.daedalus-operations.com' --data-binary '{"query":"    query getGenesisSummary {\n      genesis {\n        byron {\n          avvmDistr\n          nonAvvmBalances\n        }\n      }\n    }\n"}' --compressed
+    $ curl "$BASEURL" \
+      -H 'Content-Type: application/json' \
+      -H 'Accept: application/json' \
+      --data-binary '{"query":" query getGenesisSummary { genesis { byron { avvmDistr nonAvvmBalances } } }"}' 
     ```
 
     <details>
@@ -3338,7 +3354,7 @@ Get the total ADA supply in the blockchain.
 === "cardano-rest"
 
     ```console
-    $ https://explorer.cardano-testnet.iohkdev.io/api/supply/ada
+    $ $BASEURL/api/supply/ada
     ```
 
     <details>

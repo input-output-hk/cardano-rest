@@ -1,13 +1,19 @@
 # cardano-rest migration guide
 
-## Installing Dependencies
+## Installing 
 
 ```console
 $ pip install -r requirements.txt
 ```
 
-## Building Sources
+## Building 
 
 ```console
-$ make 
+$ mkdocs build
+```
+
+## Working
+
+```console
+$ mkdocs serve
 ```
