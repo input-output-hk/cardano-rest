@@ -654,11 +654,46 @@ below are in reality much more flexible and capable than the queries given in th
 <p class="admonition-title">Tip</p>
 <p>Any GraphQL query can be run interactively in the Cardano GraphQL playground, which is accessible <a href="https://cardano-graphql-testnet.daedalus-operations.com/">here</a> online.</p>
 </div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>cURL Examples below refers to a <code>$BASEURL</code> environment variable. Replace this to point to the host and port of the right services. If you're using the default local setup with the 
+default configuration, it should correspond to:</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Protocol</th>
+<th>Hostname</th>
+<th>Port</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cardano-rest</td>
+<td>http</td>
+<td>localhost</td>
+<td>8090</td>
+</tr>
+<tr>
+<td>cardano-graphql</td>
+<td>http</td>
+<td>localhost</td>
+<td>3100</td>
+</tr>
+<tr>
+<td>cardano-rosetta</td>
+<td>http</td>
+<td>localhost</td>
+<td>8080</td>
+</tr>
+</tbody>
+</table>
+</div>
 <h2 id="blocks">Blocks<a class="headerlink" href="#blocks" title="Permanent link">&para;</a></h2>
 <h4 id="apiblockspages"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_blocksPages">/api/blocks/pages</a><a class="headerlink" href="#apiblockspages" title="Permanent link">&para;</a></h4>
 <p>Get the list of blocks, contained in pages.</p>
 <div class="tabbed-set" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><label for="__tabbed_1_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;https://explorer.cardano-testnet.iohkdev.io/api/blocks/pages?page=221038&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">/api/blocks/pages?page=221038&quot;</span>
 </code></pre></div>
 
 <p><details>
@@ -864,7 +899,10 @@ below are in reality much more flexible and capable than the queries given in th
   <span class="nt">&quot;epoch&quot;</span><span class="p">:</span> <span class="mi">86</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s1">&#39;https://cardano-graphql-testnet.daedalus-operations.com/&#39;</span> -H <span class="s1">&#39;Accept-Encoding: gzip, deflate, br&#39;</span> -H <span class="s1">&#39;Content-Type: application/json&#39;</span> -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s1">&#39;Connection: keep-alive&#39;</span> -H <span class="s1">&#39;DNT: 1&#39;</span> -H <span class="s1">&#39;Origin: https://cardano-graphql-testnet.daedalus-operations.com&#39;</span> --data-binary <span class="s1">&#39;{&quot;query&quot;:&quot;    query getBlocks($limit: Int!, $epoch: Int!) {\n      blocks(limit: $limit, where: { epoch: { number: { _eq: $epoch } } }) {\n        slotNo # cbeSlot\n        slotInEpoch # cbeEpoch\n        number # cbeBlkHeight\n        hash # cbeBlkHash\n        forgedAt # cbeTimeIssued\n        transactionsCount # cbeTxNum\n        transactions_aggregate {\n          aggregate {\n            sum {\n              totalOutput # cbeTotalSent\n            }\n          }\n        }\n        slotLeader {\n          hash # cbeBlockLead\n        }\n        size # cbeSize\n        fees # cbeFees\n      }\n    }\n&quot;,&quot;variables&quot;:{&quot;limit&quot;:2,&quot;epoch&quot;:86}}&#39;</span> --compressed
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
+  --data-binary <span class="s1">&#39;{&quot;variables&quot;:{&quot;limit&quot;:2,&quot;epoch&quot;:86},{ &quot;query&quot;:&quot;query getBlocks($limit: Int!, $epoch: Int!) { blocks(limit: $limit, where: { epoch: { number: { _eq: $epoch } } }) { slotNo slotInEpoch number hash forgedAt transactionsCount transactions_aggregate { aggregate { sum { totalOutput } } } slotLeader { hash } size fees } }&quot;}&#39;</span> 
 </code></pre></div>
 
 <p><details>
@@ -918,9 +956,11 @@ below are in reality much more flexible and capable than the queries given in th
 </code></pre></div>
 </details></p>
 </div>
-<input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><label for="__tabbed_1_3">cardano-rosetta</label><div class="tabbed-content">
-<p>TODO</p>
+<input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><label for="__tabbed_1_3">cardano-rosetta</label><div class="tabbed-content"></div>
 </div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Neither GraphQL, nor Rosetta are paged, but instead allow to set a limit and an offset to queries.</p>
 </div>
 <h4 id="apiblockspagestotal"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_blocksPagesTotal">/api/blocks/pages/total</a><a class="headerlink" href="#apiblockspagestotal" title="Permanent link">&para;</a></h4>
 <p>Get the list of total pages.</p>
@@ -931,7 +971,7 @@ below are in reality much more flexible and capable than the queries given in th
 <h4 id="apiblockssummaryblockhash"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_blocksSummary">/api/blocks/summary/{blockHash}</a><a class="headerlink" href="#apiblockssummaryblockhash" title="Permanent link">&para;</a></h4>
 <p>Get block's summary information.</p>
 <div class="tabbed-set" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><label for="__tabbed_2_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> https://explorer.cardano-testnet.iohkdev.io/api/blocks/summary/1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/blocks/summary/1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6
 </code></pre></div>
 
 <p><details>
@@ -999,7 +1039,10 @@ below are in reality much more flexible and capable than the queries given in th
   <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6&quot;</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s1">&#39;https://cardano-graphql-testnet.daedalus-operations.com/&#39;</span> -H <span class="s1">&#39;Accept-Encoding: gzip, deflate, br&#39;</span> -H <span class="s1">&#39;Content-Type: application/json&#39;</span> -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s1">&#39;Connection: keep-alive&#39;</span> -H <span class="s1">&#39;DNT: 1&#39;</span> -H <span class="s1">&#39;Origin: https://cardano-graphql-testnet.daedalus-operations.com&#39;</span> --data-binary <span class="s1">&#39;{&quot;query&quot;:&quot;query getBlock($hash: Hash32Hex!) {\n  blocks(limit: 1, where: { hash: { _eq: $hash } }) {\n    slotInEpoch # cbeEpoch\n    slotNo # cbeSlot\n    number # cbeBlkHeight\n    hash # cbeBlkHash\n    forgedAt # cbeTimeIssued\n    transactionsCount # cbeTxNum\n    transactions_aggregate {\n      aggregate {\n        sum {\n          totalOutput # cbeTotalSent\n        }\n      }\n    }\n    size # cbeSize\n    slotLeader {\n      hash # cbeBlockLead\n    }\n    fees # cbeFees\n    previousBlock {\n      hash # cbsPrevHash\n    }\n    nextBlock {\n      hash # cbsNextHash\n    }\n    merkelRoot # cbsMerkleRoot\n  }\n}&quot;,&quot;variables&quot;:{&quot;hash&quot;:&quot;1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6&quot;}}&#39;</span> --compressed
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
+  --data-binary <span class="s1">&#39;{&quot;variables&quot;:{&quot;hash&quot;:&quot;1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6&quot;},&quot;query&quot;:&quot;query getBlock($hash: Hash32Hex!) { blocks(limit: 1, where: { hash: { _eq: $hash } }) { slotInEpoch slotNo number hash forgedAt transactionsCount transactions_aggregate { aggregate { sum { totalOutput } } } size slotLeader { hash } fees previousBlock { hash } nextBlock { hash } merkelRoot }}&quot;}&#39;</span> 
 </code></pre></div>
 
 <p><details>
@@ -1041,16 +1084,73 @@ below are in reality much more flexible and capable than the queries given in th
 </details></p>
 </div>
 <input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><label for="__tabbed_2_3">cardano-rosetta</label><div class="tabbed-content">
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Not available in Rosetta!</p>
-</div>
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl -X POST <span class="s1">&#39;$BASEURL/block&#39;</span> <span class="se">\</span>
+  -H <span class="s2">&quot;Content-Type: application/json&quot;</span> <span class="se">\</span>
+  -d <span class="s1">&#39;{ &quot;network_identifier&quot;: {&quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {}, &quot;block_identifier&quot;: {&quot;index&quot;: &quot;5264122&quot; }}&#39;</span>
+</code></pre></div>
+
+<p><details>
+  <summary>see JSON response</summary>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;block&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;block_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;index&quot;</span><span class="p">:</span> <span class="mi">5264122</span><span class="p">,</span>
+      <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;parent_block_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;index&quot;</span><span class="p">:</span> <span class="mi">5264121</span><span class="p">,</span>
+      <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;ff677921d61672d2fb14025f6d8d8b1f93d89266986f045d48ddc674459134ea&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mi">1611751783000</span><span class="p">,</span>
+    <span class="nt">&quot;transactions&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;transaction_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;operations&quot;</span><span class="p">:</span> <span class="p">[</span>
+          <span class="p">{</span>
+            <span class="nt">&quot;operation_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&quot;index&quot;</span><span class="p">:</span> <span class="mi">0</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;input&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;account&quot;</span><span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&quot;address&quot;</span><span class="p">:</span> <span class="s2">&quot;DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;amount&quot;</span><span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;-4998821898&quot;</span><span class="p">,</span>
+              <span class="nt">&quot;currency&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;symbol&quot;</span><span class="p">:</span> <span class="s2">&quot;ADA&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;decimals&quot;</span><span class="p">:</span> <span class="mi">6</span>
+              <span class="p">}</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;coin_change&quot;</span><span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&quot;coin_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;identifier&quot;</span><span class="p">:</span> <span class="s2">&quot;002da5ef961fd9d826332db916fe7de5e198b8a5f00f9c535f9c329bb14f01e8:0&quot;</span>
+              <span class="p">},</span>
+              <span class="nt">&quot;coin_action&quot;</span><span class="p">:</span> <span class="s2">&quot;coin_spent&quot;</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;transactionsCount&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+          <span class="nt">&quot;createdBy&quot;</span><span class="p">:</span> <span class="s2">&quot;ShelleyGenesis-1d4f2e1fda43070d&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;size&quot;</span><span class="p">:</span> <span class="mi">9559</span><span class="p">,</span>
+          <span class="nt">&quot;epochNo&quot;</span><span class="p">:</span> <span class="mi">244</span><span class="p">,</span>
+          <span class="nt">&quot;slotNo&quot;</span><span class="p">:</span> <span class="mi">20185492</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+</details></p>
 </div>
 </div>
 <h4 id="apiblockstxsblockhash"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_blocksTxs">/api/blocks/txs/{blockHash}</a><a class="headerlink" href="#apiblockstxsblockhash" title="Permanent link">&para;</a></h4>
 <p>Get brief information about transactions.</p>
 <div class="tabbed-set" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><label for="__tabbed_3_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> https://explorer.cardano-testnet.iohkdev.io/api/blocks/txs/1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/blocks/txs/1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6
 </code></pre></div>
 
 <p><details>
@@ -1149,7 +1249,10 @@ below are in reality much more flexible and capable than the queries given in th
   <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6&quot;</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s1">&#39;https://cardano-graphql-testnet.daedalus-operations.com/&#39;</span> -H <span class="s1">&#39;Accept-Encoding: gzip, deflate, br&#39;</span> -H <span class="s1">&#39;Content-Type: application/json&#39;</span> -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s1">&#39;Connection: keep-alive&#39;</span> -H <span class="s1">&#39;DNT: 1&#39;</span> -H <span class="s1">&#39;Origin: https://cardano-graphql-testnet.daedalus-operations.com&#39;</span> --data-binary <span class="s1">&#39;{&quot;query&quot;:&quot;query getBlockTxs($hash: Hash32Hex!) {\n  blocks(limit: 1, where: { hash: { _eq: $hash } }) {\n    transactions {\n      hash # ctbId\n      includedAt # ctbTimeIssued\n      fee # ctbFees\n      inputs {\n        # ctbInputs\n        address # ctaAddress\n        value # ctaAmount\n        sourceTxHash # ctaTxHash\n        sourceTxIndex # ctaTxIndex\n      }\n      inputs_aggregate {\n        aggregate {\n          sum {\n            value # ctbInputSum\n          }\n        }\n      }\n      outputs { # ctbOutputs\n        address # ctaAddress\n        index # ctaTxIndex\n        value # ctaAmount\n        transaction {\n          hash # ctaTxHash\n        }\n      }\n      outputs_aggregate {\n        aggregate {\n          sum {\n            value # ctbOutputSum\n          }\n        }\n      }\n    }\n  }\n}&quot;,&quot;variables&quot;:{&quot;hash&quot;:&quot;1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6&quot;}}&#39;</span> --compressed
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
+ --data-binary <span class="s1">&#39;{&quot;variables&quot;:{&quot;hash&quot;:&quot;1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6&quot;}, &quot;query&quot;:&quot;query getBlockTxs($hash: Hash32Hex!) { blocks(limit: 1, where: { hash: { _eq: $hash } }) { transactions { hash includedAt fee inputs { address value sourceTxHash sourceTxIndex } inputs_aggregate { aggregate { sum { value } } } outputs { address index value transaction { hash } } outputs_aggregate { aggregate { sum { value } } } } }}&quot;}&#39;</span> 
 </code></pre></div>
 
 <p><details>
@@ -1213,17 +1316,74 @@ below are in reality much more flexible and capable than the queries given in th
 </details></p>
 </div>
 <input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><label for="__tabbed_3_3">cardano-rosetta</label><div class="tabbed-content">
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Not available in Rosetta!</p>
-</div>
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl -X POST <span class="s1">&#39;$BASEURL/block&#39;</span> <span class="se">\</span>
+  -H <span class="s2">&quot;Content-Type: application/json&quot;</span> <span class="se">\</span>
+  -d <span class="s1">&#39;{ &quot;network_identifier&quot;: {&quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {}, &quot;block_identifier&quot;: {&quot;index&quot;: &quot;5264122&quot; }}&#39;</span>
+</code></pre></div>
+
+<p><details>
+  <summary>see JSON response</summary>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;block&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;block_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;index&quot;</span><span class="p">:</span> <span class="mi">5264122</span><span class="p">,</span>
+      <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;parent_block_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;index&quot;</span><span class="p">:</span> <span class="mi">5264121</span><span class="p">,</span>
+      <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;ff677921d61672d2fb14025f6d8d8b1f93d89266986f045d48ddc674459134ea&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mi">1611751783000</span><span class="p">,</span>
+    <span class="nt">&quot;transactions&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;transaction_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;operations&quot;</span><span class="p">:</span> <span class="p">[</span>
+          <span class="p">{</span>
+            <span class="nt">&quot;operation_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&quot;index&quot;</span><span class="p">:</span> <span class="mi">0</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;input&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;account&quot;</span><span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&quot;address&quot;</span><span class="p">:</span> <span class="s2">&quot;DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;amount&quot;</span><span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;-4998821898&quot;</span><span class="p">,</span>
+              <span class="nt">&quot;currency&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;symbol&quot;</span><span class="p">:</span> <span class="s2">&quot;ADA&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;decimals&quot;</span><span class="p">:</span> <span class="mi">6</span>
+              <span class="p">}</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;coin_change&quot;</span><span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&quot;coin_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;identifier&quot;</span><span class="p">:</span> <span class="s2">&quot;002da5ef961fd9d826332db916fe7de5e198b8a5f00f9c535f9c329bb14f01e8:0&quot;</span>
+              <span class="p">},</span>
+              <span class="nt">&quot;coin_action&quot;</span><span class="p">:</span> <span class="s2">&quot;coin_spent&quot;</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;transactionsCount&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+          <span class="nt">&quot;createdBy&quot;</span><span class="p">:</span> <span class="s2">&quot;ShelleyGenesis-1d4f2e1fda43070d&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;size&quot;</span><span class="p">:</span> <span class="mi">9559</span><span class="p">,</span>
+          <span class="nt">&quot;epochNo&quot;</span><span class="p">:</span> <span class="mi">244</span><span class="p">,</span>
+          <span class="nt">&quot;slotNo&quot;</span><span class="p">:</span> <span class="mi">20185492</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+</details></p>
 </div>
 </div>
 <h2 id="transactions">Transactions<a class="headerlink" href="#transactions" title="Permanent link">&para;</a></h2>
 <h4 id="apitxslast"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_txsLast">/api/txs/last</a><a class="headerlink" href="#apitxslast" title="Permanent link">&para;</a></h4>
 <p>Get information about the N latest transactions.</p>
 <div class="tabbed-set" data-tabs="4:3"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><label for="__tabbed_4_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> https://explorer.cardano-testnet.iohkdev.io/api/txs/last
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/txs/last
 </code></pre></div>
 
 <p><details>
@@ -1396,7 +1556,10 @@ below are in reality much more flexible and capable than the queries given in th
   <span class="nt">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">20</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s1">&#39;https://cardano-graphql-testnet.daedalus-operations.com/&#39;</span> -H <span class="s1">&#39;Accept-Encoding: gzip, deflate, br&#39;</span> -H <span class="s1">&#39;Content-Type: application/json&#39;</span> -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s1">&#39;Connection: keep-alive&#39;</span> -H <span class="s1">&#39;DNT: 1&#39;</span> -H <span class="s1">&#39;Origin: https://cardano-graphql-testnet.daedalus-operations.com&#39;</span> --data-binary <span class="s1">&#39;{&quot;query&quot;:&quot;query getTxs($limit: Int!) {\n  transactions(limit: $limit, order_by: { includedAt: desc }) {\n    hash # cteId\n    includedAt # cteTimeIssued\n    outputs_aggregate {\n      aggregate {\n        sum {\n          value # cteAmount\n        }\n      }\n    }\n  }\n}\n&quot;,&quot;variables&quot;:{&quot;limit&quot;:20}}&#39;</span> --compressed
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> 
+<span class="go">  -H &#39;Accept: application/json&#39; </span>
+<span class="go">  --data-binary &#39;{&quot;variables&quot;:{&quot;limit&quot;:20},&quot;query&quot;:&quot;query getTxs($limit: Int!) { transactions(limit: $limit, order_by: { includedAt: desc }) { hash includedAt outputs_aggregate { aggregate { sum { value } } } }}&quot;}&#39; </span>
 </code></pre></div>
 
 <p><details>
@@ -1631,13 +1794,80 @@ below are in reality much more flexible and capable than the queries given in th
 </details></p>
 </div>
 <input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><label for="__tabbed_4_3">cardano-rosetta</label><div class="tabbed-content">
-<p>TODO</p>
+<div class="highlight"><pre><span></span><code><span class="gp">#</span> Get the current block identifier
+<span class="gp">$</span> curl -X POST <span class="s1">&#39;$BASEURL/network/status&#39;</span> <span class="se">\</span>
+  -H <span class="s2">&quot;Content-Type: application/json&quot;</span> <span class="se">\</span>
+  -d <span class="s1">&#39;{ &quot;network_identifier&quot;: { &quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {} }&#39;</span> <span class="p">|</span> jq .current_block_identifier.index 
+<span class="go">5264122</span>
+
+<span class="gp">#</span> Fetch information from it
+<span class="gp">$</span> curl -X POST <span class="s1">&#39;$BASEURL/block&#39;</span> <span class="se">\</span>
+  -H <span class="s2">&quot;Content-Type: application/json&quot;</span> <span class="se">\</span>
+  -d <span class="s1">&#39;{ &quot;network_identifier&quot;: {&quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {}, &quot;block_identifier&quot;: {&quot;index&quot;: &quot;5264122&quot; }}&#39;</span>
+</code></pre></div>
+
+<p><details>
+  <summary>see JSON response</summary>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;block&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;block_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;index&quot;</span><span class="p">:</span> <span class="mi">5264122</span><span class="p">,</span>
+      <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;parent_block_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;index&quot;</span><span class="p">:</span> <span class="mi">5264121</span><span class="p">,</span>
+      <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;ff677921d61672d2fb14025f6d8d8b1f93d89266986f045d48ddc674459134ea&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mi">1611751783000</span><span class="p">,</span>
+    <span class="nt">&quot;transactions&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;transaction_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;operations&quot;</span><span class="p">:</span> <span class="p">[</span>
+          <span class="p">{</span>
+            <span class="nt">&quot;operation_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&quot;index&quot;</span><span class="p">:</span> <span class="mi">0</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;input&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;account&quot;</span><span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&quot;address&quot;</span><span class="p">:</span> <span class="s2">&quot;DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;amount&quot;</span><span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;-4998821898&quot;</span><span class="p">,</span>
+              <span class="nt">&quot;currency&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;symbol&quot;</span><span class="p">:</span> <span class="s2">&quot;ADA&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;decimals&quot;</span><span class="p">:</span> <span class="mi">6</span>
+              <span class="p">}</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;coin_change&quot;</span><span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&quot;coin_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;identifier&quot;</span><span class="p">:</span> <span class="s2">&quot;002da5ef961fd9d826332db916fe7de5e198b8a5f00f9c535f9c329bb14f01e8:0&quot;</span>
+              <span class="p">},</span>
+              <span class="nt">&quot;coin_action&quot;</span><span class="p">:</span> <span class="s2">&quot;coin_spent&quot;</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;transactionsCount&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+          <span class="nt">&quot;createdBy&quot;</span><span class="p">:</span> <span class="s2">&quot;ShelleyGenesis-1d4f2e1fda43070d&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;size&quot;</span><span class="p">:</span> <span class="mi">9559</span><span class="p">,</span>
+          <span class="nt">&quot;epochNo&quot;</span><span class="p">:</span> <span class="mi">244</span><span class="p">,</span>
+          <span class="nt">&quot;slotNo&quot;</span><span class="p">:</span> <span class="mi">20185492</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+</details></p>
 </div>
 </div>
 <h4 id="apitxssummarytxid"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_txsSummary">/api/txs/summary/{txId}</a><a class="headerlink" href="#apitxssummarytxid" title="Permanent link">&para;</a></h4>
 <p>Get summary information about a transaction.</p>
 <div class="tabbed-set" data-tabs="5:3"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><label for="__tabbed_5_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> https://explorer.cardano-testnet.iohkdev.io/api/txs/summary/382a5274ebf102910c6c923a8b11f108e79ecedb5d7433cd0dd15a8a443f0fa5
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/txs/summary/382a5274ebf102910c6c923a8b11f108e79ecedb5d7433cd0dd15a8a443f0fa5
 </code></pre></div>
 
 <p><details>
@@ -1742,7 +1972,10 @@ below are in reality much more flexible and capable than the queries given in th
   <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;382a5274ebf102910c6c923a8b11f108e79ecedb5d7433cd0dd15a8a443f0fa5&quot;</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s1">&#39;https://cardano-graphql-testnet.daedalus-operations.com/&#39;</span> -H <span class="s1">&#39;Accept-Encoding: gzip, deflate, br&#39;</span> -H <span class="s1">&#39;Content-Type: application/json&#39;</span> -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s1">&#39;Connection: keep-alive&#39;</span> -H <span class="s1">&#39;DNT: 1&#39;</span> -H <span class="s1">&#39;Origin: https://cardano-graphql-testnet.daedalus-operations.com&#39;</span> --data-binary <span class="s1">&#39;{&quot;query&quot;:&quot;query getTxSummary($hash: Hash32Hex!) {\n  transactions(where: { hash: { _eq: $hash } }) {\n    hash # ctsId\n    includedAt # ctsTxTimeIssued\n    fee # ctsFees\n    block {\n      epochNo # ctsBlockEpoch\n      slotNo # ctsBlockSlot\n      slotInEpoch\n      number # ctsBlockHeight\n      hash # ctsBlockHash\n    }\n    inputs { # ctsInputs\n      address # ctaAddress\n      value # ctaAmount\n      sourceTxHash # ctaTxHash\n      sourceTxIndex # ctaTxIndex\n    }\n    inputs_aggregate {\n      aggregate {\n        sum {\n          value # ctsTotalInput\n        }\n      }\n    }\n    outputs { # ctsOutputs\n      address # ctaAddress\n      value # ctaAmount\n      index # ctaTxIndex\n      txHash # ctaTxHash\n    }\n    outputs_aggregate {\n      aggregate {\n        sum {\n          value # ctsTotalOutput\n        }\n      }\n    }\n  }\n}\n&quot;,&quot;variables&quot;:{&quot;hash&quot;:&quot;382a5274ebf102910c6c923a8b11f108e79ecedb5d7433cd0dd15a8a443f0fa5&quot;}}&#39;</span> --compressed
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Content-Type: application/json&#39;</span>  <span class="se">\</span>
+  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
+  --data-binary <span class="s1">&#39;{&quot;variables&quot;:{&quot;hash&quot;:&quot;382a5274ebf102910c6c923a8b11f108e79ecedb5d7433cd0dd15a8a443f0fa5&quot;}, &quot;query&quot;:&quot;query getTxSummary($hash: Hash32Hex!) { transactions(where: { hash: { _eq: $hash } }) { hash includedAt fee block { epochNo slotNo slotInEpoch number hash } inputs { address value sourceTxHash sourceTxIndex } inputs_aggregate { aggregate { sum { value } } } outputs { address value index txHash } outputs_aggregate { aggregate { sum { value } } } }}&quot;}&#39;</span> 
 </code></pre></div>
 
 <p><details>
@@ -1805,13 +2038,76 @@ below are in reality much more flexible and capable than the queries given in th
 </details></p>
 </div>
 <input id="__tabbed_5_3" name="__tabbed_5" type="radio" /><label for="__tabbed_5_3">cardano-rosetta</label><div class="tabbed-content">
-<p>TODO</p>
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl -X POST <span class="s1">&#39;$BASEURL/block/transaction&#39;</span> <span class="se">\</span>
+  -H <span class="s2">&quot;Content-Type: application/json&quot;</span> <span class="se">\</span>
+  -d <span class="s1">&#39;{ &quot;network_identifier&quot;: { &quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {}, &quot;block_identifier&quot;: { &quot;index&quot;: &quot;5264122&quot;, &quot;hash&quot;: &quot;b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a&quot; }, &quot;transaction_identifier&quot;: { &quot;hash&quot;: &quot;2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772&quot;}}&#39;</span> 
+</code></pre></div>
+
+<p><details>
+  <summary>see JSON response</summary>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;transaction&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;transaction_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;operations&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;operation_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;index&quot;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;input&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;account&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;address&quot;</span><span class="p">:</span> <span class="s2">&quot;DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;amount&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;-4998821898&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;currency&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;symbol&quot;</span><span class="p">:</span> <span class="s2">&quot;ADA&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;decimals&quot;</span><span class="p">:</span> <span class="mi">6</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;coin_change&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;coin_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;identifier&quot;</span><span class="p">:</span> <span class="s2">&quot;002da5ef961fd9d826332db916fe7de5e198b8a5f00f9c535f9c329bb14f01e8:0&quot;</span>
+          <span class="p">},</span>
+          <span class="nt">&quot;coin_action&quot;</span><span class="p">:</span> <span class="s2">&quot;coin_spent&quot;</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;operation_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;index&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;input&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;account&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;address&quot;</span><span class="p">:</span> <span class="s2">&quot;DdzFFzCqrhspNxbM9rETXrrW3XL4WcuGgajfxzH3j3R7UQr4AgicTVCMbybX6naYn8ngYAgpGvRyyGecsx26fHgS43a71yUJRmjcdvJE&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;amount&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;-4000000000&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;currency&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;symbol&quot;</span><span class="p">:</span> <span class="s2">&quot;ADA&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;decimals&quot;</span><span class="p">:</span> <span class="mi">6</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;coin_change&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;coin_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;identifier&quot;</span><span class="p">:</span> <span class="s2">&quot;0151758ddf6525b9c4fb5dc00a10abb519bff36894716bc1377ba400ae995f28:0&quot;</span>
+          <span class="p">},</span>
+          <span class="nt">&quot;coin_action&quot;</span><span class="p">:</span> <span class="s2">&quot;coin_spent&quot;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+</details></p>
 </div>
 </div>
 <h4 id="apistatstxs"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_statsTxs">/api/stats/txs</a><a class="headerlink" href="#apistatstxs" title="Permanent link">&para;</a></h4>
 <p>Get statistics about transactions.</p>
 <div class="tabbed-set" data-tabs="6:3"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><label for="__tabbed_6_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> https://explorer.cardano-testnet.iohkdev.io/api/stats/txs?page<span class="o">=</span><span class="m">221444</span>
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/stats/txs?page<span class="o">=</span><span class="m">221444</span>
 </code></pre></div>
 
 <p><details>
@@ -1855,24 +2151,43 @@ block height and achieve the same result.</p>
   <span class="nt">&quot;end&quot;</span><span class="p">:</span> <span class="mi">2214440</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s1">&#39;https://cardano-graphql-testnet.daedalus-operations.com/&#39;</span> -H <span class="s1">&#39;Accept-Encoding: gzip, deflate, br&#39;</span> -H <span class="s1">&#39;Content-Type: application/json&#39;</span> -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s1">&#39;Connection: keep-alive&#39;</span> -H <span class="s1">&#39;DNT: 1&#39;</span> -H <span class="s1">&#39;Origin: https://cardano-graphql-testnet.daedalus-operations.com&#39;</span> --data-binary <span class="s1">&#39;{&quot;query&quot;:&quot;query getTxsStats($start: Int!, $end: Int!) {\n  blocks(\n    order_by: { forgedAt: desc }\n    where: {\n      number: { _gte: $start, _lte: $end }\n      transactionsCount: { _gt: \&quot;0\&quot; }\n    }\n  ) {\n    transactions {\n      hash\n      size\n    }\n  }\n}\n&quot;,&quot;variables&quot;:{&quot;start&quot;:2214430,&quot;end&quot;:2214440}}&#39;</span> --compressed
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
+  --data-binary <span class="s1">&#39;{&quot;query&quot;:&quot;query getTxsStats($start: Int!, $end: Int!) { blocks( order_by: { forgedAt: desc } where: { number: { _gte: $start, _lte: $end } transactionsCount: { _gt: \&quot;0\&quot; } } ) { transactions { hash size } }}&quot;,&quot;variables&quot;:{&quot;start&quot;:2214430,&quot;end&quot;:2214440}}&#39;</span> 
 </code></pre></div>
 
 <p><details>
   <summary>see JSON response</summary>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;blocks&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;transactions&quot;</span><span class="p">:</span> <span class="p">[</span>
+          <span class="p">{</span>
+            <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;c62c7f356bae7c1397ce5af171c7f884bd5b11eebc62e35f78ff60862004b6a5&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;size&quot;</span><span class="p">:</span> <span class="mi">233</span>
+          <span class="p">}</span>
+        <span class="p">]</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div>
 </details></p>
 </div>
 <input id="__tabbed_6_3" name="__tabbed_6" type="radio" /><label for="__tabbed_6_3">cardano-rosetta</label><div class="tabbed-content">
-<p>TODO</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>No equivalent in Rosetta!</p>
+</div>
 </div>
 </div>
 <h2 id="addresses">Addresses<a class="headerlink" href="#addresses" title="Permanent link">&para;</a></h2>
 <h4 id="apiaddressessummaryaddress"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_addressSummary">/api/addresses/summary/{address}</a><a class="headerlink" href="#apiaddressessummaryaddress" title="Permanent link">&para;</a></h4>
 <p>Get summary information about an address.</p>
 <div class="tabbed-set" data-tabs="7:3"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><label for="__tabbed_7_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> https://explorer.cardano-testnet.iohkdev.io/api/addresses/summary/addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/addresses/summary/addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5
 </code></pre></div>
 
 <p><details>
@@ -1948,9 +2263,9 @@ block height and achieve the same result.</p>
 </details></p>
 </div>
 <input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><label for="__tabbed_7_2">cardano-graphql</label><div class="tabbed-content">
-<div class="admonition info">
-<p class="admonition-title">Info</p>
-<p>The following fields from the REST endpoint are not supported: <code>caType</code>, <code>caChainTip</code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The following fields from the REST endpoint have no equivalent: <code>caType</code>, <code>caChainTip</code>.</p>
 </div>
 <p><strong>query.graphql</strong>
 <div class="highlight"><pre><span></span><code>query getAddressSummary($address: String!) {
@@ -2013,7 +2328,6 @@ block height and achieve the same result.</p>
       address # ctaAddress
       value # ctaAmount
       txHash # ctaTxHash
-      # TODO: ctaTxIndex ??
     }
     inputs_aggregate(where: { address: { _eq: $address } }) {
       aggregate {
@@ -2037,7 +2351,10 @@ block height and achieve the same result.</p>
   <span class="nt">&quot;address&quot;</span><span class="p">:</span> <span class="s2">&quot;addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5&quot;</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s1">&#39;https://cardano-graphql-testnet.daedalus-operations.com/&#39;</span> -H <span class="s1">&#39;Accept-Encoding: gzip, deflate, br&#39;</span> -H <span class="s1">&#39;Content-Type: application/json&#39;</span> -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s1">&#39;Connection: keep-alive&#39;</span> -H <span class="s1">&#39;DNT: 1&#39;</span> -H <span class="s1">&#39;Origin: https://cardano-graphql-testnet.daedalus-operations.com&#39;</span> --data-binary <span class="s1">&#39;{&quot;query&quot;:&quot;query getAddressSummary($address: String!) {\n  caTxNum: transactions_aggregate(\n    where: {\n      _or: [\n        { inputs: { address: { _eq: $address } } }\n        { outputs: { address: { _eq: $address } } }\n      ]\n    }\n  ) {\n    aggregate {\n      count # caTxNum\n    }\n  }\n  # TODO: caTotalFee ??\n  # TODO: caType ??\n  # TODO: caChainTip ??\n  caTotalInput: transactions_aggregate(\n    where: { inputs: { address: { _eq: $address } } }\n  ) {\n    aggregate {\n      sum {\n        totalOutput # caTotalInput ??\n      }\n    }\n  }\n  caTotalOutput: transactions_aggregate(\n    where: { outputs: { address: { _eq: $address } } }\n  ) {\n    aggregate {\n      sum {\n        totalOutput # caTotalOutput ??\n      }\n    }\n  }\n  caBalance: utxos_aggregate(where: { address: { _eq: $address } }) {\n    aggregate {\n      sum {\n        value # caBalance\n      }\n    }\n  }\n  caTxList: transactions(\n    where: {\n      _or: [\n        { inputs: { address: { _eq: $address } } }\n        { outputs: { address: { _eq: $address } } }\n      ]\n    }\n  ) {\n    hash # ctbId\n    includedAt # ctbTimeIssued\n    fee # ctbFees\n    inputs(where: { address: { _eq: $address } }) {\n      # ctbInputs\n      address # ctaAddress\n      value # ctaAmount\n      txHash # ctaTxHash\n      sourceTxIndex # ctaTxIndex\n    }\n    outputs(where: { address: { _eq: $address } }) {\n      address # ctaAddress\n      value # ctaAmount\n      txHash # ctaTxHash\n      # TODO: ctaTxIndex ??\n    }\n    inputs_aggregate(where: { address: { _eq: $address } }) {\n      aggregate {\n        sum {\n          value # ctbInputSum\n        }\n      }\n    }\n    outputs_aggregate(where: { address: { _eq: $address } }) {\n      aggregate {\n        sum {\n          value # ctbOutputSum\n        }\n      }\n    }\n  }\n}\n&quot;,&quot;variables&quot;:{&quot;address&quot;:&quot;addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5&quot;}}&#39;</span> --compressed
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
+  --data-binary <span class="s1">&#39;{&quot;variables&quot;:{&quot;address&quot;:&quot;addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5&quot;},&quot;query&quot;:&quot;query getAddressSummary($address: String!) { caTxNum: transactions_aggregate( where: { _or: [ { inputs: { address: { _eq: $address } } } { outputs: { address: { _eq: $address } } } ] } ) { aggregate { count } } transactions_aggregate( where: { inputs: { address: { _eq: $address } } } ) { aggregate { sum { totalOutput } } } caTotalOutput: transactions_aggregate( where: { outputs: { address: { _eq: $address } } } ) { aggregate { sum { totalOutput } } } caBalance: utxos_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } caTxList: transactions( where: { _or: [ { inputs: { address: { _eq: $address } } } { outputs: { address: { _eq: $address } } } ] } ) { hash includedAt fee inputs(where: { address: { _eq: $address } }) { address value txHash sourceTxIndex } outputs(where: { address: { _eq: $address } }) { address value txHash } inputs_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } outputs_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } }}&quot;}&#39;</span> 
 </code></pre></div>
 
 <p><details>
@@ -2105,13 +2422,37 @@ block height and achieve the same result.</p>
 </details></p>
 </div>
 <input id="__tabbed_7_3" name="__tabbed_7" type="radio" /><label for="__tabbed_7_3">cardano-rosetta</label><div class="tabbed-content">
-<p>TODO</p>
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl -X POST <span class="s1">&#39;$BASEURL/account/balance&#39;</span> <span class="se">\</span>
+  -H <span class="s2">&quot;Content-Type: application/json&quot;</span> <span class="se">\</span>
+  -d <span class="s1">&#39;{ &quot;network_identifier&quot;: { &quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {}, &quot;account_identifier&quot;: { &quot;address&quot;: &quot;DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E&quot; }, &quot;metadata&quot;: {}}&#39;</span> 
+</code></pre></div>
+
+<p><details>
+  <summary>see JSON response</summary>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;block_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;index&quot;</span><span class="p">:</span> <span class="mi">5264292</span><span class="p">,</span>
+    <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;3dc53a1991c70a160666f597c71cb751c2910ef3e14581e699e8011de9fc6839&quot;</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;balances&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;currency&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;symbol&quot;</span><span class="p">:</span> <span class="s2">&quot;ADA&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;decimals&quot;</span><span class="p">:</span> <span class="mi">6</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;coins&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div>
+</details></p>
 </div>
 </div>
 <h4 id="apiblockblockhashaddressaddress"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_blockAddress">/api/block/{blockHash}/address/{address}</a><a class="headerlink" href="#apiblockblockhashaddressaddress" title="Permanent link">&para;</a></h4>
 <p>Get address information specific to a block.</p>
 <div class="tabbed-set" data-tabs="8:3"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><label for="__tabbed_8_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> https://explorer.cardano-testnet.iohkdev.io/api/block/02788224fb087d9a5ed48a12a3db741ad7bd4429a63e7e5b6bc69d2f2956d205/address/addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/block/02788224fb087d9a5ed48a12a3db741ad7bd4429a63e7e5b6bc69d2f2956d205/address/addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5
 </code></pre></div>
 
 <p><details>
@@ -2187,9 +2528,9 @@ block height and achieve the same result.</p>
 </details></p>
 </div>
 <input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><label for="__tabbed_8_2">cardano-graphql</label><div class="tabbed-content">
-<div class="admonition info">
-<p class="admonition-title">Info</p>
-<p>This query is WIP. A few fields are still missing.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This example query only covers a subset of the results returned by cardano-rest</p>
 </div>
 <p><strong>query.graphql</strong>
 <div class="highlight"><pre><span></span><code>query getAddressBlockSummary($address: String!, $block: Hash32Hex!) {
@@ -2253,7 +2594,10 @@ block height and achieve the same result.</p>
   <span class="nt">&quot;block&quot;</span><span class="p">:</span> <span class="s2">&quot;02788224fb087d9a5ed48a12a3db741ad7bd4429a63e7e5b6bc69d2f2956d205&quot;</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s1">&#39;https://cardano-graphql-testnet.daedalus-operations.com/&#39;</span> -H <span class="s1">&#39;Accept-Encoding: gzip, deflate, br&#39;</span> -H <span class="s1">&#39;Content-Type: application/json&#39;</span> -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s1">&#39;Connection: keep-alive&#39;</span> -H <span class="s1">&#39;DNT: 1&#39;</span> -H <span class="s1">&#39;Origin: https://cardano-graphql-testnet.daedalus-operations.com&#39;</span> --data-binary <span class="s1">&#39;{&quot;query&quot;:&quot;query getAddressBlockSummary($address: String!, $block: Hash32Hex!) {\n  blocks(where: { hash: { _eq: $block } }) {\n    transactions_aggregate(\n      where: {\n        _or: [\n          { inputs: { address: { _eq: $address } } }\n          { outputs: { address: { _eq: $address } } }\n        ]\n      }\n    ) {\n      aggregate {\n        count # caTxNum\n      }\n    }\n    transactions(\n      where: {\n        _or: [\n          { inputs: { address: { _eq: $address } } }\n          { outputs: { address: { _eq: $address } } }\n        ]\n      }\n    ) {\n      # caTxList\n      hash # ctbId\n      includedAt # ctbTimeIssued\n      fee # ctbFees\n      inputs(where: { address: { _eq: $address } }) {\n        address # ctaAddress\n        value # ctaAmount\n        txHash # ctaTxHash\n        sourceTxIndex # ctaTxIndex\n      }\n      outputs(where: { address: { _eq: $address } }) {\n        address # ctaAddress\n        value # ctaAmount\n        txHash # ctaTxHash\n      }\n      inputs_aggregate(where: { address: { _eq: $address } }) {\n        aggregate {\n          sum {\n            value # ctbInputSum\n          }\n        }\n      }\n      outputs_aggregate(where: { address: { _eq: $address } }) {\n        aggregate {\n          sum {\n            value # ctbOutputSum\n          }\n        }\n      }\n    }\n  }\n}\n&quot;,&quot;variables&quot;:{&quot;address&quot;:&quot;addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5&quot;,&quot;block&quot;:&quot;02788224fb087d9a5ed48a12a3db741ad7bd4429a63e7e5b6bc69d2f2956d205&quot;}}&#39;</span> --compressed
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
+  --data-binary <span class="s1">&#39;{&quot;variables&quot;:{&quot;address&quot;:&quot;addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5&quot;,&quot;block&quot;:&quot;02788224fb087d9a5ed48a12a3db741ad7bd4429a63e7e5b6bc69d2f2956d205&quot;},&quot;query&quot;:&quot;query getAddressBlockSummary($address: String!, $block: Hash32Hex!) { blocks(where: { hash: { _eq: $block } }) { transactions_aggregate( where: { _or: [ { inputs: { address: { _eq: $address } } } { outputs: { address: { _eq: $address } } } ] } ) { aggregate { count } } transactions( where: { _or: [ { inputs: { address: { _eq: $address } } } { outputs: { address: { _eq: $address } } } ] } ) { hash includedAt fee inputs(where: { address: { _eq: $address } }) { address value txHash sourceTxIndex } outputs(where: { address: { _eq: $address } }) { address value txHash } inputs_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } outputs_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } } }}&quot;}&#39;</span> 
 </code></pre></div>
 
 <p><details>
@@ -2304,14 +2648,38 @@ block height and achieve the same result.</p>
 </details></p>
 </div>
 <input id="__tabbed_8_3" name="__tabbed_8" type="radio" /><label for="__tabbed_8_3">cardano-rosetta</label><div class="tabbed-content">
-<p>TODO</p>
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl -X POST <span class="s1">&#39;$BASEURL/account/balance&#39;</span> <span class="se">\</span>
+  -H <span class="s2">&quot;Content-Type: application/json&quot;</span> <span class="se">\</span>
+  -d <span class="s1">&#39;{ &quot;network_identifier&quot;: { &quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {}, &quot;account_identifier&quot;: { &quot;address&quot;: &quot;DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E&quot; }, &quot;metadata&quot;: {}, &quot;block_identifier&quot;: {&quot;index&quot;: &quot;5264122&quot;,&quot;hash&quot;: &quot;b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a&quot; },&quot;currencies&quot;: {&quot;symbol&quot;: &quot;ada&quot;, &quot;decimals&quot;: 8 }}&#39;</span> 
+</code></pre></div>
+
+<p><details>
+  <summary>see JSON response</summary>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;block_identifier&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;index&quot;</span><span class="p">:</span> <span class="mi">5264292</span><span class="p">,</span>
+    <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;3dc53a1991c70a160666f597c71cb751c2910ef3e14581e699e8011de9fc6839&quot;</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;balances&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;currency&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;symbol&quot;</span><span class="p">:</span> <span class="s2">&quot;ADA&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;decimals&quot;</span><span class="p">:</span> <span class="mi">6</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;coins&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div>
+</details></p>
 </div>
 </div>
 <h2 id="epochs">Epochs<a class="headerlink" href="#epochs" title="Permanent link">&para;</a></h2>
 <h4 id="apiepochsepoch"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_epochPages">/api/epochs/{epoch}</a><a class="headerlink" href="#apiepochsepoch" title="Permanent link">&para;</a></h4>
 <p>Get epoch pages, all the paged slots in the epoch.</p>
 <div class="tabbed-set" data-tabs="9:3"><input checked="checked" id="__tabbed_9_1" name="__tabbed_9" type="radio" /><label for="__tabbed_9_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> https://explorer.cardano-testnet.iohkdev.io/api/epochs/1?page<span class="o">=</span><span class="m">1</span>
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/epochs/1?page<span class="o">=</span><span class="m">1</span>
 </code></pre></div>
 
 <p><details>
@@ -2520,7 +2888,10 @@ block height and achieve the same result.</p>
   <span class="nt">&quot;block_limit&quot;</span><span class="p">:</span> <span class="mi">10</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s1">&#39;https://cardano-graphql-testnet.daedalus-operations.com/&#39;</span> -H <span class="s1">&#39;Accept-Encoding: gzip, deflate, br&#39;</span> -H <span class="s1">&#39;Content-Type: application/json&#39;</span> -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s1">&#39;Connection: keep-alive&#39;</span> -H <span class="s1">&#39;DNT: 1&#39;</span> -H <span class="s1">&#39;Origin: https://cardano-graphql-testnet.daedalus-operations.com&#39;</span> --data-binary <span class="s1">&#39;{&quot;query&quot;:&quot;query getEpoch($epoch: Int!, $block_limit: Int!) {\n  epochs(where: { number: { _eq: $epoch } }) {\n    number # cbeEpoch\n    blocks(limit: $block_limit, order_by: { slotNo: asc }) {\n      slotInEpoch # cbeSlot\n      number # cbeBlkHeight\n      hash # cbeBlkHash\n      slotLeader {\n        hash # cbeBlockLead\n      }\n      forgedAt # cbeTimeIssued\n    }\n    startedAt\n    transactionsCount # cbeTxNum\n    blocks_aggregate {\n      aggregate {\n        sum {\n          size # cbeSize\n          fees # cbeFees\n        }\n      }\n    }\n    output # cbeTotalSent\n  }\n}&quot;,&quot;variables&quot;:{&quot;epoch&quot;:1,&quot;block_limit&quot;:10}}&#39;</span> --compressed
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
+  --data-binary <span class="s1">&#39;{&quot;variables&quot;:{&quot;epoch&quot;:1,&quot;block_limit&quot;:10},&quot;query&quot;:&quot;query getEpoch($epoch: Int!, $block_limit: Int!) { epochs(where: { number: { _eq: $epoch } }) { number blocks(limit: $block_limit, order_by: { slotNo: asc }) { slotInEpoch number hash slotLeader { hash } forgedAt } startedAt transactionsCount blocks_aggregate { aggregate { sum { size fees } } } output }}&quot;}&#39;</span> 
 </code></pre></div>
 
 <p><details>
@@ -2643,14 +3014,14 @@ block height and achieve the same result.</p>
 <input id="__tabbed_9_3" name="__tabbed_9" type="radio" /><label for="__tabbed_9_3">cardano-rosetta</label><div class="tabbed-content">
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Not available in Rosetta!</p>
+<p>No equivalent in Rosetta!</p>
 </div>
 </div>
 </div>
 <h4 id="apiepochsepochslot"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_epochSlots">/api/epochs/{epoch}/{slot}</a><a class="headerlink" href="#apiepochsepochslot" title="Permanent link">&para;</a></h4>
 <p>Get the slot information in an epoch.</p>
 <div class="tabbed-set" data-tabs="10:3"><input checked="checked" id="__tabbed_10_1" name="__tabbed_10" type="radio" /><label for="__tabbed_10_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> https://explorer.cardano-testnet.iohkdev.io/api/epochs/1/8
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/epochs/1/8
 </code></pre></div>
 
 <p><details>
@@ -2712,7 +3083,10 @@ block height and achieve the same result.</p>
   <span class="nt">&quot;slot&quot;</span><span class="p">:</span> <span class="mi">8</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s1">&#39;https://cardano-graphql-testnet.daedalus-operations.com/&#39;</span> -H <span class="s1">&#39;Accept-Encoding: gzip, deflate, br&#39;</span> -H <span class="s1">&#39;Content-Type: application/json&#39;</span> -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s1">&#39;Connection: keep-alive&#39;</span> -H <span class="s1">&#39;DNT: 1&#39;</span> -H <span class="s1">&#39;Origin: https://cardano-graphql-testnet.daedalus-operations.com&#39;</span> --data-binary <span class="s1">&#39;{&quot;query&quot;:&quot;query getSlotInEpoch($epoch: Int!, $slot: Int!) {\n  epochs(where: { number: { _eq: $epoch } }) {\n    number # cbeEpoch\n    blocks(where: { slotInEpoch: { _eq: $slot } }) {\n      slotInEpoch # cbeSlot\n      number # cbeBlkHeight\n      hash # cbeBlkHash\n      slotLeader {\n        hash # cbeBlockLead\n      }\n      forgedAt # cbeTimeIssued\n    }\n    startedAt\n    transactionsCount # cbeTxNum\n    blocks_aggregate(where: { slotInEpoch: { _eq: $slot } }) {\n      aggregate {\n        sum {\n          size # cbeSize\n          fees # cbeFees\n        }\n      }\n    }\n    output # cbeTotalSent\n  }\n}&quot;,&quot;variables&quot;:{&quot;epoch&quot;:1,&quot;slot&quot;:8}}&#39;</span> --compressed
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\ </span>
+<span class="go">  -H &#39;Content-Type: application/json&#39; \</span>
+<span class="go">  -H &#39;Accept: application/json&#39; \</span>
+<span class="go">  --data-binary &#39;{&quot;variables&quot;:{&quot;epoch&quot;:1,&quot;slot&quot;:8},&quot;query&quot;:&quot;query getSlotInEpoch($epoch: Int!, $slot: Int!) { epochs(where: { number: { _eq: $epoch } }) { number blocks(where: { slotInEpoch: { _eq: $slot } }) { slotInEpoch number hash slotLeader { hash } forgedAt } startedAt transactionsCount blocks_aggregate(where: { slotInEpoch: { _eq: $slot } }) { aggregate { sum { size fees } } } output }}&quot;}&#39; </span>
 </code></pre></div>
 
 <p><details>
@@ -2754,7 +3128,7 @@ block height and achieve the same result.</p>
 <input id="__tabbed_10_3" name="__tabbed_10" type="radio" /><label for="__tabbed_10_3">cardano-rosetta</label><div class="tabbed-content">
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Not available in Rosetta!</p>
+<p>No equivalent in Rosetta!</p>
 </div>
 </div>
 </div>
@@ -2762,7 +3136,7 @@ block height and achieve the same result.</p>
 <h4 id="apigenesissummary"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_genesisSummary">/api/genesis/summary</a><a class="headerlink" href="#apigenesissummary" title="Permanent link">&para;</a></h4>
 <p>Get information about the genesis block.</p>
 <div class="tabbed-set" data-tabs="11:3"><input checked="checked" id="__tabbed_11_1" name="__tabbed_11" type="radio" /><label for="__tabbed_11_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> https://explorer.cardano-testnet.iohkdev.io/api/genesis/summary
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/genesis/summary
 </code></pre></div>
 
 <p><details>
@@ -2798,7 +3172,10 @@ block height and achieve the same result.</p>
   }
 }
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s1">&#39;https://cardano-graphql-testnet.daedalus-operations.com/&#39;</span> -H <span class="s1">&#39;Accept-Encoding: gzip, deflate, br&#39;</span> -H <span class="s1">&#39;Content-Type: application/json&#39;</span> -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s1">&#39;Connection: keep-alive&#39;</span> -H <span class="s1">&#39;DNT: 1&#39;</span> -H <span class="s1">&#39;Origin: https://cardano-graphql-testnet.daedalus-operations.com&#39;</span> --data-binary <span class="s1">&#39;{&quot;query&quot;:&quot;    query getGenesisSummary {\n      genesis {\n        byron {\n          avvmDistr\n          nonAvvmBalances\n        }\n      }\n    }\n&quot;}&#39;</span> --compressed
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
+  --data-binary <span class="s1">&#39;{&quot;query&quot;:&quot; query getGenesisSummary { genesis { byron { avvmDistr nonAvvmBalances } } }&quot;}&#39;</span> 
 </code></pre></div>
 
 <p><details>
@@ -2813,210 +3190,15 @@ block height and achieve the same result.</p>
           <span class="nt">&quot;PO1Kz9bpAowfWD8u9Ial2OkmxDiw6bK_ICDPvuHshJM=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
           <span class="nt">&quot;mqJXwreGLRzV9a--egcVvKN4hzIcNUULsXqcPWe3YXI=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
           <span class="nt">&quot;ENoYC3dNAtKL-lvjCTZDVhQYmfyWVtI0GNbz4QKqVdY=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;o0O4s8YkitBZPeZLVyjn8pjtpBoncr-H9mbtAJS_KfE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;1XEVfDyaheIAeQICkHlwmvEuY9A7E50hA1v_E_QB3Fg=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;OKVfmKrrzY0-10uxl9IxlYA6CFWwOU1dN-NyUI0bobU=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;LYOSBM00cdDToqHepveoat2SN6vdPntA0nSFXRch83Q=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;3Z-Z3rLCxLt0C3KgagBq3wOXrfm68_zh2st5Bi6Covs=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;VTx9H6wpJNMC-H-pThklJ9uCllwqXaU0WXHcVTEFAIU=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;beyF5mz8icvrBvM-mvQzLfbnHCmxOOg8Z7kJs7nySZs=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;rs_VPO7SNO2YlSY2N881xHFeBnW_Sn2o4uSfuGpq9cc=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;5RZPTI9FoSvLmiXjKYtUdkrqoMg99tIw8k4enSB1qlQ=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;QRBLXNJdJCVDjbwPvQmg_liOcYIWfvoKf7Ns5w_RDvU=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;YG9mVGb_MAvTSdFgOUV8JbRBxnj3sPELZxQNVup_X18=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;7dEmv0hdv1a7imviD3q3p9pFBFMC77Byx9oinyGwdIQ=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;H_Qs3m89FGw8QxVTUGuPjdbOPQyP8vzcD8I37BkRAXY=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;pa6NZ1j_bs8kezg23cUQiba3UyLxLiGDQfDXMQmuPSE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;Qi5VCXOUdP-U-Pd--boAii_-gwMpB0IRfibzxWEN53s=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;cLJrI380JOISi9A14PYTRmClcxPNQS3_GIZdqcXC1JQ=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;BVY8wsqEPXPQ7DPTvnvat7GRiwxFPHC4jY1x3ZvY1PE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;FBlBD9ykcwuFmoogsVjRCUag9xpkwCAgbYDNazT1oY4=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;KHwUZRYdwRs5UYIhOO9ycjucY8WvTzpkZgZ4PSbDDPI=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;ED2RmO7Wfad2p4gxyzhr4gqlhavksgHEg1acZiKMQF4=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;BOjqPWCmGewTKqKekH0HSgpnOEYT8g0qV4t4t6Nj7-c=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;b-8mgbBV-r9bqufItyyPp2WLitNhBjaMAajl3GfteeE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;JW_kuEdd0TkJEUA35YUbf_K9C4OlpZd83iTUqrD0q0g=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;IF7PMOFaXdwztrj1j_yx_YBafdZpb3pc5EF6y822KgI=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;r9HNGwms9l0cMBuT8CznPoadXKbzLPceo4-vDydXUwE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;rM0RFpsVm738CCDdzBhrEz8Q0CLIqiBKMl5rtdFlWmA=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;jFyHtgHVcd70V1SZ7O55mo8yvYw5KsijV6fMQEWkJaE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;qWmtDqvA3KZyySJLRPFPO2TiOZh3Dpv1FCJTdEilJvc=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;5YYkqAleNp8VXGYiD7WsXvWZQwybkqAUR9xMf5lLvzs=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;bi2YeYdi2W2r7IDYToq_N0RR1k3z4GYsRo2xddi2Y7I=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;vENWfzLRm1wwHYWTUIOznVCXC3ISPt8J6n3gYFrwfpg=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;G71fGc7_2IoExvY8VctjxMCd7lJsTWgvWzg__lF4qcY=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;pFzX1lvX3LPolGCv8TQXfWAZupMZEjVlMWmT7nUV70I=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;pE7umM4kIaTYqKOviWvgTb34xky-kpbN7VvSzhOT8wo=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;P6J7kBAlCPD4wxAnzuzlqTBWMyqI1zVkqVWM5kKoCwg=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;CmwjLeSIEKfLzd5ks16QoGCtYNc--wiGsgWWM4OKsco=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;-RTrh8sxu9mOYYpcfmyod8-v1Z0nqxMunwK-_NFDzYQ=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;EnoSKFBfSJ_l7RXMglXTSolDt6VeNRMay4soxkUmk0E=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;VzxlTAQWmOH7ALIXviuXH2pjjYmtW77r9ypeEZlg4mc=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;93QRpWUE-Yqthy85Y8poB_WeWdG8A_9nnq4HJiMfJQc=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;H7YIN-FF0kUawzVnhQpCoMLuOJkLzYAtZ2xof7vhtPs=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;a9_Q5Pzte2G7wXujwVBaAzLcMki6_UjKrxvWzayJ3gY=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;O4h-7y-2Izq3ojxailZAbMd0VCq78-kIMv8gIcaA6cA=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;mlzqpS0hE6s7apMGRQP4Cx5Fc380yt9gQX7XVcVrmQQ=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;aK-WCeAwKHQE9H02zvRLRdoMPIsZWiOfKkbA6yTyMxs=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;b3fq65eebunM4fM3AQubawjF6Mt9v9jyEXF5f3hewbo=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;ZbZ7v6OcrjZ3vqPFVzaHOK2A5UzRYy-wm0C-ngebU_s=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;zXza46kY7Gs5cJEoN2TUwAaXth5W7uUKQfNiaPyWDSc=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;5q5RzTcpFFUne5AKkua3DJO1IFQEOGyb2jQvV4DmDT8=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;5CzeQFC__uUi8TRPuWVgsUeJauYR3i1f3rvD0CrC34o=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;KOp96-E17RXmCf0_vEOcecpTmY8W0wpbpBwFuPwFbKM=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;EFK3F4mO823aCcko3QmFJ3Klm7glGs8a0f_f6WVIwdg=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;e4TOcy9Qp5BQ8tXkEXaWpuHRmAVcJRfPEV3sVCOKZsQ=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;w-2bM_wksghmtHp4ZB2ZOQ-V9Dw1ZivS7RwxgY-DsB4=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;9pKGBzQJLoqY6vcOM_OqHRgq9KIdO3ovCBp1mBEFKek=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;TMFEEMjP7q64-Liae7CEG0ELKtEC2e2vDuCpMItyfzU=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;nrRREQUC1zKTpQRRNDzO-NiQh6DJahitvTk0SWLkc8g=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;9xnVxPVNI9fdN5zGa5Fa3HcIwof5T-2lMbdLh3_Nbpk=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;NqOaYkD2B5yTFQ1dHMY7X2LmV0Q9tZI6KYR1-dFW_z8=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;zhXX6D5r4CDjlLLQiC87LZZL2zWUIYaXhxbcgq_Ww3w=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;CXMg_ROxPjiJAyxUpBlUepLDhcdhMffR89izVr9vcRU=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;vfTTtqpmg_3jQ7zWV3XhNfmtbtn32Z0fcfNc6_Cx-4E=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;3UAwyThFcR1vKSBpktCSkJg3NpMQhL1z4l46NHpfJkY=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;K4m8Vu1qtFRavgx0jrctVErZf6VbKDfBnigjQef6k-o=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;rmyqI_SuwRsbR4rG1Uk6bUlSJRvo004w5SeejGQERT4=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;oo8sxwl7TO2JP-QfW3_aQbE9zZCLBogFPnwEMPUBuYs=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;lif3znin9EWfZBoYZ9Ta1c69eINSJNmaqkKJVpFuF2U=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;kMAvVvgk0sEf3kHXyfb8gQ6H4gWaFBDSUwms4IFs2jo=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;8CMex0Km9bk2J1r4FaSD_FSwlGRgh1e8C1-7fCGUAJE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;pUliJY_tq41pTdo5VJISdWbGGBnL_82pupm4AjZF-y0=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;E7dg9_nI8tY9CXli9OyIHtx0FUsq0QZKLBVx9Cr8Daw=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;cpO_GBP5qVwOCGxws6oGvgZszu7jy_LwbKZj_f2pg8o=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;n8MZ16U_jB4Vg4BPZHGorDzVO7dC9qOfAdYhAluKD4Y=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;hqzkwiRusxDSgY-MyqmCyTC0VxELSFdJKJVpzBGOdQM=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;QCiQStlI-PWCbwclsM8ZvfrmP49kql7lAwJjgzZ_OvI=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;7prDyNFRXierLX1UE26h-TSO0fmfC2lFHQoelogU3hg=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;32mL1n7cF_xLIjWAGTC6vISGcafcJe0EgXaxaQNtrzQ=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;H94Fk3T5fiEXPd1eGYfpwPP4_y9FVQWsi2bhIAf9hFE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;YLQqBDTjfVrQJcqCzgn0js4ScjJpbh3_dGRmg_wQ9WM=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;Ctfg-00LO1JetbfqwOOIwrm56xdZSzzZRccGW52eCps=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;GCkRs5Iqi5jyzRhF-Z5B4-EzgCRAb55pJK8a3kmrbwU=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;975KNlfAi1B-u2Q0X0qBZpuZNLCUNnKnX-jvBzah3pE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;SrxXeNRxF0accD3dsKoj8ymSQeJoUVs78Llsy-4ZIO0=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;m5zF99P2vG3cqGrG17VvRti7d2XRi3fuUHfec-jM6tQ=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;A-w4r_kJIZpI8TqDAY-F44cR0lhZtnB25UhT0NXM6Zc=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;7mglsAKSgUEkAyA6C5Ni-v_1xoGNPCN_cj7ctQZGZqg=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;x3DrzZ_Yp8df2EGsGlwNAnclV2Tv3lcdqnI3Lk_0bF4=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;GWoauU1tVb37fjs6mPrxXiBoy9HarPqyGI8zj1mc7cw=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;op9p-7Xy9fBmzrjLbMD1jEuW1QVXTOsXSIwgaFN3sDk=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;KC7yE_m_JSiWGVP9cpcfYTLF77taAPTgveRKEiIPg1A=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;6V6sxoH3dMLw8vWcH0NQF2SZNPDzmtULTX4vxkeCQd4=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;y0DLZDhvfU-M5MvdhoyxEFp811PWFfrAdIfDVhYCMzE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;wCHhA7PS7wdfEuMpzrOJfdGyF2uIChR2LnnAcQE3hHI=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;s4iYnscFXdEK56b7o4ZvKpgN0YoKchpR-U9MZEqbGb8=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;WkMPzKKtocKcbc7_fsFND1oln6gAfWJspg9REi75pMw=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span>
+          <span class="err">...</span>
         <span class="p">},</span>
         <span class="nt">&quot;nonAvvmBalances&quot;</span><span class="p">:</span> <span class="p">{</span>
-          <span class="nt">&quot;2cWKMJemoBajGgvgVVziaKmUFa4LwJnAHffmuaSJBMDqethwJVQsyBsTSfFhp5jFpkVQM&quot;</span><span class="p">:</span> <span class="s2">&quot;5428571428571429&quot;</span><span class="p">,</span>
           <span class="nt">&quot;37btjrVyb4KEg6anTcJ9E4EAvYtNV9xXL6LNpA15YLhgvm9zJ1D2jwme574HikZ36rKdTwaUmpEicCoL1bDw4CtH5PNcFnTRGQNaFd5ai6Wvo6CZsi&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
           <span class="nt">&quot;37btjrVyb4KCRtni6YrG77RLPosnDqtEYoAD5xLdKYkWgnLqGa8yuXDUQd3psHrfxqaRcvNTsAW4ngUe6bzstbzSUJtwoaKbYaL8zjFAJJsZkQ42ti&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
           <span class="nt">&quot;37btjrVyb4KGDMix4Uj5opvbMDgjZYUjeARAqTEFEbgLUH3qyju9gkBpcm2fVWgkcNgK3xFsQgWm1w8zxqvm9P6xJj9mHqLeMJPwDMUKUGPcDyUaDS&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
           <span class="nt">&quot;37btjrVyb4KEkSeCVx985rXc38DCud2AW4LdasNmyoPLbtDGcDCyYVdf8BzxvDnzPehv4kyVBkzThjVEkSpGTv8PGQs4yRUgiCaKa7PTtBY4ohNGqR&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
           <span class="nt">&quot;37btjrVyb4KFGS7upvgJHtmp7y7EFB67utzaHf7PM8y8U4tNkpmARNwiD7seN4NSAceHmj64KLGgh9qn1BpYF49NyWxocBHn1N533qBUYfhQar9ceu&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCfir7GrvC6Y5kBNjeakZNd5po62AzQQ85SGkBB4QfXibC4fSNK5YvNeVgmPc8WbEeSUHRjoiqhJ4HDtinK2deBHSdCH6Cw8k2u92rdh&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KGAExHTQjLUHJBksSXGTomjgNsw8a4KepCgQYk4gxacKb84vGpPSv9Pjt3gdgMjA1nB67Pq3XyJpTDk8kLcXpJawCe6SCJf5jUowvAz8&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCE1qeEoUh9b8CpcZcJ794Di14AxAELGoppJNVdB79nnuKcgRut566MdDkxTqravFaDSD9iwAvDByUHi59xocCY3ButEjmCQeLTLZXQ7&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KGGSGD8KgQD6qUBaSjxy5JRtsmMSHEGGAZqA29ULGwci8TcM16vBhywuBw54izQtpAqXeyUnbjh56hCgoqGZp9tHTMLLkEgLzwxVCZ4N&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KG5ZZfwwiQuhAGWiNJ2FhXP3oAuiq75qknCz4CZWNMVY4B9BmiHRHnWfhUbkLHUqfabCYASUk2V1qGuDw97x1gdf871aFY7Lpz3N1NvT&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFtDHT2vDtMvQbLBgfH5hnpyVTTqqpPsieykukuxrDShHNccAEEj7M87UuV2GJ5pPA7YJ4JPjSokA99XaDgLmeaAumhZPHMwzg2Laspr&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDHFyvvKb29RD53ebt6N8kpbL41J4VxWpiFC4FnxxybP33M9tBbdqfMXvSvyTQpv4dULXf5B838kEWXSJ24bpHtFgcbRkiHQwqWFQ5du&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFh7jhHCtWxW942ceq7Xhxay8FZ7GkEBezGyFm3wJcVBGy1YYJDZ4Z7GbrFZmHLSe47zFs8Rjxk8rveoRpo1s43HXrMrhd4ijim4jJVP&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFhYgC9Lr4Se7C1gL39d5WBVADyUyQZz2BfG4BZxczyW827JRQR5enyWaoj6NnA5NyKsheV6Eb7WvQtbN8D6116HTknHhEb5jh1yUU6Z&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDLtM8HUJsBwergjZUj4DcMfkFmbV4bXUFGJk815o9nowX9ndPPVAeSNjAFYqJeFwTiMa9Ka8LqBnqFZgPpacyx9LrQLoXVMjvvLB7DK&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDec7E64byKc4XjmmCRDaTGQYgHJTPDijZVr7NwZSP8g7ienzTLx5Z1quaQRhJqqAyV8Z2QdkzXvjTTRiVDCqps78uGp3uuth4wEJKP9&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KF5R1LEsaQgjWFWXwbgJ51naDEaCRG23KiAN3UtGzaT5PvUANtFBgjmcCtPLMBYMTGL4S8px4HyQMLAyF4fakYoFAJC3PkxCWMUatGWD&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFB5Tmw1wsLmuv17Q6y8i6HGpVxbW8k4bevmob3DcdbH6jzrAtUrBpKgfTGgPMpLAbJcpaByGGJErkXQWFwrNMW35S79hxFvAN2GTXVQ&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDEX2XToMQoi1No3YdREgZWzrf1xQPbfhbZTZnprFwDsRMiBxqUrA7p4BwjxXHDyqAccPwyX8iWWquz2CrLazJMR4s8AMz2US1D1ffJL&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFTKCoqtZBdbh7LtJ9mRR1nbkX7ggP6a7AwvkSDxUN6U5GJWfuRXnL3a5x5e16uQwyjC6PoPVQ7VLdJXr8Kd3eFknLu6NDf2ey4AaJo2&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCHCpiGd1J2GtVjP4KxEWP7RE6K6yxHzE97cbDgFD63fUFygbni8jKw1N37nGsT43KBvBn5w9ee8sVegr6Tg8fAr52mUkhdvTZYJV52T&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KGLRpX3uQfSeLovpMTcWfVZSM5RCufYvy2tyCMwrLXyHKCM9VqQh8dCQA6WcTrViaxqpvBSeKreHFL4CftfJU1z7CjHAze236NLesbL8&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEdwV1MS3Pjek1HjLN2CSq3SJZGFBbZctkGLz569i9RWN15bAvCcZ8R5dgEi8iYjpmMVKioufoGv3issZQvVtzPz38pWHBViyRK2how5&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KD1x4cqHfGxrvBubZ8pSM8Jmw15UiHpy77eMsqpMewGND2GdvAwTBZhf4KA4uypBJnuUPbPYFovpRVJ92BUaMBHfQnAD3i15DAzD8EvL&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;2cWKMJemoBait15xg1M73WAvWafoieg2GrcykbRk6J1QC2jMUXn7LpXf4mk5RUeu8qYeG&quot;</span><span class="p">:</span> <span class="s2">&quot;5428571428571429&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KC3HyNR82Bj2Sr9o6CF9o3J5hBNycGb9JwrHggTYUHfivi87akkYDv8ayepMkM4mNvxTKvoVdMHFkMnZZgrk5qobwPKM8idSnYYmvTRU&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCmCLYttFEWLNQc1MRbV1NyhhssRioZ5CgkqHgYUTT1pPSr2hrfevSe8bSwLiPsLnaCbsxJQc5SWgWYEJDPWuUA1s4AotQxERNbT9ReA&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;2cWKMJemoBahLnFCQ8wrTuZ3sMyiCeEkUZDYLNucPiVTJr8UU3BgADsKtqosDYNFXzeiw&quot;</span><span class="p">:</span> <span class="s2">&quot;5428571428571429&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDHDPBVenqrh8tUTVNYX5ZGwjd4r3svqdnwWicGnMZZV1E7nBJVQsDY69co936H9onHpmA3PYSabYH4ibbULphL1CitDgArH9KknBARc&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KD9Z53z9qD7gTWMHr22e8jDcpCHgJFQaGQsvnNkycRehAaxLAnufNRjhLzQ57XVGJnR6mcsk6MorapLpADT77tyTaX9xfUSZyTA32ZAy&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCsozLcUUHR8GyVG7erY6j9zehKTADn3e5xpRJtu1YgfJzSmAyERBHUXa5LGWY2aR2KqcssnRjwugh1bGjxc6U6ZrePJnALYTw2TR3yh&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEDBSAmNtUBy6pfXesvTvtrDZQsSYcyo7SUwjLkhoSaPDCsNqMmoGbqzFQyEe9DNwK59BMudtdkzFPBpbgiEWx5SZr6vVMbpe86qsQJV&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFf5NQ1DuNoAP4phRomqdEUmtFb6sWcDHkizGj56dwn54LfKrfWa6Er5sxDXYrzpWwS56PKmKaBjJtn1JqN67K3CihFXXospn8B2TDz2&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBPHxFJqCekpPztGnLgbVsUA46Q8Lj2LKbFJL5Nqk5LgP2u28eBJAxkkU2r118ARdXW7fXLPQgctwK22L4N3zc6XeoDqkadGmTd4s8a1&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBYe4RSCngNCgVMAeMJkRQqoJs8t6t9e9BHcNvvT6awv4CruMWH2FyiudxcGfZHmjghDvqk39iFrmCt4XE2XDuYzyo97BxwS6MngfeWp&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KF3MxxJBeJqCPFgHyUsSDkrDqoctSSVi9h7F4Wj9zFKcPVuVju76KYhdp7nJhy44512Wjhw7WH4sed3MMSh1HYnKUfjZXGkoZXMajaye&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDsi9fc3RfExWLumjkp2YrcMjZpew19Z92kZnjPy5Xa84KY2WZw6xmjJA7AXFJCBWtrF9RFw1BjCewEqK77CVYj2s7bk9aAA7yyZARRz&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;2cWKMJemoBaj34AMeqLspGBgX1PVc7z6VkALK3rtVd8iFgCtMUenNoHhVRnjeGfYVQJM1&quot;</span><span class="p">:</span> <span class="s2">&quot;5428571428571429&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDpppzxzoaPgnstPejNxGaSZ3Vh22Qd2DWGrwfLJ2tizs33Y5Yjya1U6TXPzVX2PT5g1PXMy4jR4aWZRGZqYJk4Uw9p1h6BhEa189eiN&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEXaPVoMuKpnVEKKLMFuGSvYL7YMAD529yxeK8Y1zqnbh5FQ8GMYpJwARugWmzaXdJ1gopgsxziC4e5wgjf3zkp7RH41KTJ73xLyfrFP&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBrhG1yaBVY3X1ZoTCjUH7gbiA4qSFsMGgtLUBgwHiMZPiAJ3kQrRiboPV3s7eYXZD9fnd27qRb1cCEMc4oU57aPn2cYcEdAEJHrsyLB&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEC4vC63KNqRBD7RX1KBwWDdPDE6oXGxP8x5aKrbVTALaq4XBdak8F47Kt9VcsQvVsKZfAit8vBtZpG2mc6VKUXCFv8pTYWwQMnABckB&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFPbetkmdvqD8nLRFsUVL4HsVUYmgaZhAmBXcr78M3XoZkptjuszd2T1FNr1fGZApkZFZXikGtyhCc7jH5JYD1q8csTNSWQn4Us3nzX9&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDfwNJcNMYsyEDVHWrGrNAPBwF9FGEnm5j2XFs4BeGdiSPqPtqCjWCvcRYBfY5EoDjRBhjsTrr2HjB1jw8XZ9Hy8wd9gz4KkCbMugSgf&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEgvmzjLT7R9xHg1vNob6vCf999UFuG4qfTpHGZufdhbkUogSFJXtQXnCcJDHJ6xuZt92H6VgxGdhSLQ9gmWZy4zCJEVu8Nj8NashVQY&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KAtY8hCobTmAB36dzosSo644ZrzATKQhP1AsnM6BAVfTWwMX5BGXhigxLm5hk4beodymyjivxrH7ZY6BZjMu3AtafB5guvagxEZM7vJq&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCRMJDqQ3iK4M19XhWGWpFbCoxjgeDB7ZqUhgW7jSYLEk5oVL4okVPVx5rXCgoK2ND9kAWnNU5QncJp1qvuCngRdJaLrvFwp4boE56VR&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBTRHUnz17FQNFzHR8PpoGGwuNQZauAUxmvTb1o7Ragv9Zvyiv6Cb3rnrmYY1PGtVFTmom3TGg4mK5XpkRyf7PnnCG5EQM69i7MViLpU&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;2cWKMJemoBam1WPtZrz3Fi4EMUDao74k9Xn4fhyVYLqK4o1VRzoxPFU91QBRToLbVyrjX&quot;</span><span class="p">:</span> <span class="s2">&quot;5428571428571429&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBUH8nDpwtt3sSc6rJ7AkYjmnqvt1tJ4J8ZKCuqPrEuEioJJZXeD9aohveoB9zhRWru6oM5zyBcgMtkA26HLtTDKsSVwzoqugfftbiPu&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCgWqZ8sJW46mQGdZS9wKW2TEQesyCoRScUxvisbdvEkfsxYLR49i6wE6uP1BBgPX9eg8cxKHPuNyKpStwf5UVmRCXD2ahotjamotMwV&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCR9vZcXetWv4QdP4jPSH4msGeXs8DUBUMVYJHgD62etfv2jiD7gmLbLezCAiGTQu9JvrHd9Wfu74wguKgkX1vCUQkzcWsn4rVWsKCyt&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFV3TiBqtLDN3oHQr5NrA8ouAAqasFU4ZuB9W13xgcgWsSy5fUtbNL4imCruQz19hjzBzykxGxCAarrviCUBh3sxWbvvTTHdvpyWGgXc&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KGM5rFFreGtZAs4PFB2Drb37uXRHebh8rCeVWFkW8De8XAbYqvfQrAqVthfJp9Qy2YzbzNhWSiUGY3D7yJkRkChyMveKCWT8qUTNEu6e&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;2cWKMJemoBahEJS9xuB3R1ofSgtG621enmfpxfx9Unpo2K26wJPioaA4tizZrNMACNoQb&quot;</span><span class="p">:</span> <span class="s2">&quot;5428571428571429&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFGV8HUDv7S5E8CSBV3pQLgGFt5HXa2jb9ofbAo3gTxcaQ4So84mHsNk9mhAybq6miH2VZU3iz7cqCd74gPMyn3zdUsrF1u2rib7HSXq&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCF4JTyyC27XuFmcrn9Nxj1DmM4G5BKnf8F8F8BSpvn3PnsLRNH2RZJoajmg4yqHnwMXpUnbb7sFSuthjXv6YUenX8EWsApQUzAm77Dm&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KD5zMmtnD3jWpX3TSJnZJ8jMzCFQHYa3HcHNXxdAnK5A88SiWncRpJQxesMDrYgzPHk7SnFNag5teaFELV6hE9opnJpJzMGpVicDDRX4&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDTABtj2RScLVCLVyFhxcURYUZNVta8CghbH5Edz32XSP79NHc28QTkKLMNUBupRnJXs4zcZt8C2fiPFGZfgSBMqMGMidWc2zo9piRb4&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCGn7x5G6obn9NPNoTuv25LrBcqK9wHCm3XbrhxqycSQrbPfsDxgDp2M8pqTjCk8cVEG2fRxWrTjfG4q71MtyMo6nt8WG11kJzdQQSNL&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEhnv3cCqP8jzRBbwE5v6ymPkBjTexHCcCgYJarjHHaxipJvz4aaXc5Xmp5KXxnC3SoE1oqR8sdGHobyfsAqJy7DwejZWpkkoYD7LJsS&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDvKgSbCTx1gwwZFGe5DZaXyGwTYGGnJNCQ9C61XP4n1pKFQtNbYEowGeRoKHCGUvuU8Ebz2vQwN7YhcJ9bSb5oNpAoCe8UxX5KK5C3e&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KB6yr5YozXGqSKemHyZfsgiRQFX3VdJBKx7waoSaScNWc2dNvhNp6HSnXMxUwDtBvicXDWdpoJ7cKLWAwqEYki5azdt1qDP4sHXh8XhJ&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCqRLQRj8svdZGGLQDZGdXztzeC15Vvt6uZWg23QAdfL1dMc52dpc8jqKquWNj6xjyLnLciVnRxzEq1kiq54ssmc6h7V5xK1cqqKJWBT&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEW3PG2LAJNwmok2H6i149HetvT6fYrPsqPGpUkucNkA4b5TQmv896EF44UmcCAXDycfxFB7GcVefBCgk9cZffVUdX3kri3i5TEqSjKm&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDdgCo1a7URfpQVFoTJEUcn4LqWpAtCeLaW7NeGMJtecsahTJM7886BjLcnhU2CboLSUojCPcab3WNTmXFDrRMHMHdmWefCAyYA7QaaL&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KG5vwKTPpCSQ14a7Cv4TESosSVoFVRHsw1vHj7Tpb7N4j1U5dtFcY7L3MWsH9BJqQjU9NxwaHpbHCJAhmsLi2mC2BE8k8Rj7zcjiiVhR&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KAr171Hd3fu65bbtKxqwktHGwY9kNanPYGXQcFKA8d9Hp1RgLrxzU1AdJCJbJDByTnHdDmtA7pm985tKK8hr5JdHPXFfSvkkYZn3kb9G&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEZWqFxGYhFuLE23i92B8BiLRwwFUdnjmM24KHCNuWik5dc6MJqz7GxupgKGK5zzbYSXJyA8DQVDszyFmJuoxgzPn2GSnfBoREZ82ZdF&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDB6sZamEoJWYBLoDWucRdDtRXCuQvLCoVoHPNjrywJKDz8PQg65ZtLvYvREwAK9oLzGGb6UcdAf9zwQcFaKRRHhLzCZxwTsRDVyPkSy&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDJc8Af5dfJY2jcFbtkofFL6qXBxWnk2kHzCE63qAQR9Ynnk1XkfUrcnBrN7EEyvxmUDEFdNFfZHzXKhmkSQht3b6Y5rHHmuFYYoKdZz&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDjPpuxBuJM1Ma5NGBqriSEAcozZMqYkWEkoJ3GgR8MAy3Zeb8q5BvtsWGEpSFQ69znPuaX4kVCcnEiEMDp91A6EL8A5YM12cpYYogLm&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDmCmpc6FutA3PbQmWxcsbzZsFEdMKhHxrJVtGkmaiWd18dKmiaRA6o4Y2sAjDwjFozKzNzQg3dp8CXVSPpWgDLAXaozoRyPanW7UM8B&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCLfSBFhCBdrb72YBNJkKcDCqpdxf3k7iwJTj7M3txxiq3fcam7Nyi8sLcJNSfgnUrh8C7RKEMN5wWpku7HLdZqZVuPRjeihhgXmEpCe&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KF3ZQhHTvVH3L7jNYoZ3XWK6SWpqZKiu9AGz6qNtxoxhAmmJpenFMA6fedYDT3Lt7cihgc1q4pE2GJXvPuknAkjvESmPxhhzkBzuiRis&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KF9xNLdS47pRBLB8e8bQLuvrBiGJbnHPNCbKU4wrMerJztEtYJdHayvaoUEmJ1vc3aiq9Z3UgP83Y1b4rpiyrGeYjzQhhDgB6DW8sWJm&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KC4LdZLvrexUgAntpySomDAPVwdMEnz1cP9pZxsxZqVYzM6zPPWAhc7byfwsLdgW8GEMTuTUagYFAKEmYgaDmYxK7cHxtWJG3hiMHxVU&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFfXPG5GDEc4tLyVUSepKD9GGXZcSuP1xtLLRQnQr4wSXawT62bSJsiPzS25kdADKh94V3iDksm9nq5fhV4jixCnpNjsn7k2hSkwrAUa&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KC1L9MsZ8htPomWp4FV4hULeBVT6jf3GGqmDcw3k9tPn6pnfqGTWowQDvqVr7BqtQ5rcQ7gc5z41qh9vyBV7Ds83bRsndDbTAwkEUJ21&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBtLs3NwnoLkyVx9ZxSoQ7mQx2ZvzanG7PGWWdMA9ksXqZxakLxdj9MAPKw7eQoZJWHxJJCsd7MeWj7ujfXtPsthGhcURT3Hste4Kr4n&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCaYYFDdnbHEdBzpDPcL5iH98AGF8J5avuweDHwKChDq9mBvLKVJS6F4YTuAVDigPjMnAcuYUJ2UUbvDPePFZBhLhBrFUKeauoKC8X5z&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFfnmiGpxNSGQVMfmFpAFrEAEhZwGPQDutSHnZqQXPhcXxDNcbdoKiztyQHpTA3jSmVowZCxcaJMS1k1wu8U6nXTzejgh7wYZjycamU6&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCTVE8b2UitH791rYrkSrHG9u449h6JHKotuPWRsdVZQfP1jXrs4ygSxAnG1rM5mGFM6cmUqA44e9fenjbVC1QFYyn3R4CaptVZypKgW&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDaKs8A6CU8Lrzxpr3WNM1kDdd4CPe66TqSP2ehHexrAuZ3ykMmhkaUZEHUEiq78ELQx5vpSFGHXFKbyGgrWa8rokqamCV8bSKiqsqVt&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCdPziHrv1QgXL5zMy3KYxr7zPqoRd96iz3LNrkWbobRmPswTpRKgCQEkZcEnipiNJ5UoULAc33mbR44MchdHT5vLNYT9sPxwzpgNUWj&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KGAZJWCpicgRkb9ijP3Jnv6y9EYvnpMqkPdBZ2d6fdnCa9C97HUmfHLWF846AKjViPvnY7MbSM8mTM3VDx5RazBFxA7C7mZ9CyM48AW9&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFfgfRyETGNXNXm6gAxNpTQSxr6bM7T6yZE1ibiZBovxG52PioVmLRnPYxs4wYddAfgTH4mbmtLFnwuZYSBh2eNsdLdc6vWb4AdJNNym&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBsV28Wce4x44WsTVoXa5s4zaBKALWXxMQ2MtfVgB8LJJW34QFpvjrxKmheLtpcLyVqaeu36oB6ZcgQPppFN4oqhdueoKBEpn8dfQUVF&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBEKzyCGqao8GmErVER19oBH3L8xVNCSZs8tCVd53iV5FXZAZ7bNCT67bKoasGeiYZxEoDzGBsKxb4uJxStU1e9wkaPo6BxUEErZG7LD&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCi8WRzrkFiE1AVYbSiXBzMRTuTLv8DAchfg4tPaDgHRuDN6m4dq4VkA17pkWwCoa2NmvNb5sGeU1ZkjcqFuYrWPK2C5a3TLBfx64uLs&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDz8QGqk9LJ9kSsSd1zKgqfTuiTKbL92b4aDSXmRPyrFZp3VPEwhMyEmwCiSkpd7KQztirmU6CGwiphhiHoXbbZjkbfiHN5Mq1y7fmJM&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEcCa8yc1d8Zrne1hRtedHQQGPbkRJcvHak2ygcCndPfSqWwb2L59ERxhtqsMJLdS1fPQPs2vcJcQCvB52tCm4rGCDwUmRG51PUzjSVh&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEhvykuoQZKWdNKFgTrugRUSV66yr8GCXREuaX2PfVQJeuXS4h1bNP8SeUxHAG2J6RfK35YnsZj5qkWQCWV7tVYMVokU5bw9y8CcmqPy&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDsFS7rbQjZQGX6Fz53u76NF2hF9iqRhfbx8ePmjJKCsv5rZV1hhtP6DHdKwLAf5zkVH9FE51xYuCvJzNppSn1tgExVQJpuTwKmyTekT&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFtfVixJcJdD27YZfXfRM5diZFj4TEazkCAhF8KyztTbe67zQpBc1RTjruHNvefdJ9Jtr7u5rebR71tGrGtKioSSGKy2hMKd6GUVFkEg&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;2cWKMJemoBaiXc4dYCHfDyvy3LcqPebJ8zfRJsZZoHDqik2SzK9Be73YQ5W9u5jEiMPXa&quot;</span><span class="p">:</span> <span class="s2">&quot;5428571428571429&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFNpxUYvzqFKsRfRYJKHjEuFfgy6rpoGq29dcMrNhbKTvqNr719U282rp9PcnFonAENkUdv2nE36wZmyNkj8JVQJL1TLu25SKjGFNzVs&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFYnqsKFfMwj4S3PcCxwxutoiUubHazLfw4wJc5bfrQgpNEpRnGCS2UUfzvMWRRV2vy4wzPKE7tshLS2YEW219R6QfAenXzktMoXCmuU&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEbo96SLroMfZB11rEvztPswgdqC5ESkHXc4EaFdAhsDQ24vJK23XsjTJzpPS3ZcDWiHiFVtmp5wkJrcnRcMe74s88eTy8YLvLL7EBRj&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBcyGa22cYKz3Xo9UnB2kzZg4nqVX863JCAvUd54ehdg94DWwnBasCv6sUdbKdh9t4tf48oaXokeoms1HDNuegsmRjVntHBX3Z2hnrV7&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDHmdZ8ewhythkmGaUzLCwME5pGtWR7nPhE9nCjLMcKstQFyKq1vTSagA2BXtiopfGwtLq2e1jhUVKsw1Z8Me6XTmLm5C9MzRYCZCd3n&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBGJtifVyePJjSHTno1XNBeTcqmSqEhyUznts9KGQTsvCd9Hq6zM2w29njvmJYCtWmNkUXvayfqyv7epN1awWkKK1WUFQKJsjtevSKz7&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEwqVLa1yaRPdDUctf525DovPsxoXZfqNp26eXQnmTSFwY3Q3rgPsjRfTKHKtjFpxPy6XYvjzscccsZYfXSaL9MmgrKAaeQgQhCtoXih&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDxRyqtP9nWyEd7sfzdB8Xgh2egCATJAVtvxM2LhKLp1ALCE714vMCsbQZ5SwvVgiAvmieJTkae865ycwU39JN4pgt27pqEuB8uvi947&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDA9F68PUv9efaoQHTvacu98Dk6Zx3784ADx4SDnwMfDt3uRfJwqBELeVuis5UEqsf9u4zAD9YC82s6YNmQu43avWDqrQq9Z4hHkEVrL&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCjschbSccsYGDJo1rVBjdVrpH27iRtc5h1q4XRqpQJTma1NA9t9t8PrTsJjFE7WzNCczJHQR1RGXW1jDNEiEqNa6xctAZ4ZBtXKHVtp&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span>
+          <span class="err">...</span>
         <span class="p">}</span>
       <span class="p">}</span>
     <span class="p">}</span>
@@ -3028,7 +3210,7 @@ block height and achieve the same result.</p>
 <input id="__tabbed_11_3" name="__tabbed_11" type="radio" /><label for="__tabbed_11_3">cardano-rosetta</label><div class="tabbed-content">
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Not available in Rosetta!</p>
+<p>No equivalent in Rosetta!</p>
 </div>
 </div>
 </div>
@@ -3039,7 +3221,7 @@ block height and achieve the same result.</p>
 </div>
 <h4 id="apigenesisaddress"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_genesisAddressInfo">/api/genesis/address</a><a class="headerlink" href="#apigenesisaddress" title="Permanent link">&para;</a></h4>
 <div class="tabbed-set" data-tabs="12:3"><input checked="checked" id="__tabbed_12_1" name="__tabbed_12" type="radio" /><label for="__tabbed_12_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> https://explorer.cardano-testnet.iohkdev.io/api/genesis/address?page<span class="o">=</span><span class="m">1</span>
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/genesis/address?page<span class="o">=</span><span class="m">1</span>
 </code></pre></div>
 
 <p><details>
@@ -3136,7 +3318,10 @@ block height and achieve the same result.</p>
   }
 }
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s1">&#39;https://cardano-graphql-testnet.daedalus-operations.com/&#39;</span> -H <span class="s1">&#39;Accept-Encoding: gzip, deflate, br&#39;</span> -H <span class="s1">&#39;Content-Type: application/json&#39;</span> -H <span class="s1">&#39;Accept: application/json&#39;</span> -H <span class="s1">&#39;Connection: keep-alive&#39;</span> -H <span class="s1">&#39;DNT: 1&#39;</span> -H <span class="s1">&#39;Origin: https://cardano-graphql-testnet.daedalus-operations.com&#39;</span> --data-binary <span class="s1">&#39;{&quot;query&quot;:&quot;    query getGenesisSummary {\n      genesis {\n        byron {\n          avvmDistr\n          nonAvvmBalances\n        }\n      }\n    }\n&quot;}&#39;</span> --compressed
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
+  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
+  --data-binary <span class="s1">&#39;{&quot;query&quot;:&quot; query getGenesisSummary { genesis { byron { avvmDistr nonAvvmBalances } } }&quot;}&#39;</span> 
 </code></pre></div>
 
 <p><details>
@@ -3150,211 +3335,14 @@ block height and achieve the same result.</p>
           <span class="nt">&quot;h48-GEVDKf_0_vGKzmGOuAOhhIm2uc0OEDSNwFayV28=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
           <span class="nt">&quot;PO1Kz9bpAowfWD8u9Ial2OkmxDiw6bK_ICDPvuHshJM=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
           <span class="nt">&quot;mqJXwreGLRzV9a--egcVvKN4hzIcNUULsXqcPWe3YXI=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;ENoYC3dNAtKL-lvjCTZDVhQYmfyWVtI0GNbz4QKqVdY=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;o0O4s8YkitBZPeZLVyjn8pjtpBoncr-H9mbtAJS_KfE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;1XEVfDyaheIAeQICkHlwmvEuY9A7E50hA1v_E_QB3Fg=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;OKVfmKrrzY0-10uxl9IxlYA6CFWwOU1dN-NyUI0bobU=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;LYOSBM00cdDToqHepveoat2SN6vdPntA0nSFXRch83Q=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;3Z-Z3rLCxLt0C3KgagBq3wOXrfm68_zh2st5Bi6Covs=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;VTx9H6wpJNMC-H-pThklJ9uCllwqXaU0WXHcVTEFAIU=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;beyF5mz8icvrBvM-mvQzLfbnHCmxOOg8Z7kJs7nySZs=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;rs_VPO7SNO2YlSY2N881xHFeBnW_Sn2o4uSfuGpq9cc=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;5RZPTI9FoSvLmiXjKYtUdkrqoMg99tIw8k4enSB1qlQ=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;QRBLXNJdJCVDjbwPvQmg_liOcYIWfvoKf7Ns5w_RDvU=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;YG9mVGb_MAvTSdFgOUV8JbRBxnj3sPELZxQNVup_X18=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;7dEmv0hdv1a7imviD3q3p9pFBFMC77Byx9oinyGwdIQ=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;H_Qs3m89FGw8QxVTUGuPjdbOPQyP8vzcD8I37BkRAXY=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;pa6NZ1j_bs8kezg23cUQiba3UyLxLiGDQfDXMQmuPSE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;Qi5VCXOUdP-U-Pd--boAii_-gwMpB0IRfibzxWEN53s=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;cLJrI380JOISi9A14PYTRmClcxPNQS3_GIZdqcXC1JQ=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;BVY8wsqEPXPQ7DPTvnvat7GRiwxFPHC4jY1x3ZvY1PE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;FBlBD9ykcwuFmoogsVjRCUag9xpkwCAgbYDNazT1oY4=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;KHwUZRYdwRs5UYIhOO9ycjucY8WvTzpkZgZ4PSbDDPI=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;ED2RmO7Wfad2p4gxyzhr4gqlhavksgHEg1acZiKMQF4=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;BOjqPWCmGewTKqKekH0HSgpnOEYT8g0qV4t4t6Nj7-c=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;b-8mgbBV-r9bqufItyyPp2WLitNhBjaMAajl3GfteeE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;JW_kuEdd0TkJEUA35YUbf_K9C4OlpZd83iTUqrD0q0g=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;IF7PMOFaXdwztrj1j_yx_YBafdZpb3pc5EF6y822KgI=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;r9HNGwms9l0cMBuT8CznPoadXKbzLPceo4-vDydXUwE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;rM0RFpsVm738CCDdzBhrEz8Q0CLIqiBKMl5rtdFlWmA=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;jFyHtgHVcd70V1SZ7O55mo8yvYw5KsijV6fMQEWkJaE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;qWmtDqvA3KZyySJLRPFPO2TiOZh3Dpv1FCJTdEilJvc=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;5YYkqAleNp8VXGYiD7WsXvWZQwybkqAUR9xMf5lLvzs=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;bi2YeYdi2W2r7IDYToq_N0RR1k3z4GYsRo2xddi2Y7I=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;vENWfzLRm1wwHYWTUIOznVCXC3ISPt8J6n3gYFrwfpg=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;G71fGc7_2IoExvY8VctjxMCd7lJsTWgvWzg__lF4qcY=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;pFzX1lvX3LPolGCv8TQXfWAZupMZEjVlMWmT7nUV70I=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;pE7umM4kIaTYqKOviWvgTb34xky-kpbN7VvSzhOT8wo=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;P6J7kBAlCPD4wxAnzuzlqTBWMyqI1zVkqVWM5kKoCwg=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;CmwjLeSIEKfLzd5ks16QoGCtYNc--wiGsgWWM4OKsco=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;-RTrh8sxu9mOYYpcfmyod8-v1Z0nqxMunwK-_NFDzYQ=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;EnoSKFBfSJ_l7RXMglXTSolDt6VeNRMay4soxkUmk0E=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;VzxlTAQWmOH7ALIXviuXH2pjjYmtW77r9ypeEZlg4mc=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;93QRpWUE-Yqthy85Y8poB_WeWdG8A_9nnq4HJiMfJQc=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;H7YIN-FF0kUawzVnhQpCoMLuOJkLzYAtZ2xof7vhtPs=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;a9_Q5Pzte2G7wXujwVBaAzLcMki6_UjKrxvWzayJ3gY=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;O4h-7y-2Izq3ojxailZAbMd0VCq78-kIMv8gIcaA6cA=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;mlzqpS0hE6s7apMGRQP4Cx5Fc380yt9gQX7XVcVrmQQ=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;aK-WCeAwKHQE9H02zvRLRdoMPIsZWiOfKkbA6yTyMxs=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;b3fq65eebunM4fM3AQubawjF6Mt9v9jyEXF5f3hewbo=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;ZbZ7v6OcrjZ3vqPFVzaHOK2A5UzRYy-wm0C-ngebU_s=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;zXza46kY7Gs5cJEoN2TUwAaXth5W7uUKQfNiaPyWDSc=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;5q5RzTcpFFUne5AKkua3DJO1IFQEOGyb2jQvV4DmDT8=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;5CzeQFC__uUi8TRPuWVgsUeJauYR3i1f3rvD0CrC34o=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;KOp96-E17RXmCf0_vEOcecpTmY8W0wpbpBwFuPwFbKM=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;EFK3F4mO823aCcko3QmFJ3Klm7glGs8a0f_f6WVIwdg=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;e4TOcy9Qp5BQ8tXkEXaWpuHRmAVcJRfPEV3sVCOKZsQ=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;w-2bM_wksghmtHp4ZB2ZOQ-V9Dw1ZivS7RwxgY-DsB4=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;9pKGBzQJLoqY6vcOM_OqHRgq9KIdO3ovCBp1mBEFKek=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;TMFEEMjP7q64-Liae7CEG0ELKtEC2e2vDuCpMItyfzU=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;nrRREQUC1zKTpQRRNDzO-NiQh6DJahitvTk0SWLkc8g=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;9xnVxPVNI9fdN5zGa5Fa3HcIwof5T-2lMbdLh3_Nbpk=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;NqOaYkD2B5yTFQ1dHMY7X2LmV0Q9tZI6KYR1-dFW_z8=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;zhXX6D5r4CDjlLLQiC87LZZL2zWUIYaXhxbcgq_Ww3w=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;CXMg_ROxPjiJAyxUpBlUepLDhcdhMffR89izVr9vcRU=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;vfTTtqpmg_3jQ7zWV3XhNfmtbtn32Z0fcfNc6_Cx-4E=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;3UAwyThFcR1vKSBpktCSkJg3NpMQhL1z4l46NHpfJkY=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;K4m8Vu1qtFRavgx0jrctVErZf6VbKDfBnigjQef6k-o=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;rmyqI_SuwRsbR4rG1Uk6bUlSJRvo004w5SeejGQERT4=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;oo8sxwl7TO2JP-QfW3_aQbE9zZCLBogFPnwEMPUBuYs=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;lif3znin9EWfZBoYZ9Ta1c69eINSJNmaqkKJVpFuF2U=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;kMAvVvgk0sEf3kHXyfb8gQ6H4gWaFBDSUwms4IFs2jo=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;8CMex0Km9bk2J1r4FaSD_FSwlGRgh1e8C1-7fCGUAJE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;pUliJY_tq41pTdo5VJISdWbGGBnL_82pupm4AjZF-y0=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;E7dg9_nI8tY9CXli9OyIHtx0FUsq0QZKLBVx9Cr8Daw=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;cpO_GBP5qVwOCGxws6oGvgZszu7jy_LwbKZj_f2pg8o=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;n8MZ16U_jB4Vg4BPZHGorDzVO7dC9qOfAdYhAluKD4Y=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;hqzkwiRusxDSgY-MyqmCyTC0VxELSFdJKJVpzBGOdQM=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;QCiQStlI-PWCbwclsM8ZvfrmP49kql7lAwJjgzZ_OvI=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;7prDyNFRXierLX1UE26h-TSO0fmfC2lFHQoelogU3hg=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;32mL1n7cF_xLIjWAGTC6vISGcafcJe0EgXaxaQNtrzQ=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;H94Fk3T5fiEXPd1eGYfpwPP4_y9FVQWsi2bhIAf9hFE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;YLQqBDTjfVrQJcqCzgn0js4ScjJpbh3_dGRmg_wQ9WM=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;Ctfg-00LO1JetbfqwOOIwrm56xdZSzzZRccGW52eCps=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;GCkRs5Iqi5jyzRhF-Z5B4-EzgCRAb55pJK8a3kmrbwU=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;975KNlfAi1B-u2Q0X0qBZpuZNLCUNnKnX-jvBzah3pE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;SrxXeNRxF0accD3dsKoj8ymSQeJoUVs78Llsy-4ZIO0=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;m5zF99P2vG3cqGrG17VvRti7d2XRi3fuUHfec-jM6tQ=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;A-w4r_kJIZpI8TqDAY-F44cR0lhZtnB25UhT0NXM6Zc=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;7mglsAKSgUEkAyA6C5Ni-v_1xoGNPCN_cj7ctQZGZqg=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;x3DrzZ_Yp8df2EGsGlwNAnclV2Tv3lcdqnI3Lk_0bF4=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;GWoauU1tVb37fjs6mPrxXiBoy9HarPqyGI8zj1mc7cw=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;op9p-7Xy9fBmzrjLbMD1jEuW1QVXTOsXSIwgaFN3sDk=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;KC7yE_m_JSiWGVP9cpcfYTLF77taAPTgveRKEiIPg1A=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;6V6sxoH3dMLw8vWcH0NQF2SZNPDzmtULTX4vxkeCQd4=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;y0DLZDhvfU-M5MvdhoyxEFp811PWFfrAdIfDVhYCMzE=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;wCHhA7PS7wdfEuMpzrOJfdGyF2uIChR2LnnAcQE3hHI=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;s4iYnscFXdEK56b7o4ZvKpgN0YoKchpR-U9MZEqbGb8=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;WkMPzKKtocKcbc7_fsFND1oln6gAfWJspg9REi75pMw=&quot;</span><span class="p">:</span> <span class="s2">&quot;20000000000000&quot;</span>
+          <span class="err">...</span>
         <span class="p">},</span>
         <span class="nt">&quot;nonAvvmBalances&quot;</span><span class="p">:</span> <span class="p">{</span>
-          <span class="nt">&quot;2cWKMJemoBajGgvgVVziaKmUFa4LwJnAHffmuaSJBMDqethwJVQsyBsTSfFhp5jFpkVQM&quot;</span><span class="p">:</span> <span class="s2">&quot;5428571428571429&quot;</span><span class="p">,</span>
           <span class="nt">&quot;37btjrVyb4KEg6anTcJ9E4EAvYtNV9xXL6LNpA15YLhgvm9zJ1D2jwme574HikZ36rKdTwaUmpEicCoL1bDw4CtH5PNcFnTRGQNaFd5ai6Wvo6CZsi&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
           <span class="nt">&quot;37btjrVyb4KCRtni6YrG77RLPosnDqtEYoAD5xLdKYkWgnLqGa8yuXDUQd3psHrfxqaRcvNTsAW4ngUe6bzstbzSUJtwoaKbYaL8zjFAJJsZkQ42ti&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
           <span class="nt">&quot;37btjrVyb4KGDMix4Uj5opvbMDgjZYUjeARAqTEFEbgLUH3qyju9gkBpcm2fVWgkcNgK3xFsQgWm1w8zxqvm9P6xJj9mHqLeMJPwDMUKUGPcDyUaDS&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
           <span class="nt">&quot;37btjrVyb4KEkSeCVx985rXc38DCud2AW4LdasNmyoPLbtDGcDCyYVdf8BzxvDnzPehv4kyVBkzThjVEkSpGTv8PGQs4yRUgiCaKa7PTtBY4ohNGqR&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFGS7upvgJHtmp7y7EFB67utzaHf7PM8y8U4tNkpmARNwiD7seN4NSAceHmj64KLGgh9qn1BpYF49NyWxocBHn1N533qBUYfhQar9ceu&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCfir7GrvC6Y5kBNjeakZNd5po62AzQQ85SGkBB4QfXibC4fSNK5YvNeVgmPc8WbEeSUHRjoiqhJ4HDtinK2deBHSdCH6Cw8k2u92rdh&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KGAExHTQjLUHJBksSXGTomjgNsw8a4KepCgQYk4gxacKb84vGpPSv9Pjt3gdgMjA1nB67Pq3XyJpTDk8kLcXpJawCe6SCJf5jUowvAz8&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCE1qeEoUh9b8CpcZcJ794Di14AxAELGoppJNVdB79nnuKcgRut566MdDkxTqravFaDSD9iwAvDByUHi59xocCY3ButEjmCQeLTLZXQ7&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KGGSGD8KgQD6qUBaSjxy5JRtsmMSHEGGAZqA29ULGwci8TcM16vBhywuBw54izQtpAqXeyUnbjh56hCgoqGZp9tHTMLLkEgLzwxVCZ4N&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KG5ZZfwwiQuhAGWiNJ2FhXP3oAuiq75qknCz4CZWNMVY4B9BmiHRHnWfhUbkLHUqfabCYASUk2V1qGuDw97x1gdf871aFY7Lpz3N1NvT&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFtDHT2vDtMvQbLBgfH5hnpyVTTqqpPsieykukuxrDShHNccAEEj7M87UuV2GJ5pPA7YJ4JPjSokA99XaDgLmeaAumhZPHMwzg2Laspr&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDHFyvvKb29RD53ebt6N8kpbL41J4VxWpiFC4FnxxybP33M9tBbdqfMXvSvyTQpv4dULXf5B838kEWXSJ24bpHtFgcbRkiHQwqWFQ5du&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFh7jhHCtWxW942ceq7Xhxay8FZ7GkEBezGyFm3wJcVBGy1YYJDZ4Z7GbrFZmHLSe47zFs8Rjxk8rveoRpo1s43HXrMrhd4ijim4jJVP&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFhYgC9Lr4Se7C1gL39d5WBVADyUyQZz2BfG4BZxczyW827JRQR5enyWaoj6NnA5NyKsheV6Eb7WvQtbN8D6116HTknHhEb5jh1yUU6Z&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDLtM8HUJsBwergjZUj4DcMfkFmbV4bXUFGJk815o9nowX9ndPPVAeSNjAFYqJeFwTiMa9Ka8LqBnqFZgPpacyx9LrQLoXVMjvvLB7DK&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDec7E64byKc4XjmmCRDaTGQYgHJTPDijZVr7NwZSP8g7ienzTLx5Z1quaQRhJqqAyV8Z2QdkzXvjTTRiVDCqps78uGp3uuth4wEJKP9&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KF5R1LEsaQgjWFWXwbgJ51naDEaCRG23KiAN3UtGzaT5PvUANtFBgjmcCtPLMBYMTGL4S8px4HyQMLAyF4fakYoFAJC3PkxCWMUatGWD&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFB5Tmw1wsLmuv17Q6y8i6HGpVxbW8k4bevmob3DcdbH6jzrAtUrBpKgfTGgPMpLAbJcpaByGGJErkXQWFwrNMW35S79hxFvAN2GTXVQ&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDEX2XToMQoi1No3YdREgZWzrf1xQPbfhbZTZnprFwDsRMiBxqUrA7p4BwjxXHDyqAccPwyX8iWWquz2CrLazJMR4s8AMz2US1D1ffJL&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFTKCoqtZBdbh7LtJ9mRR1nbkX7ggP6a7AwvkSDxUN6U5GJWfuRXnL3a5x5e16uQwyjC6PoPVQ7VLdJXr8Kd3eFknLu6NDf2ey4AaJo2&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCHCpiGd1J2GtVjP4KxEWP7RE6K6yxHzE97cbDgFD63fUFygbni8jKw1N37nGsT43KBvBn5w9ee8sVegr6Tg8fAr52mUkhdvTZYJV52T&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KGLRpX3uQfSeLovpMTcWfVZSM5RCufYvy2tyCMwrLXyHKCM9VqQh8dCQA6WcTrViaxqpvBSeKreHFL4CftfJU1z7CjHAze236NLesbL8&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEdwV1MS3Pjek1HjLN2CSq3SJZGFBbZctkGLz569i9RWN15bAvCcZ8R5dgEi8iYjpmMVKioufoGv3issZQvVtzPz38pWHBViyRK2how5&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KD1x4cqHfGxrvBubZ8pSM8Jmw15UiHpy77eMsqpMewGND2GdvAwTBZhf4KA4uypBJnuUPbPYFovpRVJ92BUaMBHfQnAD3i15DAzD8EvL&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;2cWKMJemoBait15xg1M73WAvWafoieg2GrcykbRk6J1QC2jMUXn7LpXf4mk5RUeu8qYeG&quot;</span><span class="p">:</span> <span class="s2">&quot;5428571428571429&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KC3HyNR82Bj2Sr9o6CF9o3J5hBNycGb9JwrHggTYUHfivi87akkYDv8ayepMkM4mNvxTKvoVdMHFkMnZZgrk5qobwPKM8idSnYYmvTRU&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCmCLYttFEWLNQc1MRbV1NyhhssRioZ5CgkqHgYUTT1pPSr2hrfevSe8bSwLiPsLnaCbsxJQc5SWgWYEJDPWuUA1s4AotQxERNbT9ReA&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;2cWKMJemoBahLnFCQ8wrTuZ3sMyiCeEkUZDYLNucPiVTJr8UU3BgADsKtqosDYNFXzeiw&quot;</span><span class="p">:</span> <span class="s2">&quot;5428571428571429&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDHDPBVenqrh8tUTVNYX5ZGwjd4r3svqdnwWicGnMZZV1E7nBJVQsDY69co936H9onHpmA3PYSabYH4ibbULphL1CitDgArH9KknBARc&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KD9Z53z9qD7gTWMHr22e8jDcpCHgJFQaGQsvnNkycRehAaxLAnufNRjhLzQ57XVGJnR6mcsk6MorapLpADT77tyTaX9xfUSZyTA32ZAy&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCsozLcUUHR8GyVG7erY6j9zehKTADn3e5xpRJtu1YgfJzSmAyERBHUXa5LGWY2aR2KqcssnRjwugh1bGjxc6U6ZrePJnALYTw2TR3yh&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEDBSAmNtUBy6pfXesvTvtrDZQsSYcyo7SUwjLkhoSaPDCsNqMmoGbqzFQyEe9DNwK59BMudtdkzFPBpbgiEWx5SZr6vVMbpe86qsQJV&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFf5NQ1DuNoAP4phRomqdEUmtFb6sWcDHkizGj56dwn54LfKrfWa6Er5sxDXYrzpWwS56PKmKaBjJtn1JqN67K3CihFXXospn8B2TDz2&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBPHxFJqCekpPztGnLgbVsUA46Q8Lj2LKbFJL5Nqk5LgP2u28eBJAxkkU2r118ARdXW7fXLPQgctwK22L4N3zc6XeoDqkadGmTd4s8a1&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBYe4RSCngNCgVMAeMJkRQqoJs8t6t9e9BHcNvvT6awv4CruMWH2FyiudxcGfZHmjghDvqk39iFrmCt4XE2XDuYzyo97BxwS6MngfeWp&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KF3MxxJBeJqCPFgHyUsSDkrDqoctSSVi9h7F4Wj9zFKcPVuVju76KYhdp7nJhy44512Wjhw7WH4sed3MMSh1HYnKUfjZXGkoZXMajaye&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDsi9fc3RfExWLumjkp2YrcMjZpew19Z92kZnjPy5Xa84KY2WZw6xmjJA7AXFJCBWtrF9RFw1BjCewEqK77CVYj2s7bk9aAA7yyZARRz&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;2cWKMJemoBaj34AMeqLspGBgX1PVc7z6VkALK3rtVd8iFgCtMUenNoHhVRnjeGfYVQJM1&quot;</span><span class="p">:</span> <span class="s2">&quot;5428571428571429&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDpppzxzoaPgnstPejNxGaSZ3Vh22Qd2DWGrwfLJ2tizs33Y5Yjya1U6TXPzVX2PT5g1PXMy4jR4aWZRGZqYJk4Uw9p1h6BhEa189eiN&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEXaPVoMuKpnVEKKLMFuGSvYL7YMAD529yxeK8Y1zqnbh5FQ8GMYpJwARugWmzaXdJ1gopgsxziC4e5wgjf3zkp7RH41KTJ73xLyfrFP&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBrhG1yaBVY3X1ZoTCjUH7gbiA4qSFsMGgtLUBgwHiMZPiAJ3kQrRiboPV3s7eYXZD9fnd27qRb1cCEMc4oU57aPn2cYcEdAEJHrsyLB&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEC4vC63KNqRBD7RX1KBwWDdPDE6oXGxP8x5aKrbVTALaq4XBdak8F47Kt9VcsQvVsKZfAit8vBtZpG2mc6VKUXCFv8pTYWwQMnABckB&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFPbetkmdvqD8nLRFsUVL4HsVUYmgaZhAmBXcr78M3XoZkptjuszd2T1FNr1fGZApkZFZXikGtyhCc7jH5JYD1q8csTNSWQn4Us3nzX9&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDfwNJcNMYsyEDVHWrGrNAPBwF9FGEnm5j2XFs4BeGdiSPqPtqCjWCvcRYBfY5EoDjRBhjsTrr2HjB1jw8XZ9Hy8wd9gz4KkCbMugSgf&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEgvmzjLT7R9xHg1vNob6vCf999UFuG4qfTpHGZufdhbkUogSFJXtQXnCcJDHJ6xuZt92H6VgxGdhSLQ9gmWZy4zCJEVu8Nj8NashVQY&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KAtY8hCobTmAB36dzosSo644ZrzATKQhP1AsnM6BAVfTWwMX5BGXhigxLm5hk4beodymyjivxrH7ZY6BZjMu3AtafB5guvagxEZM7vJq&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCRMJDqQ3iK4M19XhWGWpFbCoxjgeDB7ZqUhgW7jSYLEk5oVL4okVPVx5rXCgoK2ND9kAWnNU5QncJp1qvuCngRdJaLrvFwp4boE56VR&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBTRHUnz17FQNFzHR8PpoGGwuNQZauAUxmvTb1o7Ragv9Zvyiv6Cb3rnrmYY1PGtVFTmom3TGg4mK5XpkRyf7PnnCG5EQM69i7MViLpU&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;2cWKMJemoBam1WPtZrz3Fi4EMUDao74k9Xn4fhyVYLqK4o1VRzoxPFU91QBRToLbVyrjX&quot;</span><span class="p">:</span> <span class="s2">&quot;5428571428571429&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBUH8nDpwtt3sSc6rJ7AkYjmnqvt1tJ4J8ZKCuqPrEuEioJJZXeD9aohveoB9zhRWru6oM5zyBcgMtkA26HLtTDKsSVwzoqugfftbiPu&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCgWqZ8sJW46mQGdZS9wKW2TEQesyCoRScUxvisbdvEkfsxYLR49i6wE6uP1BBgPX9eg8cxKHPuNyKpStwf5UVmRCXD2ahotjamotMwV&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCR9vZcXetWv4QdP4jPSH4msGeXs8DUBUMVYJHgD62etfv2jiD7gmLbLezCAiGTQu9JvrHd9Wfu74wguKgkX1vCUQkzcWsn4rVWsKCyt&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFV3TiBqtLDN3oHQr5NrA8ouAAqasFU4ZuB9W13xgcgWsSy5fUtbNL4imCruQz19hjzBzykxGxCAarrviCUBh3sxWbvvTTHdvpyWGgXc&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KGM5rFFreGtZAs4PFB2Drb37uXRHebh8rCeVWFkW8De8XAbYqvfQrAqVthfJp9Qy2YzbzNhWSiUGY3D7yJkRkChyMveKCWT8qUTNEu6e&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;2cWKMJemoBahEJS9xuB3R1ofSgtG621enmfpxfx9Unpo2K26wJPioaA4tizZrNMACNoQb&quot;</span><span class="p">:</span> <span class="s2">&quot;5428571428571429&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFGV8HUDv7S5E8CSBV3pQLgGFt5HXa2jb9ofbAo3gTxcaQ4So84mHsNk9mhAybq6miH2VZU3iz7cqCd74gPMyn3zdUsrF1u2rib7HSXq&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCF4JTyyC27XuFmcrn9Nxj1DmM4G5BKnf8F8F8BSpvn3PnsLRNH2RZJoajmg4yqHnwMXpUnbb7sFSuthjXv6YUenX8EWsApQUzAm77Dm&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KD5zMmtnD3jWpX3TSJnZJ8jMzCFQHYa3HcHNXxdAnK5A88SiWncRpJQxesMDrYgzPHk7SnFNag5teaFELV6hE9opnJpJzMGpVicDDRX4&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDTABtj2RScLVCLVyFhxcURYUZNVta8CghbH5Edz32XSP79NHc28QTkKLMNUBupRnJXs4zcZt8C2fiPFGZfgSBMqMGMidWc2zo9piRb4&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCGn7x5G6obn9NPNoTuv25LrBcqK9wHCm3XbrhxqycSQrbPfsDxgDp2M8pqTjCk8cVEG2fRxWrTjfG4q71MtyMo6nt8WG11kJzdQQSNL&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEhnv3cCqP8jzRBbwE5v6ymPkBjTexHCcCgYJarjHHaxipJvz4aaXc5Xmp5KXxnC3SoE1oqR8sdGHobyfsAqJy7DwejZWpkkoYD7LJsS&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDvKgSbCTx1gwwZFGe5DZaXyGwTYGGnJNCQ9C61XP4n1pKFQtNbYEowGeRoKHCGUvuU8Ebz2vQwN7YhcJ9bSb5oNpAoCe8UxX5KK5C3e&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KB6yr5YozXGqSKemHyZfsgiRQFX3VdJBKx7waoSaScNWc2dNvhNp6HSnXMxUwDtBvicXDWdpoJ7cKLWAwqEYki5azdt1qDP4sHXh8XhJ&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCqRLQRj8svdZGGLQDZGdXztzeC15Vvt6uZWg23QAdfL1dMc52dpc8jqKquWNj6xjyLnLciVnRxzEq1kiq54ssmc6h7V5xK1cqqKJWBT&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEW3PG2LAJNwmok2H6i149HetvT6fYrPsqPGpUkucNkA4b5TQmv896EF44UmcCAXDycfxFB7GcVefBCgk9cZffVUdX3kri3i5TEqSjKm&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDdgCo1a7URfpQVFoTJEUcn4LqWpAtCeLaW7NeGMJtecsahTJM7886BjLcnhU2CboLSUojCPcab3WNTmXFDrRMHMHdmWefCAyYA7QaaL&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KG5vwKTPpCSQ14a7Cv4TESosSVoFVRHsw1vHj7Tpb7N4j1U5dtFcY7L3MWsH9BJqQjU9NxwaHpbHCJAhmsLi2mC2BE8k8Rj7zcjiiVhR&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KAr171Hd3fu65bbtKxqwktHGwY9kNanPYGXQcFKA8d9Hp1RgLrxzU1AdJCJbJDByTnHdDmtA7pm985tKK8hr5JdHPXFfSvkkYZn3kb9G&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEZWqFxGYhFuLE23i92B8BiLRwwFUdnjmM24KHCNuWik5dc6MJqz7GxupgKGK5zzbYSXJyA8DQVDszyFmJuoxgzPn2GSnfBoREZ82ZdF&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDB6sZamEoJWYBLoDWucRdDtRXCuQvLCoVoHPNjrywJKDz8PQg65ZtLvYvREwAK9oLzGGb6UcdAf9zwQcFaKRRHhLzCZxwTsRDVyPkSy&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDJc8Af5dfJY2jcFbtkofFL6qXBxWnk2kHzCE63qAQR9Ynnk1XkfUrcnBrN7EEyvxmUDEFdNFfZHzXKhmkSQht3b6Y5rHHmuFYYoKdZz&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDjPpuxBuJM1Ma5NGBqriSEAcozZMqYkWEkoJ3GgR8MAy3Zeb8q5BvtsWGEpSFQ69znPuaX4kVCcnEiEMDp91A6EL8A5YM12cpYYogLm&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDmCmpc6FutA3PbQmWxcsbzZsFEdMKhHxrJVtGkmaiWd18dKmiaRA6o4Y2sAjDwjFozKzNzQg3dp8CXVSPpWgDLAXaozoRyPanW7UM8B&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCLfSBFhCBdrb72YBNJkKcDCqpdxf3k7iwJTj7M3txxiq3fcam7Nyi8sLcJNSfgnUrh8C7RKEMN5wWpku7HLdZqZVuPRjeihhgXmEpCe&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KF3ZQhHTvVH3L7jNYoZ3XWK6SWpqZKiu9AGz6qNtxoxhAmmJpenFMA6fedYDT3Lt7cihgc1q4pE2GJXvPuknAkjvESmPxhhzkBzuiRis&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KF9xNLdS47pRBLB8e8bQLuvrBiGJbnHPNCbKU4wrMerJztEtYJdHayvaoUEmJ1vc3aiq9Z3UgP83Y1b4rpiyrGeYjzQhhDgB6DW8sWJm&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KC4LdZLvrexUgAntpySomDAPVwdMEnz1cP9pZxsxZqVYzM6zPPWAhc7byfwsLdgW8GEMTuTUagYFAKEmYgaDmYxK7cHxtWJG3hiMHxVU&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFfXPG5GDEc4tLyVUSepKD9GGXZcSuP1xtLLRQnQr4wSXawT62bSJsiPzS25kdADKh94V3iDksm9nq5fhV4jixCnpNjsn7k2hSkwrAUa&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KC1L9MsZ8htPomWp4FV4hULeBVT6jf3GGqmDcw3k9tPn6pnfqGTWowQDvqVr7BqtQ5rcQ7gc5z41qh9vyBV7Ds83bRsndDbTAwkEUJ21&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBtLs3NwnoLkyVx9ZxSoQ7mQx2ZvzanG7PGWWdMA9ksXqZxakLxdj9MAPKw7eQoZJWHxJJCsd7MeWj7ujfXtPsthGhcURT3Hste4Kr4n&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCaYYFDdnbHEdBzpDPcL5iH98AGF8J5avuweDHwKChDq9mBvLKVJS6F4YTuAVDigPjMnAcuYUJ2UUbvDPePFZBhLhBrFUKeauoKC8X5z&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFfnmiGpxNSGQVMfmFpAFrEAEhZwGPQDutSHnZqQXPhcXxDNcbdoKiztyQHpTA3jSmVowZCxcaJMS1k1wu8U6nXTzejgh7wYZjycamU6&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCTVE8b2UitH791rYrkSrHG9u449h6JHKotuPWRsdVZQfP1jXrs4ygSxAnG1rM5mGFM6cmUqA44e9fenjbVC1QFYyn3R4CaptVZypKgW&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDaKs8A6CU8Lrzxpr3WNM1kDdd4CPe66TqSP2ehHexrAuZ3ykMmhkaUZEHUEiq78ELQx5vpSFGHXFKbyGgrWa8rokqamCV8bSKiqsqVt&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCdPziHrv1QgXL5zMy3KYxr7zPqoRd96iz3LNrkWbobRmPswTpRKgCQEkZcEnipiNJ5UoULAc33mbR44MchdHT5vLNYT9sPxwzpgNUWj&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KGAZJWCpicgRkb9ijP3Jnv6y9EYvnpMqkPdBZ2d6fdnCa9C97HUmfHLWF846AKjViPvnY7MbSM8mTM3VDx5RazBFxA7C7mZ9CyM48AW9&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFfgfRyETGNXNXm6gAxNpTQSxr6bM7T6yZE1ibiZBovxG52PioVmLRnPYxs4wYddAfgTH4mbmtLFnwuZYSBh2eNsdLdc6vWb4AdJNNym&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBsV28Wce4x44WsTVoXa5s4zaBKALWXxMQ2MtfVgB8LJJW34QFpvjrxKmheLtpcLyVqaeu36oB6ZcgQPppFN4oqhdueoKBEpn8dfQUVF&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBEKzyCGqao8GmErVER19oBH3L8xVNCSZs8tCVd53iV5FXZAZ7bNCT67bKoasGeiYZxEoDzGBsKxb4uJxStU1e9wkaPo6BxUEErZG7LD&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCi8WRzrkFiE1AVYbSiXBzMRTuTLv8DAchfg4tPaDgHRuDN6m4dq4VkA17pkWwCoa2NmvNb5sGeU1ZkjcqFuYrWPK2C5a3TLBfx64uLs&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDz8QGqk9LJ9kSsSd1zKgqfTuiTKbL92b4aDSXmRPyrFZp3VPEwhMyEmwCiSkpd7KQztirmU6CGwiphhiHoXbbZjkbfiHN5Mq1y7fmJM&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEcCa8yc1d8Zrne1hRtedHQQGPbkRJcvHak2ygcCndPfSqWwb2L59ERxhtqsMJLdS1fPQPs2vcJcQCvB52tCm4rGCDwUmRG51PUzjSVh&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEhvykuoQZKWdNKFgTrugRUSV66yr8GCXREuaX2PfVQJeuXS4h1bNP8SeUxHAG2J6RfK35YnsZj5qkWQCWV7tVYMVokU5bw9y8CcmqPy&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDsFS7rbQjZQGX6Fz53u76NF2hF9iqRhfbx8ePmjJKCsv5rZV1hhtP6DHdKwLAf5zkVH9FE51xYuCvJzNppSn1tgExVQJpuTwKmyTekT&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFtfVixJcJdD27YZfXfRM5diZFj4TEazkCAhF8KyztTbe67zQpBc1RTjruHNvefdJ9Jtr7u5rebR71tGrGtKioSSGKy2hMKd6GUVFkEg&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;2cWKMJemoBaiXc4dYCHfDyvy3LcqPebJ8zfRJsZZoHDqik2SzK9Be73YQ5W9u5jEiMPXa&quot;</span><span class="p">:</span> <span class="s2">&quot;5428571428571429&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFNpxUYvzqFKsRfRYJKHjEuFfgy6rpoGq29dcMrNhbKTvqNr719U282rp9PcnFonAENkUdv2nE36wZmyNkj8JVQJL1TLu25SKjGFNzVs&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KFYnqsKFfMwj4S3PcCxwxutoiUubHazLfw4wJc5bfrQgpNEpRnGCS2UUfzvMWRRV2vy4wzPKE7tshLS2YEW219R6QfAenXzktMoXCmuU&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEbo96SLroMfZB11rEvztPswgdqC5ESkHXc4EaFdAhsDQ24vJK23XsjTJzpPS3ZcDWiHiFVtmp5wkJrcnRcMe74s88eTy8YLvLL7EBRj&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBcyGa22cYKz3Xo9UnB2kzZg4nqVX863JCAvUd54ehdg94DWwnBasCv6sUdbKdh9t4tf48oaXokeoms1HDNuegsmRjVntHBX3Z2hnrV7&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDHmdZ8ewhythkmGaUzLCwME5pGtWR7nPhE9nCjLMcKstQFyKq1vTSagA2BXtiopfGwtLq2e1jhUVKsw1Z8Me6XTmLm5C9MzRYCZCd3n&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KBGJtifVyePJjSHTno1XNBeTcqmSqEhyUznts9KGQTsvCd9Hq6zM2w29njvmJYCtWmNkUXvayfqyv7epN1awWkKK1WUFQKJsjtevSKz7&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KEwqVLa1yaRPdDUctf525DovPsxoXZfqNp26eXQnmTSFwY3Q3rgPsjRfTKHKtjFpxPy6XYvjzscccsZYfXSaL9MmgrKAaeQgQhCtoXih&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDxRyqtP9nWyEd7sfzdB8Xgh2egCATJAVtvxM2LhKLp1ALCE714vMCsbQZ5SwvVgiAvmieJTkae865ycwU39JN4pgt27pqEuB8uvi947&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KDA9F68PUv9efaoQHTvacu98Dk6Zx3784ADx4SDnwMfDt3uRfJwqBELeVuis5UEqsf9u4zAD9YC82s6YNmQu43avWDqrQq9Z4hHkEVrL&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;37btjrVyb4KCjschbSccsYGDJo1rVBjdVrpH27iRtc5h1q4XRqpQJTma1NA9t9t8PrTsJjFE7WzNCczJHQR1RGXW1jDNEiEqNa6xctAZ4ZBtXKHVtp&quot;</span><span class="p">:</span> <span class="s2">&quot;19999999999999&quot;</span>
+          <span class="err">...</span>
         <span class="p">}</span>
       <span class="p">}</span>
     <span class="p">}</span>
@@ -3366,14 +3354,14 @@ block height and achieve the same result.</p>
 <input id="__tabbed_12_3" name="__tabbed_12" type="radio" /><label for="__tabbed_12_3">cardano-rosetta</label><div class="tabbed-content">
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Not available in Rosetta!</p>
+<p>No equivalent in Rosetta!</p>
 </div>
 </div>
 </div>
 <h4 id="apisupplyada"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_totalAda">/api/supply/ada</a><a class="headerlink" href="#apisupplyada" title="Permanent link">&para;</a></h4>
 <p>Get the total ADA supply in the blockchain.</p>
 <div class="tabbed-set" data-tabs="13:3"><input checked="checked" id="__tabbed_13_1" name="__tabbed_13" type="radio" /><label for="__tabbed_13_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> https://explorer.cardano-testnet.iohkdev.io/api/supply/ada
+<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/supply/ada
 </code></pre></div>
 
 <p><details>
@@ -3389,8 +3377,7 @@ block height and achieve the same result.</p>
 <div class="highlight"><pre><span></span><code>query getAdaSupply {
   ada {
     supply {
-      total # corresponds to REST output
-            # total = max - reserves
+      total # corresponds to REST output, total = max - reserves
       # additional interesting output
       circulating
       max
@@ -3398,19 +3385,11 @@ block height and achieve the same result.</p>
   }
 }
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code>
-</code></pre></div>
-
-<p><details>
-  <summary>see JSON response</summary>
-<div class="highlight"><pre><span></span><code>
-</code></pre></div>
-</details></p>
 </div>
 <input id="__tabbed_13_3" name="__tabbed_13" type="radio" /><label for="__tabbed_13_3">cardano-rosetta</label><div class="tabbed-content">
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Not available in Rosetta!</p>
+<p>No equivalent in Rosetta!</p>
 </div>
 </div>
 </div>
