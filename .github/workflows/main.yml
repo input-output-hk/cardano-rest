@@ -18,7 +18,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - name: Install OS Packages
-      uses: mstksg/get-package@v1
+      uses: mstksg/get-package@2a4b48d5
       with:
         apt-get: libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev libsodium-dev
         brew: libsodium

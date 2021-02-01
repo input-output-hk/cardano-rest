@@ -1,4 +1,4 @@
-resolver: https://raw.githubusercontent.com/input-output-hk/cardano-haskell/5ed4af4df2a609361260f159cd0e47e1c4073e2c/snapshots/cardano-1.24.2.yaml
+resolver: https://raw.githubusercontent.com/input-output-hk/cardano-haskell/578c5777b8f4db1f8f5d4d8c07b1945dc0cbaab7/snapshots/cardano-1.25.1.yaml
 compiler: ghc-8.6.5
 
 allow-newer: true
@@ -16,11 +16,11 @@ extra-deps:
   - Diff-0.4.0
 
   - git: https://github.com/input-output-hk/cardano-db-sync
-    commit: 3cf868ec8c06265e4b670ac737af640d716e5ef7
+    commit: 1c7dbdac93e4d75118f1592dbb411f4f6a617128
     # Author: Erik de Castro Lopo <erikd@mega-nerd.com>
-    # Date:   Thu Dec 10 09:18:17 2020 +1100
+    # Date:   Wed Jan 27 08:22:21 2021 +1100
     #
-    #     Version 7.1.0
+    #     Version 8.0.0
     subdirs:
     - cardano-db
 

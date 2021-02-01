@@ -20,8 +20,6 @@ module Explorer.Web.Api.Legacy.Util
 
 import Cardano.Db
     ( Block (..), TxId )
-import Cardano.Ledger.Shelley
-    ( ShelleyEra )
 import Control.Applicative
     ( (<|>) )
 import Control.Monad.IO.Class
@@ -80,7 +78,7 @@ collapseTxGroup xs =
     [] -> error "collapseTxGroup: groupOn produced [] on non-empty list (impossible)"
     (x:_) -> (fst x, map snd xs)
 
-decodeTextAddress :: Text -> Either ExplorerError (Addr (ShelleyEra StandardCrypto))
+decodeTextAddress :: Text -> Either ExplorerError (Addr StandardCrypto)
 decodeTextAddress txt =
     case tryBase16 <|> tryBech32 <|> tryBase58 of
         Nothing ->

@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.2 -- January 2021
+
+* Upgrade dependencies to more recent versions of the Cardano eco-system (cardano-node 1.25.1, cardano-db-sync 8.0.0)
+
 ## 3.1.1 -- December 2020
 
 * ø (patch in submit-api).
