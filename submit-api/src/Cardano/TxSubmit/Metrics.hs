@@ -12,7 +12,7 @@ import           Cardano.Prelude
 import           System.Metrics.Prometheus.Concurrent.RegistryT (RegistryT (..), registerGauge,
                     runRegistryT, unRegistryT)
 import           System.Metrics.Prometheus.Metric.Gauge (Gauge)
-import           System.Metrics.Prometheus.Http.Scrape (serveHttpTextMetricsT)
+import           System.Metrics.Prometheus.Http.Scrape (serveMetricsT)
 
 
 newtype TxSubmitMetrics = TxSubmitMetrics
@@ -24,7 +24,7 @@ registerMetricsServer =
   runRegistryT $ do
     metrics <- makeMetrics
     registry <- RegistryT ask
-    server <- liftIO . async $ runReaderT (unRegistryT $ serveHttpTextMetricsT 8081 []) registry
+    server <- liftIO . async $ runReaderT (unRegistryT $ serveMetricsT 8081 []) registry
     pure (metrics, server)
 
 makeMetrics :: RegistryT IO TxSubmitMetrics
