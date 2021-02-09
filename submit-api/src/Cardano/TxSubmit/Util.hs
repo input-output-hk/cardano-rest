@@ -9,8 +9,7 @@ import           Cardano.BM.Trace (Trace, logError)
 
 import           Cardano.Prelude
 
-import           Data.Text (Text)
-import qualified Data.Text as Text
+import qualified Data.Text as T
 
 
 -- | ouroboros-network catches 'SomeException' and if a 'nullTracer' is passed into that
@@ -27,4 +26,4 @@ logException tracer txt action =
       throwIO e
 
 textShow :: Show a => a -> Text
-textShow = Text.pack . show
+textShow = T.pack . show

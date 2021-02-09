@@ -4,11 +4,6 @@ steps:
     agents:
       system: x86_64-linux
 
-  - label: 'stack-cabal-sync'
-    command: 'nix-shell ./nix -A iohkNix.stack-cabal-sync-shell --run .buildkite/stack-cabal-sync.sh'
-    agents:
-      system: x86_64-linux
-
   - label: 'Docker Images'
     command:
       - "nix-build .buildkite/docker-build-push.nix -o docker-build-push"

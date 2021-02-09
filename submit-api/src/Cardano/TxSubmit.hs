@@ -23,10 +23,6 @@ import           Cardano.TxSubmit.Util as X
 import           Cardano.TxSubmit.Web as X
 
 import qualified Control.Concurrent.Async as Async
-import           Control.Monad.IO.Class (liftIO)
-
-import           Data.Text (Text)
-
 
 runTxSubmitWebapi :: TxSubmitNodeParams -> IO ()
 runTxSubmitWebapi tsnp = do

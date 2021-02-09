@@ -1,51 +1,92 @@
-name: GitHub Release
+name: Haskell CI
 
-on:
-  pull_request:
-    branches: [ "master" ]
-  push:
-    tags: [ '*.*.*' ]
+on: [push]
 
 jobs:
   build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macOS-latest]
-        plan:
-        - { build: stack, resolver: "--resolver lts-14.25"  }
-        include: []
-
     runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      fail-fast: false
+      matrix:
+        ghc: ["8.6.5", "8.10.3"]
+        os: [ubuntu-latest]
+
     steps:
     - name: Install OS Packages
       uses: mstksg/get-package@2a4b48d5
       with:
-        apt-get: libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev libsodium-dev
-        brew: libsodium
+        apt-get: libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev libsodium23 libsodium-dev
 
     - uses: actions/checkout@v2.3.4
 
-    - name: Setup Stack
-      uses: timbod7/setup-stack@1f68f27c
-
-    - name: Install Dependencies
+    - name: Select optimal cabal version
       run: |
-        export PATH=$PATH:/usr/local/opt/libpq/bin
-        stack --no-terminal test --bench --only-dependencies
+        case "$OS" in
+          Windows_NT)   echo "CABAL_VERSION=3.4.0.0-rc5"  >> $GITHUB_ENV;;
+          *)            echo "CABAL_VERSION=3.4.0.0-rc4"  >> $GITHUB_ENV;;
+        esac
+
+    - name: Install Haskell
+      uses: haskell/actions/setup@v1
+      id: setup-haskell
+      with:
+        ghc-version: ${{ matrix.ghc }}
+        cabal-version: ${{ env.CABAL_VERSION }}
+
+    - name: Show Haskell tool versions
+      run: |
+        ghc --version
+        cabal --version
+
+    - name: Cache cabal store
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.setup-haskell.outputs.cabal-store }}
+        key: cabal-store-${{ env.CACHE_VERSION }}-${{ matrix.ghc }}-${{ matrix.os }}
+
+    - name: Configure to use libsodium
+      run: |
+        cat >> cabal.project <<EOF
+        package cardano-crypto-praos
+          flags: -external-libsodium-vrf
+        EOF
+
+    - name: Update Hackage index
+      run: cabal update
+
+    - name: Cabal Configure
+      run: cabal --builddir="$CABAL_BUILDDIR" configure --enable-tests
+
+    - name: Build dependencies
+      run: cabal --builddir="$CABAL_BUILDDIR" build --only-dependencies all
+
+    - name: Build projects
+      run: cabal --builddir="$CABAL_BUILDDIR" build all
+
+    - name: Test projects
+      run: cabal --builddir="$CABAL_BUILDDIR" test all
+
     - name: Build & Test
       run: |
-        stack --no-terminal test --bench --no-run-benchmarks
-        stack --no-terminal install
-        cp $(stack path --local-bin)/cardano-explorer-api .
-        cp $(stack path --local-bin)/cardano-submit-api .
-        tar -czf cardano-explorer-api.tar.gz cardano-explorer-api
-        tar -czf cardano-submit-api.tar.gz cardano-submit-api
-        mkdir -p dist && mv cardano-*-api.tar.gz dist
+        mkdir -p artefacts
+
+        for exe in $(cat dist-newstyle/cache/plan.json | jq -r '."install-plan"[] | select(.style == "local" and (."component-name" | startswith("exe:"))) | ."bin-file"'); do
+          ( cd artefacts
+            tar -C "$(dirname $exe)" -czf "$(basename $exe).tar.gz" "$(basename $exe)"
+          )
+        done
+
     - name: Save Artifact
+      if: matrix.ghc == '8.10.3'
       uses: actions/upload-artifact@v1
       with:
         name: ${{ matrix.os }}_cardano-rest
-        path: ./dist
+        path: ./artefacts
 
   release:
     needs: [build]

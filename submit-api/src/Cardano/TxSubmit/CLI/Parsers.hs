@@ -23,7 +23,7 @@ import Cardano.Rest.Parsers
 import Cardano.TxSubmit.CLI.Types
     ( ConfigFile (..), SocketPath (..), TxSubmitNodeParams (..) )
 import Options.Applicative
-    ( Parser, ParserInfo, (<**>) )
+    ( Parser, ParserInfo )
 
 import qualified Options.Applicative as Opt
 

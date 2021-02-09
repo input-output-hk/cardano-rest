@@ -28,7 +28,6 @@ library
                         -fwarn-unused-imports
                         -Wincomplete-record-updates
                         -Wincomplete-uni-patterns
-                        -Weverything
                         -Wno-safe
                         -Wno-unsafe
                         -Wno-implicit-prelude

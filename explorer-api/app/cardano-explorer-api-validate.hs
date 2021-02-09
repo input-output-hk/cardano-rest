@@ -1,6 +1,4 @@
 
-import           Data.Monoid ((<>))
-
 import           Explorer.Web.Validate
 
 import           Options.Applicative (Parser, ParserInfo, ParserPrefs)
@@ -22,7 +20,7 @@ main = do
 
 -- -----------------------------------------------------------------------------
 
-data Command
+newtype Command
   = Validate Word
 
 runCommand :: Command -> IO ()

@@ -28,12 +28,11 @@ library
                         -fwarn-unused-imports
                         -Wincomplete-record-updates
                         -Wincomplete-uni-patterns
-                        -Weverything
+                        -Wno-all-missed-specialisations
+                        -Wno-implicit-prelude
+                        -Wno-missing-import-lists
                         -Wno-safe
                         -Wno-unsafe
-                        -Wno-implicit-prelude
-                        -Wno-all-missed-specialisations
-                        -Wno-missing-import-lists
 
   exposed-modules:      Cardano.Rest.Parsers
                       , Cardano.Rest.Types

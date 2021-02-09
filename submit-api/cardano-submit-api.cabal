@@ -28,7 +28,6 @@ library
                         -fwarn-unused-imports
                         -Wincomplete-record-updates
                         -Wincomplete-uni-patterns
-                        -Weverything
                         -Wno-safe
                         -Wno-unsafe
                         -Wno-implicit-prelude
@@ -75,9 +74,9 @@ library
                       , ouroboros-consensus-shelley
                       , ouroboros-network
                       , ouroboros-network-framework
-                      , prometheus
-                      , servant
-                      , servant-server
+                      , prometheus                    >= 2.2
+                      , servant                       >= 0.18
+                      , servant-server                >= 0.18
                       , shelley-spec-ledger
                       , text
                       , transformers
