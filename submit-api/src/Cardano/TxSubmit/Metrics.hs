@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Cardano.TxSubmit.Metrics
-  ( TxSubmitMetrics (..)
+  ( TxSubmitMetrics(..)
   , makeMetrics
   , registerMetricsServer
   ) where
@@ -15,8 +15,8 @@ import           System.Metrics.Prometheus.Metric.Gauge (Gauge)
 import           System.Metrics.Prometheus.Http.Scrape (serveHttpTextMetricsT)
 
 
-data TxSubmitMetrics = TxSubmitMetrics
-  { tsmCount :: !Gauge
+newtype TxSubmitMetrics = TxSubmitMetrics
+  { tsmCount :: Gauge
   }
 
 registerMetricsServer :: IO (TxSubmitMetrics, Async ())

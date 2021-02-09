@@ -75,9 +75,9 @@ library
                       , ouroboros-consensus-shelley
                       , ouroboros-network
                       , ouroboros-network-framework
-                      , prometheus
-                      , servant
-                      , servant-server
+                      , prometheus                    >= 2.1.2 && < 2.2
+                      , servant                       >= 0.16.2 && < 0.17
+                      , servant-server                >= 0.16.2 && < 0.17
                       , shelley-spec-ledger
                       , text
                       , transformers
