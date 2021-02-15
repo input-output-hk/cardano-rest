@@ -37,51 +37,6 @@ services:
         max-size: "200k"
         max-file: "10"
 
-  cardano-db-sync:
-    image: inputoutput/cardano-db-sync:${CARDANO_DB_SYNC_VERSION:-8.0.0}
-    environment:
-      - NETWORK=${NETWORK:-mainnet}
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-    depends_on:
-      - cardano-node
-      - postgres
-    secrets:
-      - postgres_password
-      - postgres_user
-      - postgres_db
-    volumes:
-      - db-sync-data:/var/lib/cdbsync
-      - node-ipc:/node-ipc
-    restart: on-failure
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "200k"
-        max-file: "10"
-
-  cardano-explorer-api:
-    image: inputoutput/cardano-explorer-api:${CARDANO_EXPLORER_API_VERSION:-3.1.2}
-    depends_on:
-      - postgres
-      - cardano-db-sync
-    environment:
-      - NETWORK=${NETWORK:-mainnet}
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-    secrets:
-      - postgres_password
-      - postgres_user
-      - postgres_db
-    ports:
-      - 8100:8100
-    restart: on-failure
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "200k"
-        max-file: "10"
-
   cardano-submit-api:
     image: inputoutput/cardano-submit-api:${CARDANO_SUBMIT_API_VERSION:-3.1.2}
     environment:
@@ -108,7 +63,6 @@ secrets:
     file: ./config/postgres_user
 
 volumes:
-  db-sync-data:
   postgres:
   node-db:
   node-ipc:

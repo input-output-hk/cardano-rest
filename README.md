@@ -29,7 +29,7 @@ $ git clone git@github.com:input-output-hk/cardano-rest.git
 $ cd cardano-rest
 ```
 
-2. Start `cardano-node`, `cardano-db-sync`, `postgresql` and `cardano-rest` components using Docker:
+2. Start `cardano-node`, `postgresql` and `cardano-rest` components using Docker:
 
 ```
 $ NETWORK=testnet docker-compose up
