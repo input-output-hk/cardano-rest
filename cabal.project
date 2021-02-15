@@ -4,15 +4,11 @@ allow-older: *
 allow-newer: *
 
 packages:
-    explorer-api/
-  , rest-common/
+    rest-common/
   , submit-api/
 
 package cardano-rest-common
     ghc-options: -ddump-to-file -ddump-hi
-
-package cardano-explorer-api
-    ghc-options: -Wall -Werror -fwarn-redundant-constraints
 
 package cardano-submit-api
     ghc-options: -Wall -Werror -fwarn-redundant-constraints
@@ -207,7 +203,7 @@ source-repository-package
     type: git
     location: https://github.com/input-output-hk/cardano-db-sync
     tag: e46ee30e0099f0cf50fd5947b803a244de3d783d
-    --sha256: 0wiqijrvahdn4w4mzdps22l85h9fb7dgmqq8p1alrmj4jb1hy3bb
+    --sha256: 19n2ybkw2c1g9dw2lj7zy1psf9yj6vmkagdgkmardd7bn51y4vi1
     subdir: cardano-db
 
 source-repository-package
