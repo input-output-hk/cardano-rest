@@ -3,12 +3,7 @@ index-state: 2021-01-08T00:00:00Z
 allow-older: *
 allow-newer: *
 
-packages:
-    rest-common/
-  , submit-api/
-
-package cardano-rest-common
-    ghc-options: -ddump-to-file -ddump-hi
+packages: submit-api/
 
 package cardano-submit-api
     ghc-options: -Wall -Werror -fwarn-redundant-constraints

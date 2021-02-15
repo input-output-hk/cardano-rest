@@ -1,7 +1,7 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE StrictData #-}
 
-module Cardano.Rest.Types
+module Cardano.TxSubmit.Rest.Types
   ( WebserverConfig(..)
   , toWarpSettings
   ) where

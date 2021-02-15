@@ -9,7 +9,7 @@ import Cardano.Api.Protocol
     ( Protocol (..) )
 import Cardano.Api.Typed
     ( NetworkId (..) )
-import Cardano.Rest.Types
+import Cardano.TxSubmit.Rest.Types
     ( WebserverConfig )
 
 -- | The product type of all command line arguments

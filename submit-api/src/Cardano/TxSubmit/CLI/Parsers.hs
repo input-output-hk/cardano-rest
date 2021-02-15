@@ -18,10 +18,10 @@ import Cardano.Api.Typed
     ( NetworkId (..), NetworkMagic (..) )
 import Cardano.Chain.Slotting
     ( EpochSlots (..) )
-import Cardano.Rest.Parsers
-    ( pWebserverConfig )
 import Cardano.TxSubmit.CLI.Types
     ( ConfigFile (..), SocketPath (..), TxSubmitNodeParams (..) )
+import Cardano.TxSubmit.Rest.Parsers
+    ( pWebserverConfig )
 import Options.Applicative
     ( Parser, ParserInfo )
 

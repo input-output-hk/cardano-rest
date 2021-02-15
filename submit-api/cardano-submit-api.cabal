@@ -42,6 +42,9 @@ library
                       , Cardano.TxSubmit.ErrorRender
                       , Cardano.TxSubmit.JsonOrphans
                       , Cardano.TxSubmit.Metrics
+                      , Cardano.TxSubmit.Rest.Parsers
+                      , Cardano.TxSubmit.Rest.Types
+                      , Cardano.TxSubmit.Rest.Web
                       , Cardano.TxSubmit.Tracing.ToObjectOrphans
                       , Cardano.TxSubmit.Tx
                       , Cardano.TxSubmit.Types
@@ -56,15 +59,15 @@ library
                       , cardano-api
                       , cardano-binary
                       , cardano-crypto-class
-                      , cardano-prelude
-                      , cardano-rest-common
                       , cardano-ledger
                       , cardano-ledger-shelley-ma
+                      , cardano-prelude
                       , containers
                       , contra-tracer
                       , formatting
                       , http-media
                       , iohk-monitoring
+                      , monad-logger
                       , mtl
                       , network
                       , optparse-applicative
@@ -78,8 +81,11 @@ library
                       , servant                       >= 0.18
                       , servant-server                >= 0.18
                       , shelley-spec-ledger
+                      , streaming-commons
+                      , text
                       , text
                       , transformers
+                      , warp
                       , yaml
 
 executable cardano-submit-api

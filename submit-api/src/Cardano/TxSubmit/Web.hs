@@ -6,7 +6,7 @@ module Cardano.TxSubmit.Web
   ( runTxSubmitServer
   ) where
 
-import Cardano.Rest.Web as Web
+import Cardano.TxSubmit.Rest.Web as Web
 import Cardano.TxSubmit.CLI.Types
 import Cardano.TxSubmit.JsonOrphans
     ()
@@ -52,7 +52,7 @@ import Servant.Server.Generic
     ( AsServerT )
 
 import qualified Cardano.Crypto.Hash.Class as Crypto
-import Cardano.Rest.Types
+import Cardano.TxSubmit.Rest.Types
     ( WebserverConfig (..), toWarpSettings )
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString.Char8 as BS

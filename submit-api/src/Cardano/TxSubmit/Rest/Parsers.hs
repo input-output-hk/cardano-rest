@@ -2,11 +2,11 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Cardano.Rest.Parsers
+module Cardano.TxSubmit.Rest.Parsers
   ( pWebserverConfig
   ) where
 
-import Cardano.Rest.Types
+import Cardano.TxSubmit.Rest.Types
     ( WebserverConfig (..) )
 import Data.String
     ( fromString )

@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Cardano.Rest.Web
+module Cardano.TxSubmit.Rest.Web
   ( runSettings
   ) where
 
