@@ -55,10 +55,10 @@ import qualified Cardano.Crypto.Hash.Class as Crypto
 import Cardano.TxSubmit.Rest.Types
     ( WebserverConfig (..), toWarpSettings )
 import qualified Data.Aeson as Aeson
-import qualified Data.ByteString.Char8 as BS
+import qualified Data.ByteString.Char8 as B8
 import qualified Data.Char as Char
-import qualified Data.Text as Text
-import qualified Data.Text.Encoding as Text
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as T
 import qualified Servant
 import qualified System.Metrics.Prometheus.Metric.Gauge as Gauge
 
@@ -97,7 +97,7 @@ txSubmitPost
 txSubmitPost trce metrics connectInfo txBytes = do
   liftIO $ logInfo trce $
     "txSubmitPost: received "
-      <> textShow (BS.length txBytes)
+      <> textShow (B8.length txBytes)
       <> " bytes"
   case localNodeConsensusMode connectInfo of
     ByronMode{} ->
@@ -129,8 +129,8 @@ txSubmitPost trce metrics connectInfo txBytes = do
     handleDeserialiseErr :: DecoderError -> Handler a
     handleDeserialiseErr err = do
       let serr = if
-                  | BS.length txBytes == 0 -> TxSubmitEmpty
-                  | BS.all isHexDigitOrSpace txBytes -> TxSubmitDecodeHex
+                  | B8.length txBytes == 0 -> TxSubmitEmpty
+                  | B8.all isHexDigitOrSpace txBytes -> TxSubmitDecodeHex
                   | otherwise -> TxSubmitDecodeFail err
       liftIO $ logInfo trce $
         "txSubmitPost: failed to deserialise transaction: "
@@ -176,5 +176,4 @@ renderMediumTxId (TxId hash) = renderMediumHash hash
 
 -- | Render the first 16 characters of a hex-encoded hash.
 renderMediumHash :: Crypto.Hash crypto a -> Text
-renderMediumHash =
-  Text.take 16 . Text.decodeLatin1 . Crypto.hashToBytesAsHex
+renderMediumHash = T.take 16 . T.decodeLatin1 . Crypto.hashToBytesAsHex

@@ -20,8 +20,8 @@ import           Cardano.TxSubmit.Util
 import           Data.Aeson (FromJSON (..), Object, Value (..), (.:))
 import           Data.Aeson.Types (Parser)
 import qualified Data.Aeson as Aeson
-import qualified Data.ByteString.Char8 as BS
-import qualified Data.Text as Text
+import qualified Data.ByteString.Char8 as B8
+import qualified Data.Text as T
 import qualified Data.Yaml as Yaml
 
 type TxSubmitNodeConfig = GenTxSubmitNodeConfig Logging.Configuration
@@ -41,8 +41,8 @@ readTxSubmitNodeConfig fp = do
   where
     readLoggingConfig :: IO ByteString
     readLoggingConfig =
-      catch (BS.readFile fp) $ \(_ :: IOException) ->
-        panic $ "Cannot find the logging configuration file at : " <> Text.pack fp
+      catch (B8.readFile fp) $ \(_ :: IOException) ->
+        panic $ "Cannot find the logging configuration file at : " <> T.pack fp
 
 convertLogging :: GenTxSubmitNodeConfig Logging.Representation -> IO TxSubmitNodeConfig
 convertLogging tsc = do

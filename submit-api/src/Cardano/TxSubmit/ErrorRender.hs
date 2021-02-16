@@ -24,7 +24,7 @@ import Formatting
 import Ouroboros.Consensus.Cardano.Block
     ( EraMismatch (..) )
 
-import qualified Data.Text as Text
+import qualified Data.Text as T
 
 renderApplyMempoolPayloadErr :: ApplyMempoolPayloadErr -> Text
 renderApplyMempoolPayloadErr err =
@@ -80,4 +80,4 @@ renderEraMismatch EraMismatch{ledgerEraName, otherEraName} =
   " era, but the transaction is for the " <> otherEraName <> " era."
 
 textShow :: Show a => a -> Text
-textShow = Text.pack . show
+textShow = T.pack . show

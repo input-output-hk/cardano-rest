@@ -75,7 +75,7 @@ type TxSubmitApi
     = "api" :> ToServantApi TxSubmitApiRecord
 
 -- | A servant-generic record with all the methods of the API
-data TxSubmitApiRecord route = TxSubmitApiRecord
+newtype TxSubmitApiRecord route = TxSubmitApiRecord
   { _txSubmitPost :: route
         :- "submit"
         :> "tx"
@@ -98,4 +98,4 @@ instance MimeUnrender CBORStream ByteString where
     mimeUnrender _ = Right . LBS.toStrict
 
 instance MimeUnrender CBORStream LBS.ByteString where
-    mimeUnrender _ = Right . id
+    mimeUnrender _ = Right
