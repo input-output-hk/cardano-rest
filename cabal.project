@@ -276,12 +276,7 @@ source-repository-package
   tag: d714bf02cbfc7b5faf7f423de09208bd2202a5f9
   --sha256: 1scffi7igv4kj93bpjf8yibcaq0sskfikmm00f7r6q031l53y50c
   subdir: cardano-api
-          cardano-api/test
-          cardano-cli
           cardano-config
-          cardano-node
-          cardano-node-chairman
-          hedgehog-extras
 
 source-repository-package
   type: git
