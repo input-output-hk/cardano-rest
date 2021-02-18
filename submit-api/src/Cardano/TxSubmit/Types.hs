@@ -11,7 +11,7 @@ module Cardano.TxSubmit.Types
   , renderTxSubmitWebApiError
   ) where
 
-import Cardano.Api.Typed
+import Cardano.Api
     ( TxId )
 import Cardano.Binary
     ( DecoderError )
