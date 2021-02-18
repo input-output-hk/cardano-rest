@@ -6,7 +6,7 @@
 
 module Cardano.TxSubmit.JsonOrphans () where
 
-import Cardano.Api.Typed
+import Cardano.Api.Byron
     ( TxId (..) )
 import Cardano.Crypto.Hash.Class as Cryptos
 import Data.Aeson
