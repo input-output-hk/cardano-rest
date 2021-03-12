@@ -37,9 +37,7 @@ jobs:
         stack --no-terminal test --bench --no-run-benchmarks
         stack --no-terminal install
         cp $(stack path --local-bin)/cardano-explorer-api .
-        cp $(stack path --local-bin)/cardano-submit-api .
         tar -czf cardano-explorer-api.tar.gz cardano-explorer-api
-        tar -czf cardano-submit-api.tar.gz cardano-submit-api
         mkdir -p dist && mv cardano-*-api.tar.gz dist
     - name: Save Artifact
       uses: actions/upload-artifact@v1
@@ -98,24 +96,4 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./macOS-latest_cardano-rest/cardano-explorer-api.tar.gz
         asset_name: cardano-explorer-api_${{ steps.create_release_tag.outputs.TAG }}-macOS.tar.gz
-        asset_content_type: application/gzip
-
-    - name: Upload Release Asset (cardano-submit-api, linux)
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./ubuntu-latest_cardano-rest/cardano-submit-api.tar.gz
-        asset_name: cardano-submit-api_${{ steps.create_release_tag.outputs.TAG }}-linux.tar.gz
-        asset_content_type: application/gzip
-
-    - name: Upload Release Asset (cardano-submit-api, macOS)
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./macOS-latest_cardano-rest/cardano-submit-api.tar.gz
-        asset_name: cardano-submit-api_${{ steps.create_release_tag.outputs.TAG }}-macOS.tar.gz
         asset_content_type: application/gzip

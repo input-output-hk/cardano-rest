@@ -16,7 +16,6 @@ let
 
     packages = ps: with ps; [
        ps.cardano-explorer-api
-       ps.cardano-submit-api
     ];
 
     # These programs will be available inside the nix-shell.

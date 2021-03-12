@@ -18,7 +18,6 @@ with hostPkgs.lib;
 let
   images = map impureCreated [
     restPackages.dockerImages.explorerApi
-    restPackages.dockerImages.submitApi
   ];
 
   # Override Docker image, setting its creation date to the current time rather than the UNIX epoch.

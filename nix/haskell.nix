@@ -27,7 +27,6 @@ let
         # split data output for ekg to reduce closure size
         packages.ekg.components.library.enableSeparateDataOutput = true;
         packages.cardano-explorer-api.configureFlags = [ "--ghc-option=-Wall" "--ghc-option=-Werror" ];
-        packages.cardano-submit-api.configureFlags = [ "--ghc-option=-Wall" "--ghc-option=-Werror" ];
         enableLibraryProfiling = profiling;
       }
     ];

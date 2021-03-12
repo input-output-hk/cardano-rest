@@ -6,7 +6,6 @@ allow-newer: true
 packages:
   - explorer-api
   - rest-common
-  - submit-api
 
 extra-deps:
   - esqueleto-3.2.0
@@ -27,7 +26,6 @@ extra-deps:
 ghc-options:
   $locals: -ddump-to-file -ddump-hi
   cardano-explorer-api: -Wall -Werror -fwarn-redundant-constraints
-  cardano-submit-api:   -Wall -Werror -fwarn-redundant-constraints
 
 nix:
   shell-file: nix/stack-shell.nix

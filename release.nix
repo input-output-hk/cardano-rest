@@ -114,7 +114,6 @@ let
       buildInputs = with pkgs.buildPackages; [ gnutar gzip binutils ];
     } ''
       cp -R ${jobs.musl64.cardano-explorer-api.x86_64-linux}/bin ${name}
-      cp -R ${jobs.musl64.cardano-submit-api.x86_64-linux}/bin ${name}
       chmod -R 755 ${name}
       strip ${name}/*
 
@@ -132,7 +131,6 @@ let
     } ''
       mkdir -p ${name}/bin
       cp -R ${jobs.native.cardano-explorer-api.x86_64-darwin}/bin ${name}
-      cp -R ${jobs.native.cardano-submit-api.x86_64-darwin}/bin ${name}
       chmod -R 755 ${name}
 
       mkdir -p $out/nix-support
@@ -146,7 +144,6 @@ let
       jobs.native.cardano-explorer-api.x86_64-linux
       jobs.native.cardano-explorer-api-compare.x86_64-linux
       jobs.native.cardano-explorer-api-validate.x86_64-linux
-      jobs.native.cardano-submit-api.x86_64-linux
     ]));
 
 in jobs

@@ -82,23 +82,6 @@ services:
         max-size: "200k"
         max-file: "10"
 
-  cardano-submit-api:
-    image: inputoutput/cardano-submit-api:${CARDANO_SUBMIT_API_VERSION:-3.1.2}
-    environment:
-      - NETWORK=${NETWORK:-mainnet}
-    depends_on:
-      - cardano-node
-    volumes:
-      - node-ipc:/node-ipc
-    ports:
-      - 8090:8090
-    restart: on-failure
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "200k"
-        max-file: "10"
-
 secrets:
   postgres_db:
     file: ./config/postgres_db

@@ -4,21 +4,6 @@
 # To build and load into the Docker engine:
 #
 #   docker load -i $(nix-build -A dockerImages.explorerApi --no-out-link)
-#   docker load -i $(nix-build -A dockerImages.submitApi --no-out-link)
-#
-# cardano-submit-api
-#   To launch with provided mainnet configuration
-#
-#    docker run -e NETWORK=mainnet inputoutput/cardano-submit-api:<TAG>
-#
-#  To launch with provided testnet configuration
-#
-#    docker run -e NETWORK=testnet inputoutput/cardano-submit-api:<TAG>
-#
-#   Provide a complete command otherwise:
-#
-#    docker run -v $PWD/config.yaml:/config.yaml inputoutput/cardano-submit-api:<TAG> \
-#      --config /config.yaml --mainnet --socket-path /node-ipc/node.socket
 #
 #  cardano-explorer-api
 #    docker run -v $PATH_TO/pgpass:/configuration/pgpass inputoutput/cardano-explorer-api:<TAG>
@@ -33,7 +18,6 @@
 
 # The main contents of the image.
 , cardano-explorer-api
-, cardano-submit-api
 , scripts
 
 # Get the current commit
@@ -57,11 +41,9 @@
 , customConfig
 
 , explorerApiRepoName ? "inputoutput/cardano-explorer-api"
-, submitApiRepoName ? "inputoutput/cardano-submit-api"
 }:
 
 let
-  submitApiPort = customConfig.services.cardano-submit-api.port or 8090;
   explorerApiPort = customConfig.services.cardano-explorer-api.port or 8100;
 
   # Layer of tools which aren't going to change much between versions.
@@ -136,44 +118,7 @@ let
       };
     };
   };
-  submitApiWithoutConfig = dockerTools.buildImage {
-    name = "submit-api-without-config";
-    fromImage = baseImage;
-    contents = [
-      cardano-submit-api
-    ];
-  };
-  submitApiDockerImage = let
-    clusterStatements = lib.concatStringsSep "\n" (lib.mapAttrsToList (_: value: value) (commonLib.forEnvironmentsCustom (env: ''
-      elif [[ "$NETWORK" == "${env.name}" ]]; then
-        exec ${scripts.${env.name}.submit-api}
-    '') scripts.environments));
-    entry-point = writeScriptBin "entry-point" ''
-      #!${runtimeShell}
-      # set up /tmp (override with TMPDIR variable)
-      mkdir -p -m 1777 tmp
-      if [[ -z "$NETWORK" ]]; then
-         exec ${cardano-submit-api}/bin/cardano-submit-api $@
-         ${clusterStatements}
-      else
-        echo "Managed configuration for network "$NETWORK" does not exist"
-      fi
-    '';
-  in dockerTools.buildImage {
-    name = "${submitApiRepoName}";
-    fromImage = submitApiWithoutConfig;
-    tag = "${gitrev}";
-    created = "now";   # Set creation date to build time. Breaks reproducibility
-    contents = [ entry-point ];
-    config = {
-      EntryPoint = [ "${entry-point}/bin/entry-point" ];
-      ExposedPorts = {
-        "${toString submitApiPort}/tcp" = {};
-      };
-    };
-  };
 
 in {
   explorerApi = explorerApiDockerImage;
-  submitApi = submitApiDockerImage;
 }

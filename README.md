@@ -56,7 +56,6 @@ See assets available for each [release](https://github.com/input-output-hk/carda
 ## Documentation
 
 - [API Documentation (cardano-explorer-api)](https://input-output-hk.github.io/cardano-rest/explorer-api)
-- [API Documentation (cardano-submit-api)](https://input-output-hk.github.io/cardano-rest/submit-api)
 
 <hr/>
 

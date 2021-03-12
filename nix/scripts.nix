@@ -8,11 +8,6 @@ let
         enable = true;
         postgres.user = "*";
       };
-      services.cardano-submit-api = {
-        enable = true;
-        environment = envConfig;
-        network = envConfig.name;
-      };
     };
     systemdCompat.options = {
       systemd.services = lib.mkOption {};
@@ -26,6 +21,5 @@ let
     };
   in {
     explorer-api = eval.config.services.cardano-explorer-api.script;
-    submit-api = eval.config.services.cardano-submit-api.script;
   };
 in iohkNix.cardanoLib.forEnvironmentsCustom mkStartScripts environments // { inherit environments; }

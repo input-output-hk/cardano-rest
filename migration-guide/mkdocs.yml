@@ -17,7 +17,6 @@ theme:
   nav:
     - Getting Started: index.md
     - explorer-api: cardano-api.md
-    - submmit-api: submit-api.md
 
 markdown_extensions:
   - markdown.extensions.admonition

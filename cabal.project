@@ -10,15 +10,11 @@ allow-newer: *
 packages:
     explorer-api/
   , rest-common/
-  , submit-api/
 
 package cardano-rest-common
     ghc-options: -ddump-to-file -ddump-hi
 
 package cardano-explorer-api
-    ghc-options: -Wall -Werror -fwarn-redundant-constraints
-
-package cardano-submit-api
     ghc-options: -Wall -Werror -fwarn-redundant-constraints
 
 package cardano-crypto
