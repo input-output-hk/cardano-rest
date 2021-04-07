@@ -1,8 +1,5 @@
 # submit-api
 
-GraphQL doesn't support submission of data, so the following endpoints
-are only provided by Rosetta.
-
 ## Transactions
 
 #### [/api/submit/tx](https://input-output-hk.github.io/cardano-rest/submit-api/#operation/postTransaction)
@@ -23,7 +20,23 @@ Submit an already serialized transaction to the network.
     ```
     </details>
 
+=== "cardano-graphql"
+
+    ```graphql
+    mutation submitTransaction($transaction) {
+      submitTransaction(transaction: $transaction) {
+          hash
+      }
+    }
+    ```
+
+    Where `$transaction` corresponds to a CBOR-serialized transaction, e.g. as output from `cardano-cli`. 
+  
 === "cardano-rosetta"
 
     This can be done via the [/construction/submit](https://www.rosetta-api.org/docs/ConstructionApi.html#constructionsubmit) endpoint.
-    Response, request and data are documented at there.
+
+=== "cardano-submit-api"
+
+    Follow the OpenAPI specification defined [here](https://github.com/input-output-hk/cardano-node/blob/master/cardano-submit-api/swagger.yaml). For any question, please open a ticket 
+    on input-output-hk/cardano-node.
