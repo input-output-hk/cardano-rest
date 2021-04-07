@@ -13,8 +13,8 @@
       
         <link rel="canonical" href="https://input-output-hk.github.io/cardano-rest/migration-guide/explorer-api/">
       
-      <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.3">
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.0">
     
     
       
@@ -22,10 +22,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.3b61ea93.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.33e2939f.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.39b8e14a.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ef6f36e2.min.css">
         
           
           
@@ -39,7 +39,7 @@
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
-        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
       
     
     
@@ -57,8 +57,9 @@
     
     
     <body dir="ltr" data-md-color-scheme="" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple">
-      
   
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -75,27 +76,25 @@
       
     </div>
     
-      
-
-<header class="md-header" data-md-component="header">
-  <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href="https://input-output-hk.github.io/cardano-rest/migration-guide/" title="cardano-rest Migration Guide" class="md-header-nav__button md-logo" aria-label="cardano-rest Migration Guide">
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="cardano-rest Migration Guide" class="md-header__button md-logo" aria-label="cardano-rest Migration Guide" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
 
     </a>
-    <label class="md-header-nav__button md-icon" for="__drawer">
+    <label class="md-header__button md-icon" for="__drawer">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
     </label>
-    <div class="md-header-nav__title" data-md-component="header-title">
-      <div class="md-header-nav__ellipsis">
-        <div class="md-header-nav__topic">
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
           <span class="md-ellipsis">
             cardano-rest Migration Guide
           </span>
         </div>
-        <div class="md-header-nav__topic">
+        <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
               explorer-api
@@ -105,8 +104,10 @@
       </div>
     </div>
     
-      <label class="md-header-nav__button md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
       </label>
       
 <div class="md-search" data-md-component="search" role="dialog">
@@ -115,11 +116,11 @@
     <form class="md-search__form" name="search">
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
       <label class="md-search__icon md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
       </label>
-      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
       </button>
     </form>
     <div class="md-search__output">
@@ -136,12 +137,12 @@
 </div>
     
     
-      <div class="md-header-nav__source">
+      <div class="md-header__source">
         
-<a href="https://github.com/input-output-hk/cardano-rest/" title="Go to repository" class="md-source">
+<a href="https://github.com/input-output-hk/cardano-rest/" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
   </div>
   <div class="md-source__repository">
     GitHub
@@ -162,20 +163,18 @@
           
             
               
-              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation" >
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
 
 
-
-
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="https://input-output-hk.github.io/cardano-rest/migration-guide/" title="cardano-rest Migration Guide" class="md-nav__button md-logo" aria-label="cardano-rest Migration Guide">
+    <a href=".." title="cardano-rest Migration Guide" class="md-nav__button md-logo" aria-label="cardano-rest Migration Guide" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
 
     </a>
     cardano-rest Migration Guide
@@ -183,10 +182,10 @@
   
     <div class="md-nav__source">
       
-<a href="https://github.com/input-output-hk/cardano-rest/" title="Go to repository" class="md-source">
+<a href="https://github.com/input-output-hk/cardano-rest/" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
   </div>
   <div class="md-source__repository">
     GitHub
@@ -200,40 +199,43 @@
       
       
 
-
-
-  <li class="md-nav__item">
-    <a href=".." class="md-nav__link">
-      Getting Started
-    </a>
-  </li>
-
-    
-      
-      
-      
-
-
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
   
 
+    
+      
+      
+      
 
-  <li class="md-nav__item md-nav__item--active">
+  
+  
     
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
       
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          explorer-api
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         explorer-api
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-    
-    <a href="./" class="md-nav__link md-nav__link--active">
-      explorer-api
-    </a>
-    
+      </a>
       
+        
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -244,7 +246,7 @@
       <span class="md-nav__icon md-icon"></span>
       Table of contents
     </label>
-    <ul class="md-nav__list" data-md-scrollfix>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
   <a href="#blocks" class="md-nav__link">
@@ -419,21 +421,24 @@
     </ul>
   
 </nav>
+      
+    </li>
+  
+
     
-  </li>
-
-    
       
       
       
 
-
-
-  <li class="md-nav__item">
-    <a href="../submit-api/" class="md-nav__link">
-      submit-api
-    </a>
-  </li>
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../submit-api/" class="md-nav__link">
+        submit-api
+      </a>
+    </li>
+  
 
     
   </ul>
@@ -444,7 +449,7 @@
             
             
               
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc" >
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
@@ -458,7 +463,7 @@
       <span class="md-nav__icon md-icon"></span>
       Table of contents
     </label>
-    <ul class="md-nav__list" data-md-scrollfix>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
   <a href="#blocks" class="md-nav__link">
@@ -638,7 +643,7 @@
               </div>
             
           
-          <div class="md-content">
+          <div class="md-content" data-md-component="content">
             <article class="md-content__inner md-typeset">
               
                 
@@ -693,9 +698,8 @@ default configuration, it should correspond to:</p>
 <h4 id="apiblockspages"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_blocksPages">/api/blocks/pages</a><a class="headerlink" href="#apiblockspages" title="Permanent link">&para;</a></h4>
 <p>Get the list of blocks, contained in pages.</p>
 <div class="tabbed-set" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><label for="__tabbed_1_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">/api/blocks/pages?page=221038&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">/api/blocks/pages?page=221038&quot;</span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -899,12 +903,11 @@ default configuration, it should correspond to:</p>
   <span class="nt">&quot;epoch&quot;</span><span class="p">:</span> <span class="mi">86</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
-  --data-binary <span class="s1">&#39;{&quot;variables&quot;:{&quot;limit&quot;:2,&quot;epoch&quot;:86},{ &quot;query&quot;:&quot;query getBlocks($limit: Int!, $epoch: Int!) { blocks(limit: $limit, where: { epoch: { number: { _eq: $epoch } } }) { slotNo slotInEpoch number hash forgedAt transactionsCount transactions_aggregate { aggregate { sum { totalOutput } } } slotLeader { hash } size fees } }&quot;}&#39;</span> 
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+<span class="go">  -H &#39;Content-Type: application/json&#39; \</span>
+<span class="go">  -H &#39;Accept: application/json&#39; \</span>
+<span class="go">  --data-binary &#39;{&quot;variables&quot;:{&quot;limit&quot;:2,&quot;epoch&quot;:86},{ &quot;query&quot;:&quot;query getBlocks($limit: Int!, $epoch: Int!) { blocks(limit: $limit, where: { epoch: { number: { _eq: $epoch } } }) { slotNo slotInEpoch number hash forgedAt transactionsCount transactions_aggregate { aggregate { sum { totalOutput } } } slotLeader { hash } size fees } }&quot;}&#39; </span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -971,9 +974,8 @@ default configuration, it should correspond to:</p>
 <h4 id="apiblockssummaryblockhash"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_blocksSummary">/api/blocks/summary/{blockHash}</a><a class="headerlink" href="#apiblockssummaryblockhash" title="Permanent link">&para;</a></h4>
 <p>Get block's summary information.</p>
 <div class="tabbed-set" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><label for="__tabbed_2_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/blocks/summary/1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="nv">$BASEURL</span>/api/blocks/summary/1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -1039,12 +1041,11 @@ default configuration, it should correspond to:</p>
   <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6&quot;</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
-  --data-binary <span class="s1">&#39;{&quot;variables&quot;:{&quot;hash&quot;:&quot;1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6&quot;},&quot;query&quot;:&quot;query getBlock($hash: Hash32Hex!) { blocks(limit: 1, where: { hash: { _eq: $hash } }) { slotInEpoch slotNo number hash forgedAt transactionsCount transactions_aggregate { aggregate { sum { totalOutput } } } size slotLeader { hash } fees previousBlock { hash } nextBlock { hash } merkelRoot }}&quot;}&#39;</span> 
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+<span class="go">  -H &#39;Content-Type: application/json&#39; \</span>
+<span class="go">  -H &#39;Accept: application/json&#39; \</span>
+<span class="go">  --data-binary &#39;{&quot;variables&quot;:{&quot;hash&quot;:&quot;1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6&quot;},&quot;query&quot;:&quot;query getBlock($hash: Hash32Hex!) { blocks(limit: 1, where: { hash: { _eq: $hash } }) { slotInEpoch slotNo number hash forgedAt transactionsCount transactions_aggregate { aggregate { sum { totalOutput } } } size slotLeader { hash } fees previousBlock { hash } nextBlock { hash } merkelRoot }}&quot;}&#39; </span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -1084,11 +1085,10 @@ default configuration, it should correspond to:</p>
 </details></p>
 </div>
 <input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><label for="__tabbed_2_3">cardano-rosetta</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl -X POST <span class="s1">&#39;$BASEURL/block&#39;</span> <span class="se">\</span>
-  -H <span class="s2">&quot;Content-Type: application/json&quot;</span> <span class="se">\</span>
-  -d <span class="s1">&#39;{ &quot;network_identifier&quot;: {&quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {}, &quot;block_identifier&quot;: {&quot;index&quot;: &quot;5264122&quot; }}&#39;</span>
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl -X POST <span class="s1">&#39;$BASEURL/block&#39;</span> <span class="se">\</span>
+<span class="go">  -H &quot;Content-Type: application/json&quot; \</span>
+<span class="go">  -d &#39;{ &quot;network_identifier&quot;: {&quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {}, &quot;block_identifier&quot;: {&quot;index&quot;: &quot;5264122&quot; }}&#39;</span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -1150,9 +1150,8 @@ default configuration, it should correspond to:</p>
 <h4 id="apiblockstxsblockhash"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_blocksTxs">/api/blocks/txs/{blockHash}</a><a class="headerlink" href="#apiblockstxsblockhash" title="Permanent link">&para;</a></h4>
 <p>Get brief information about transactions.</p>
 <div class="tabbed-set" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><label for="__tabbed_3_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/blocks/txs/1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="nv">$BASEURL</span>/api/blocks/txs/1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -1249,12 +1248,11 @@ default configuration, it should correspond to:</p>
   <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6&quot;</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
- --data-binary <span class="s1">&#39;{&quot;variables&quot;:{&quot;hash&quot;:&quot;1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6&quot;}, &quot;query&quot;:&quot;query getBlockTxs($hash: Hash32Hex!) { blocks(limit: 1, where: { hash: { _eq: $hash } }) { transactions { hash includedAt fee inputs { address value sourceTxHash sourceTxIndex } inputs_aggregate { aggregate { sum { value } } } outputs { address index value transaction { hash } } outputs_aggregate { aggregate { sum { value } } } } }}&quot;}&#39;</span> 
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+<span class="go">  -H &#39;Content-Type: application/json&#39; \</span>
+<span class="go">  -H &#39;Accept: application/json&#39; \</span>
+<span class="go"> --data-binary &#39;{&quot;variables&quot;:{&quot;hash&quot;:&quot;1fd784ef1814fd3e1bdf35c9cd9966ed3d92ba36b68e91504cf414493a657da6&quot;}, &quot;query&quot;:&quot;query getBlockTxs($hash: Hash32Hex!) { blocks(limit: 1, where: { hash: { _eq: $hash } }) { transactions { hash includedAt fee inputs { address value sourceTxHash sourceTxIndex } inputs_aggregate { aggregate { sum { value } } } outputs { address index value transaction { hash } } outputs_aggregate { aggregate { sum { value } } } } }}&quot;}&#39; </span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -1316,11 +1314,10 @@ default configuration, it should correspond to:</p>
 </details></p>
 </div>
 <input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><label for="__tabbed_3_3">cardano-rosetta</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl -X POST <span class="s1">&#39;$BASEURL/block&#39;</span> <span class="se">\</span>
-  -H <span class="s2">&quot;Content-Type: application/json&quot;</span> <span class="se">\</span>
-  -d <span class="s1">&#39;{ &quot;network_identifier&quot;: {&quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {}, &quot;block_identifier&quot;: {&quot;index&quot;: &quot;5264122&quot; }}&#39;</span>
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl -X POST <span class="s1">&#39;$BASEURL/block&#39;</span> <span class="se">\</span>
+<span class="go">  -H &quot;Content-Type: application/json&quot; \</span>
+<span class="go">  -d &#39;{ &quot;network_identifier&quot;: {&quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {}, &quot;block_identifier&quot;: {&quot;index&quot;: &quot;5264122&quot; }}&#39;</span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -1383,9 +1380,8 @@ default configuration, it should correspond to:</p>
 <h4 id="apitxslast"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_txsLast">/api/txs/last</a><a class="headerlink" href="#apitxslast" title="Permanent link">&para;</a></h4>
 <p>Get information about the N latest transactions.</p>
 <div class="tabbed-set" data-tabs="4:3"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><label for="__tabbed_4_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/txs/last
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="nv">$BASEURL</span>/api/txs/last
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -1556,12 +1552,11 @@ default configuration, it should correspond to:</p>
   <span class="nt">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">20</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> 
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+<span class="go">  -H &#39;Content-Type: application/json&#39; </span>
 <span class="go">  -H &#39;Accept: application/json&#39; </span>
 <span class="go">  --data-binary &#39;{&quot;variables&quot;:{&quot;limit&quot;:20},&quot;query&quot;:&quot;query getTxs($limit: Int!) { transactions(limit: $limit, order_by: { includedAt: desc }) { hash includedAt outputs_aggregate { aggregate { sum { value } } } }}&quot;}&#39; </span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -1794,18 +1789,17 @@ default configuration, it should correspond to:</p>
 </details></p>
 </div>
 <input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><label for="__tabbed_4_3">cardano-rosetta</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">#</span> Get the current block identifier
-<span class="gp">$</span> curl -X POST <span class="s1">&#39;$BASEURL/network/status&#39;</span> <span class="se">\</span>
-  -H <span class="s2">&quot;Content-Type: application/json&quot;</span> <span class="se">\</span>
-  -d <span class="s1">&#39;{ &quot;network_identifier&quot;: { &quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {} }&#39;</span> <span class="p">|</span> jq .current_block_identifier.index 
+<div class="highlight"><pre><span></span><code><span class="gp"># </span>Get the current block identifier
+<span class="gp">$ </span>curl -X POST <span class="s1">&#39;$BASEURL/network/status&#39;</span> <span class="se">\</span>
+<span class="go">  -H &quot;Content-Type: application/json&quot; \</span>
+<span class="go">  -d &#39;{ &quot;network_identifier&quot;: { &quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {} }&#39; | jq .current_block_identifier.index </span>
 <span class="go">5264122</span>
 
-<span class="gp">#</span> Fetch information from it
-<span class="gp">$</span> curl -X POST <span class="s1">&#39;$BASEURL/block&#39;</span> <span class="se">\</span>
-  -H <span class="s2">&quot;Content-Type: application/json&quot;</span> <span class="se">\</span>
-  -d <span class="s1">&#39;{ &quot;network_identifier&quot;: {&quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {}, &quot;block_identifier&quot;: {&quot;index&quot;: &quot;5264122&quot; }}&#39;</span>
+<span class="gp"># </span>Fetch information from it
+<span class="gp">$ </span>curl -X POST <span class="s1">&#39;$BASEURL/block&#39;</span> <span class="se">\</span>
+<span class="go">  -H &quot;Content-Type: application/json&quot; \</span>
+<span class="go">  -d &#39;{ &quot;network_identifier&quot;: {&quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {}, &quot;block_identifier&quot;: {&quot;index&quot;: &quot;5264122&quot; }}&#39;</span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -1867,9 +1861,8 @@ default configuration, it should correspond to:</p>
 <h4 id="apitxssummarytxid"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_txsSummary">/api/txs/summary/{txId}</a><a class="headerlink" href="#apitxssummarytxid" title="Permanent link">&para;</a></h4>
 <p>Get summary information about a transaction.</p>
 <div class="tabbed-set" data-tabs="5:3"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><label for="__tabbed_5_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/txs/summary/382a5274ebf102910c6c923a8b11f108e79ecedb5d7433cd0dd15a8a443f0fa5
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="nv">$BASEURL</span>/api/txs/summary/382a5274ebf102910c6c923a8b11f108e79ecedb5d7433cd0dd15a8a443f0fa5
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -1972,12 +1965,11 @@ default configuration, it should correspond to:</p>
   <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="s2">&quot;382a5274ebf102910c6c923a8b11f108e79ecedb5d7433cd0dd15a8a443f0fa5&quot;</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Content-Type: application/json&#39;</span>  <span class="se">\</span>
-  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
-  --data-binary <span class="s1">&#39;{&quot;variables&quot;:{&quot;hash&quot;:&quot;382a5274ebf102910c6c923a8b11f108e79ecedb5d7433cd0dd15a8a443f0fa5&quot;}, &quot;query&quot;:&quot;query getTxSummary($hash: Hash32Hex!) { transactions(where: { hash: { _eq: $hash } }) { hash includedAt fee block { epochNo slotNo slotInEpoch number hash } inputs { address value sourceTxHash sourceTxIndex } inputs_aggregate { aggregate { sum { value } } } outputs { address value index txHash } outputs_aggregate { aggregate { sum { value } } } }}&quot;}&#39;</span> 
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+<span class="go">  -H &#39;Content-Type: application/json&#39;  \</span>
+<span class="go">  -H &#39;Accept: application/json&#39; \</span>
+<span class="go">  --data-binary &#39;{&quot;variables&quot;:{&quot;hash&quot;:&quot;382a5274ebf102910c6c923a8b11f108e79ecedb5d7433cd0dd15a8a443f0fa5&quot;}, &quot;query&quot;:&quot;query getTxSummary($hash: Hash32Hex!) { transactions(where: { hash: { _eq: $hash } }) { hash includedAt fee block { epochNo slotNo slotInEpoch number hash } inputs { address value sourceTxHash sourceTxIndex } inputs_aggregate { aggregate { sum { value } } } outputs { address value index txHash } outputs_aggregate { aggregate { sum { value } } } }}&quot;}&#39; </span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -2038,11 +2030,10 @@ default configuration, it should correspond to:</p>
 </details></p>
 </div>
 <input id="__tabbed_5_3" name="__tabbed_5" type="radio" /><label for="__tabbed_5_3">cardano-rosetta</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl -X POST <span class="s1">&#39;$BASEURL/block/transaction&#39;</span> <span class="se">\</span>
-  -H <span class="s2">&quot;Content-Type: application/json&quot;</span> <span class="se">\</span>
-  -d <span class="s1">&#39;{ &quot;network_identifier&quot;: { &quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {}, &quot;block_identifier&quot;: { &quot;index&quot;: &quot;5264122&quot;, &quot;hash&quot;: &quot;b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a&quot; }, &quot;transaction_identifier&quot;: { &quot;hash&quot;: &quot;2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772&quot;}}&#39;</span> 
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl -X POST <span class="s1">&#39;$BASEURL/block/transaction&#39;</span> <span class="se">\</span>
+<span class="go">  -H &quot;Content-Type: application/json&quot; \</span>
+<span class="go">  -d &#39;{ &quot;network_identifier&quot;: { &quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {}, &quot;block_identifier&quot;: { &quot;index&quot;: &quot;5264122&quot;, &quot;hash&quot;: &quot;b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a&quot; }, &quot;transaction_identifier&quot;: { &quot;hash&quot;: &quot;2d3d33d26c87d3e8ef0bc6cb25be3fb34f4db43bf23d7c624955a82cd8815772&quot;}}&#39; </span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -2107,9 +2098,8 @@ default configuration, it should correspond to:</p>
 <h4 id="apistatstxs"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_statsTxs">/api/stats/txs</a><a class="headerlink" href="#apistatstxs" title="Permanent link">&para;</a></h4>
 <p>Get statistics about transactions.</p>
 <div class="tabbed-set" data-tabs="6:3"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><label for="__tabbed_6_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/stats/txs?page<span class="o">=</span><span class="m">221444</span>
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="nv">$BASEURL</span>/api/stats/txs?page<span class="o">=</span><span class="m">221444</span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -2151,12 +2141,11 @@ block height and achieve the same result.</p>
   <span class="nt">&quot;end&quot;</span><span class="p">:</span> <span class="mi">2214440</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
-  --data-binary <span class="s1">&#39;{&quot;query&quot;:&quot;query getTxsStats($start: Int!, $end: Int!) { blocks( order_by: { forgedAt: desc } where: { number: { _gte: $start, _lte: $end } transactionsCount: { _gt: \&quot;0\&quot; } } ) { transactions { hash size } }}&quot;,&quot;variables&quot;:{&quot;start&quot;:2214430,&quot;end&quot;:2214440}}&#39;</span> 
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+<span class="go">  -H &#39;Content-Type: application/json&#39; \</span>
+<span class="go">  -H &#39;Accept: application/json&#39; \</span>
+<span class="go">  --data-binary &#39;{&quot;query&quot;:&quot;query getTxsStats($start: Int!, $end: Int!) { blocks( order_by: { forgedAt: desc } where: { number: { _gte: $start, _lte: $end } transactionsCount: { _gt: \&quot;0\&quot; } } ) { transactions { hash size } }}&quot;,&quot;variables&quot;:{&quot;start&quot;:2214430,&quot;end&quot;:2214440}}&#39; </span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -2187,9 +2176,8 @@ block height and achieve the same result.</p>
 <h4 id="apiaddressessummaryaddress"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_addressSummary">/api/addresses/summary/{address}</a><a class="headerlink" href="#apiaddressessummaryaddress" title="Permanent link">&para;</a></h4>
 <p>Get summary information about an address.</p>
 <div class="tabbed-set" data-tabs="7:3"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><label for="__tabbed_7_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/addresses/summary/addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="nv">$BASEURL</span>/api/addresses/summary/addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -2351,12 +2339,11 @@ block height and achieve the same result.</p>
   <span class="nt">&quot;address&quot;</span><span class="p">:</span> <span class="s2">&quot;addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5&quot;</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
-  --data-binary <span class="s1">&#39;{&quot;variables&quot;:{&quot;address&quot;:&quot;addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5&quot;},&quot;query&quot;:&quot;query getAddressSummary($address: String!) { caTxNum: transactions_aggregate( where: { _or: [ { inputs: { address: { _eq: $address } } } { outputs: { address: { _eq: $address } } } ] } ) { aggregate { count } } transactions_aggregate( where: { inputs: { address: { _eq: $address } } } ) { aggregate { sum { totalOutput } } } caTotalOutput: transactions_aggregate( where: { outputs: { address: { _eq: $address } } } ) { aggregate { sum { totalOutput } } } caBalance: utxos_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } caTxList: transactions( where: { _or: [ { inputs: { address: { _eq: $address } } } { outputs: { address: { _eq: $address } } } ] } ) { hash includedAt fee inputs(where: { address: { _eq: $address } }) { address value txHash sourceTxIndex } outputs(where: { address: { _eq: $address } }) { address value txHash } inputs_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } outputs_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } }}&quot;}&#39;</span> 
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+<span class="go">  -H &#39;Content-Type: application/json&#39; \</span>
+<span class="go">  -H &#39;Accept: application/json&#39; \</span>
+<span class="go">  --data-binary &#39;{&quot;variables&quot;:{&quot;address&quot;:&quot;addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5&quot;},&quot;query&quot;:&quot;query getAddressSummary($address: String!) { caTxNum: transactions_aggregate( where: { _or: [ { inputs: { address: { _eq: $address } } } { outputs: { address: { _eq: $address } } } ] } ) { aggregate { count } } transactions_aggregate( where: { inputs: { address: { _eq: $address } } } ) { aggregate { sum { totalOutput } } } caTotalOutput: transactions_aggregate( where: { outputs: { address: { _eq: $address } } } ) { aggregate { sum { totalOutput } } } caBalance: utxos_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } caTxList: transactions( where: { _or: [ { inputs: { address: { _eq: $address } } } { outputs: { address: { _eq: $address } } } ] } ) { hash includedAt fee inputs(where: { address: { _eq: $address } }) { address value txHash sourceTxIndex } outputs(where: { address: { _eq: $address } }) { address value txHash } inputs_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } outputs_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } }}&quot;}&#39; </span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -2422,11 +2409,10 @@ block height and achieve the same result.</p>
 </details></p>
 </div>
 <input id="__tabbed_7_3" name="__tabbed_7" type="radio" /><label for="__tabbed_7_3">cardano-rosetta</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl -X POST <span class="s1">&#39;$BASEURL/account/balance&#39;</span> <span class="se">\</span>
-  -H <span class="s2">&quot;Content-Type: application/json&quot;</span> <span class="se">\</span>
-  -d <span class="s1">&#39;{ &quot;network_identifier&quot;: { &quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {}, &quot;account_identifier&quot;: { &quot;address&quot;: &quot;DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E&quot; }, &quot;metadata&quot;: {}}&#39;</span> 
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl -X POST <span class="s1">&#39;$BASEURL/account/balance&#39;</span> <span class="se">\</span>
+<span class="go">  -H &quot;Content-Type: application/json&quot; \</span>
+<span class="go">  -d &#39;{ &quot;network_identifier&quot;: { &quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {}, &quot;account_identifier&quot;: { &quot;address&quot;: &quot;DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E&quot; }, &quot;metadata&quot;: {}}&#39; </span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -2452,9 +2438,8 @@ block height and achieve the same result.</p>
 <h4 id="apiblockblockhashaddressaddress"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_blockAddress">/api/block/{blockHash}/address/{address}</a><a class="headerlink" href="#apiblockblockhashaddressaddress" title="Permanent link">&para;</a></h4>
 <p>Get address information specific to a block.</p>
 <div class="tabbed-set" data-tabs="8:3"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><label for="__tabbed_8_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/block/02788224fb087d9a5ed48a12a3db741ad7bd4429a63e7e5b6bc69d2f2956d205/address/addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="nv">$BASEURL</span>/api/block/02788224fb087d9a5ed48a12a3db741ad7bd4429a63e7e5b6bc69d2f2956d205/address/addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -2594,12 +2579,11 @@ block height and achieve the same result.</p>
   <span class="nt">&quot;block&quot;</span><span class="p">:</span> <span class="s2">&quot;02788224fb087d9a5ed48a12a3db741ad7bd4429a63e7e5b6bc69d2f2956d205&quot;</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
-  --data-binary <span class="s1">&#39;{&quot;variables&quot;:{&quot;address&quot;:&quot;addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5&quot;,&quot;block&quot;:&quot;02788224fb087d9a5ed48a12a3db741ad7bd4429a63e7e5b6bc69d2f2956d205&quot;},&quot;query&quot;:&quot;query getAddressBlockSummary($address: String!, $block: Hash32Hex!) { blocks(where: { hash: { _eq: $block } }) { transactions_aggregate( where: { _or: [ { inputs: { address: { _eq: $address } } } { outputs: { address: { _eq: $address } } } ] } ) { aggregate { count } } transactions( where: { _or: [ { inputs: { address: { _eq: $address } } } { outputs: { address: { _eq: $address } } } ] } ) { hash includedAt fee inputs(where: { address: { _eq: $address } }) { address value txHash sourceTxIndex } outputs(where: { address: { _eq: $address } }) { address value txHash } inputs_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } outputs_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } } }}&quot;}&#39;</span> 
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+<span class="go">  -H &#39;Content-Type: application/json&#39; \</span>
+<span class="go">  -H &#39;Accept: application/json&#39; \</span>
+<span class="go">  --data-binary &#39;{&quot;variables&quot;:{&quot;address&quot;:&quot;addr_test1qrvf30r0e6r8zjzmv22a4r3h8kzj2xf3l2ekezvqd66mcj6kvlatzplcfr8afde6wsr6weskqr8k3u80e957ecmkvkhqrfd5g5&quot;,&quot;block&quot;:&quot;02788224fb087d9a5ed48a12a3db741ad7bd4429a63e7e5b6bc69d2f2956d205&quot;},&quot;query&quot;:&quot;query getAddressBlockSummary($address: String!, $block: Hash32Hex!) { blocks(where: { hash: { _eq: $block } }) { transactions_aggregate( where: { _or: [ { inputs: { address: { _eq: $address } } } { outputs: { address: { _eq: $address } } } ] } ) { aggregate { count } } transactions( where: { _or: [ { inputs: { address: { _eq: $address } } } { outputs: { address: { _eq: $address } } } ] } ) { hash includedAt fee inputs(where: { address: { _eq: $address } }) { address value txHash sourceTxIndex } outputs(where: { address: { _eq: $address } }) { address value txHash } inputs_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } outputs_aggregate(where: { address: { _eq: $address } }) { aggregate { sum { value } } } } }}&quot;}&#39; </span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -2648,11 +2632,10 @@ block height and achieve the same result.</p>
 </details></p>
 </div>
 <input id="__tabbed_8_3" name="__tabbed_8" type="radio" /><label for="__tabbed_8_3">cardano-rosetta</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl -X POST <span class="s1">&#39;$BASEURL/account/balance&#39;</span> <span class="se">\</span>
-  -H <span class="s2">&quot;Content-Type: application/json&quot;</span> <span class="se">\</span>
-  -d <span class="s1">&#39;{ &quot;network_identifier&quot;: { &quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {}, &quot;account_identifier&quot;: { &quot;address&quot;: &quot;DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E&quot; }, &quot;metadata&quot;: {}, &quot;block_identifier&quot;: {&quot;index&quot;: &quot;5264122&quot;,&quot;hash&quot;: &quot;b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a&quot; },&quot;currencies&quot;: {&quot;symbol&quot;: &quot;ada&quot;, &quot;decimals&quot;: 8 }}&#39;</span> 
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl -X POST <span class="s1">&#39;$BASEURL/account/balance&#39;</span> <span class="se">\</span>
+<span class="go">  -H &quot;Content-Type: application/json&quot; \</span>
+<span class="go">  -d &#39;{ &quot;network_identifier&quot;: { &quot;blockchain&quot;: &quot;cardano&quot;, &quot;network&quot;: &quot;mainnet&quot; }, &quot;metadata&quot;: {}, &quot;account_identifier&quot;: { &quot;address&quot;: &quot;DdzFFzCqrhsqKd92VGNM9Ts1Ms62J2FaSRmf8t1bQa1VugDmcUJzeU8TRFnGDDUR6f1m9VaJJG1GfnzxVjKGBbBAVGT9sPBseREYzP3E&quot; }, &quot;metadata&quot;: {}, &quot;block_identifier&quot;: {&quot;index&quot;: &quot;5264122&quot;,&quot;hash&quot;: &quot;b5426334221805b3c161ec07b02722728ced7b5c38a9cc60962e819620ecbf9a&quot; },&quot;currencies&quot;: {&quot;symbol&quot;: &quot;ada&quot;, &quot;decimals&quot;: 8 }}&#39; </span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -2679,9 +2662,8 @@ block height and achieve the same result.</p>
 <h4 id="apiepochsepoch"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_epochPages">/api/epochs/{epoch}</a><a class="headerlink" href="#apiepochsepoch" title="Permanent link">&para;</a></h4>
 <p>Get epoch pages, all the paged slots in the epoch.</p>
 <div class="tabbed-set" data-tabs="9:3"><input checked="checked" id="__tabbed_9_1" name="__tabbed_9" type="radio" /><label for="__tabbed_9_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/epochs/1?page<span class="o">=</span><span class="m">1</span>
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="nv">$BASEURL</span>/api/epochs/1?page<span class="o">=</span><span class="m">1</span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -2888,12 +2870,11 @@ block height and achieve the same result.</p>
   <span class="nt">&quot;block_limit&quot;</span><span class="p">:</span> <span class="mi">10</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
-  --data-binary <span class="s1">&#39;{&quot;variables&quot;:{&quot;epoch&quot;:1,&quot;block_limit&quot;:10},&quot;query&quot;:&quot;query getEpoch($epoch: Int!, $block_limit: Int!) { epochs(where: { number: { _eq: $epoch } }) { number blocks(limit: $block_limit, order_by: { slotNo: asc }) { slotInEpoch number hash slotLeader { hash } forgedAt } startedAt transactionsCount blocks_aggregate { aggregate { sum { size fees } } } output }}&quot;}&#39;</span> 
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+<span class="go">  -H &#39;Content-Type: application/json&#39; \</span>
+<span class="go">  -H &#39;Accept: application/json&#39; \</span>
+<span class="go">  --data-binary &#39;{&quot;variables&quot;:{&quot;epoch&quot;:1,&quot;block_limit&quot;:10},&quot;query&quot;:&quot;query getEpoch($epoch: Int!, $block_limit: Int!) { epochs(where: { number: { _eq: $epoch } }) { number blocks(limit: $block_limit, order_by: { slotNo: asc }) { slotInEpoch number hash slotLeader { hash } forgedAt } startedAt transactionsCount blocks_aggregate { aggregate { sum { size fees } } } output }}&quot;}&#39; </span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -3021,9 +3002,8 @@ block height and achieve the same result.</p>
 <h4 id="apiepochsepochslot"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_epochSlots">/api/epochs/{epoch}/{slot}</a><a class="headerlink" href="#apiepochsepochslot" title="Permanent link">&para;</a></h4>
 <p>Get the slot information in an epoch.</p>
 <div class="tabbed-set" data-tabs="10:3"><input checked="checked" id="__tabbed_10_1" name="__tabbed_10" type="radio" /><label for="__tabbed_10_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/epochs/1/8
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="nv">$BASEURL</span>/api/epochs/1/8
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -3083,12 +3063,11 @@ block height and achieve the same result.</p>
   <span class="nt">&quot;slot&quot;</span><span class="p">:</span> <span class="mi">8</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\ </span>
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\ </span>
 <span class="go">  -H &#39;Content-Type: application/json&#39; \</span>
 <span class="go">  -H &#39;Accept: application/json&#39; \</span>
 <span class="go">  --data-binary &#39;{&quot;variables&quot;:{&quot;epoch&quot;:1,&quot;slot&quot;:8},&quot;query&quot;:&quot;query getSlotInEpoch($epoch: Int!, $slot: Int!) { epochs(where: { number: { _eq: $epoch } }) { number blocks(where: { slotInEpoch: { _eq: $slot } }) { slotInEpoch number hash slotLeader { hash } forgedAt } startedAt transactionsCount blocks_aggregate(where: { slotInEpoch: { _eq: $slot } }) { aggregate { sum { size fees } } } output }}&quot;}&#39; </span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -3136,9 +3115,8 @@ block height and achieve the same result.</p>
 <h4 id="apigenesissummary"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_genesisSummary">/api/genesis/summary</a><a class="headerlink" href="#apigenesissummary" title="Permanent link">&para;</a></h4>
 <p>Get information about the genesis block.</p>
 <div class="tabbed-set" data-tabs="11:3"><input checked="checked" id="__tabbed_11_1" name="__tabbed_11" type="radio" /><label for="__tabbed_11_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/genesis/summary
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="nv">$BASEURL</span>/api/genesis/summary
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -3172,12 +3150,11 @@ block height and achieve the same result.</p>
   }
 }
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
-  --data-binary <span class="s1">&#39;{&quot;query&quot;:&quot; query getGenesisSummary { genesis { byron { avvmDistr nonAvvmBalances } } }&quot;}&#39;</span> 
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+<span class="go">  -H &#39;Content-Type: application/json&#39; \</span>
+<span class="go">  -H &#39;Accept: application/json&#39; \</span>
+<span class="go">  --data-binary &#39;{&quot;query&quot;:&quot; query getGenesisSummary { genesis { byron { avvmDistr nonAvvmBalances } } }&quot;}&#39; </span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -3221,9 +3198,8 @@ block height and achieve the same result.</p>
 </div>
 <h4 id="apigenesisaddress"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_genesisAddressInfo">/api/genesis/address</a><a class="headerlink" href="#apigenesisaddress" title="Permanent link">&para;</a></h4>
 <div class="tabbed-set" data-tabs="12:3"><input checked="checked" id="__tabbed_12_1" name="__tabbed_12" type="radio" /><label for="__tabbed_12_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/genesis/address?page<span class="o">=</span><span class="m">1</span>
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="nv">$BASEURL</span>/api/genesis/address?page<span class="o">=</span><span class="m">1</span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -3318,12 +3294,11 @@ block height and achieve the same result.</p>
   }
 }
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
-  -H <span class="s1">&#39;Accept: application/json&#39;</span> <span class="se">\</span>
-  --data-binary <span class="s1">&#39;{&quot;query&quot;:&quot; query getGenesisSummary { genesis { byron { avvmDistr nonAvvmBalances } } }&quot;}&#39;</span> 
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="s2">&quot;</span><span class="nv">$BASEURL</span><span class="s2">&quot;</span> <span class="se">\</span>
+<span class="go">  -H &#39;Content-Type: application/json&#39; \</span>
+<span class="go">  -H &#39;Accept: application/json&#39; \</span>
+<span class="go">  --data-binary &#39;{&quot;query&quot;:&quot; query getGenesisSummary { genesis { byron { avvmDistr nonAvvmBalances } } }&quot;}&#39; </span>
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -3361,9 +3336,8 @@ block height and achieve the same result.</p>
 <h4 id="apisupplyada"><a href="https://input-output-hk.github.io/cardano-rest/explorer-api/#operation/_totalAda">/api/supply/ada</a><a class="headerlink" href="#apisupplyada" title="Permanent link">&para;</a></h4>
 <p>Get the total ADA supply in the blockchain.</p>
 <div class="tabbed-set" data-tabs="13:3"><input checked="checked" id="__tabbed_13_1" name="__tabbed_13" type="radio" /><label for="__tabbed_13_1">cardano-rest</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code><span class="gp">$</span> curl <span class="nv">$BASEURL</span>/api/supply/ada
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl <span class="nv">$BASEURL</span>/api/supply/ada
 </code></pre></div>
-
 <p><details>
   <summary>see JSON response</summary>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -3403,45 +3377,44 @@ block height and achieve the same result.</p>
             </article>
           </div>
         </div>
+        
       </main>
       
         
 <footer class="md-footer">
   
-    <div class="md-footer-nav">
-      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
-        
-          <a href=".." class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
-            <div class="md-footer-nav__button md-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        <a href=".." class="md-footer__link md-footer__link--prev" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Getting Started
             </div>
-            <div class="md-footer-nav__title">
-              <div class="md-ellipsis">
-                <span class="md-footer-nav__direction">
-                  Previous
-                </span>
-                Getting Started
-              </div>
+          </div>
+        </a>
+      
+      
+        <a href="../submit-api/" class="md-footer__link md-footer__link--next" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              submit-api
             </div>
-          </a>
-        
-        
-          <a href="../submit-api/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
-            <div class="md-footer-nav__title">
-              <div class="md-ellipsis">
-                <span class="md-footer-nav__direction">
-                  Next
-                </span>
-                submit-api
-              </div>
-            </div>
-            <div class="md-footer-nav__button md-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
-            </div>
-          </a>
-        
-      </nav>
-    </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -3456,6 +3429,7 @@ block height and achieve the same result.</p>
         <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
           Material for MkDocs
         </a>
+        
       </div>
       
     </div>
@@ -3463,19 +3437,13 @@ block height and achieve the same result.</p>
 </footer>
       
     </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../assets/javascripts/workers/search.fe42c31b.min.js", "version": null}</script>
     
-      <script src="../assets/javascripts/vendor.08c56446.min.js"></script>
-      <script src="../assets/javascripts/bundle.6ced434e.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
-      
-      <script>
-        app = initialize({
-          base: "..",
-          features: [],
-          search: Object.assign({
-            worker: "../assets/javascripts/worker/search.8c7e0a7e.min.js"
-          }, typeof search !== "undefined" && search)
-        })
-      </script>
+    
+      <script src="../assets/javascripts/bundle.d892486b.min.js"></script>
       
     
   </body>
