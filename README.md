@@ -15,43 +15,20 @@
 
 ## Overview
 
-Cardano REST provides a set of APIs for interacting with on-chain data
-through JSON over HTTP.
+Cardano REST provides a set of APIs for interacting with on-chain data through JSON over HTTP.
 
-:warning: These APIs are the currently supported APIs. In future they may be augmented or replaced by a GraphQL API of [cardano-graphql](https://github.com/input-output-hk/cardano-graphql), when GraphQL component will be released. These APIs will be supported for some time, even once alternatives become available.
+## Deprecation Notice
 
-## Getting Started
+:warning: **cardano-rest is now DEPRECATED. The `explorer-api` and `submit-api` will NOT survive the Alonzo hard-fork.** :warning: 
 
-1. Clone the repository.
+As a replacement, the following tools are at your disposal:
 
-```
-$ git clone git@github.com:input-output-hk/cardano-rest.git
-$ cd cardano-rest
-```
+- [cardano-graphql](https://github.com/input-output-hk/cardano-graphql)
+- [cardano-rosetta](https://github.com/input-output-hk/cardano-rosetta)
+- [cardano-submit-api](https://github.com/input-output-hk/cardano-node/tree/master/cardano-submit-api)
+- [cardano-wallet](https://github.com/input-output-hk/cardano-wallet)
 
-2. Start `cardano-node`, `cardano-db-sync`, `postgresql` and `cardano-rest` components using Docker:
-
-```
-$ NETWORK=testnet docker-compose up
-```
-
-3. Query the API :tada:
-
-```
-$ curl http://localhost:8100/api/txs/last 
-```
-
-For more information, have a look at the [Wiki :book:](https://github.com/input-output-hk/cardano-rest/wiki).
-
-## How to install (Linux / Mac OS / Docker)
-
-### Docker (recommended)
-
-See [Using Docker](https://github.com/input-output-hk/cardano-rest/wiki/Docker).
-
-### From Binaries 
-
-See assets available for each [release](https://github.com/input-output-hk/cardano-rest/releases).
+Users with an existing integration are encouraged to look at the [migration guide](https://input-output-hk.github.io/cardano-rest/migration-guide/). 
 
 ## Documentation
 
